@@ -1,0 +1,29 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twister.Console", "Twister.Console\Twister.Console.csproj", "{28EF4876-3B9E-4910-AA83-2B70F93A7B89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twister.Compiler", "Twister.Compiler\Twister.Compiler.csproj", "{B3568CF8-BBA3-48BD-A702-010D240DFBCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twister.Test", "Twister.Test\Twister.Test.csproj", "{8C9323B1-FF5A-4997-8AAA-55009A95DE92}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{28EF4876-3B9E-4910-AA83-2B70F93A7B89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28EF4876-3B9E-4910-AA83-2B70F93A7B89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28EF4876-3B9E-4910-AA83-2B70F93A7B89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28EF4876-3B9E-4910-AA83-2B70F93A7B89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3568CF8-BBA3-48BD-A702-010D240DFBCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3568CF8-BBA3-48BD-A702-010D240DFBCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3568CF8-BBA3-48BD-A702-010D240DFBCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3568CF8-BBA3-48BD-A702-010D240DFBCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C9323B1-FF5A-4997-8AAA-55009A95DE92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C9323B1-FF5A-4997-8AAA-55009A95DE92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C9323B1-FF5A-4997-8AAA-55009A95DE92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C9323B1-FF5A-4997-8AAA-55009A95DE92}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
