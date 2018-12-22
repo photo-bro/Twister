@@ -1,12 +1,12 @@
 ﻿using System;
 namespace Twister.Compiler.Lexer.Token
 {
-	public struct TokenInfo
-	{
-		public string Text { get; set; }
+    public struct TokenInfo
+    {
+        public string Text { get; set; }
 
-		public TokenType TokenType { get; set; }
+        public TokenType TokenType { get; set; }
 
-		public int SourceLineNumber { get; set; }
-	}
+        public int SourceLineNumber { get; set; }
+    }
 }

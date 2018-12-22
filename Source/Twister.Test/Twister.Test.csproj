@@ -15,5 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="UnitTest\" />
+    <Folder Include="UnitTest\Lexer\" />
   </ItemGroup>
 </Project>
