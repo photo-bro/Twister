@@ -56,23 +56,6 @@ namespace Twister.Compiler.Lexer
             return currentSlice.Slice(currentSlice.Length - 1, 1)[0];
         }
 
-        private void CheckForNewlines(ref ReadOnlySpan<char> currentSlice)
-        {
-            if (currentSlice.Length != 1)
-            {
-                CurrentSourceLine += currentSlice.Count(NewLine.AsSpan());
-                return;
-            }
-
-            if (currentSlice[0] == '\n')
-            {
-                // if non-unix newlines only increment if there is a carriage return
-                if (NewLine[0] == '\r' && PeekNext(-1) != '\r')
-                    return;
-                CurrentSourceLine++;
-            }
-        }
-
         public char PeekNext() => PeekNext(1);
 
         public char PeekNext(int count)
@@ -94,20 +77,39 @@ namespace Twister.Compiler.Lexer
             Position = -1;
         }
 
+        private void CheckForNewlines(ref ReadOnlySpan<char> currentSlice)
+        {
+            if (currentSlice.Length != 1)
+            {
+                CurrentSourceLine += currentSlice.Count(NewLine.AsSpan());
+                return;
+            }
+
+            if (currentSlice[0] == '\n')
+            {
+                // if non-unix newlines only increment if there is a carriage return
+                if (NewLine[0] == '\r' && PeekNext(-1) != '\r')
+                    return;
+                CurrentSourceLine++;
+            }
+        }
     }
 
     public static class SourceScannerExtensions
     {
         public static int Count(this ReadOnlySpan<char> span, ReadOnlySpan<char> item)
         {
+            if (item.Length < 1 || span.Length < 1 || item.Length> span.Length)
+                return 0;
+
             if (!span.Contains(item, StringComparison.InvariantCulture))
                 return 0;
 
             var indexOfItem = span.IndexOf(item);
-            if (indexOfItem >= span.Length - item.Length)
+            if (indexOfItem + item.Length >= span.Length)
                 return 1;
 
-            return span.Slice(indexOfItem).Count(item) + 1;
+            return span.Slice(indexOfItem + item.Length).Count(item) + 1;
         }
     }
 }
