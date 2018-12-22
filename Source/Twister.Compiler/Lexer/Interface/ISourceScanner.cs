@@ -2,7 +2,7 @@
 {
 	public interface ISourceScanner
 	{
-		char InvalidItem { get; }
+		char InvalidChar { get; }
 
 		int CurrentSourceLine { get; }
 

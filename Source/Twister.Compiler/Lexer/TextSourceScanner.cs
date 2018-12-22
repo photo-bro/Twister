@@ -5,20 +5,18 @@ namespace Twister.Compiler.Lexer
 {
 	public class TextSourceScanner : ISourceScanner
 	{
-		private const char InvalidChar = char.MaxValue;
+		private const char INVALIDCHAR = char.MaxValue;
 		private readonly string NewLine = Environment.NewLine;
-		private readonly string _sourceString;
 		private readonly ReadOnlyMemory<char> _source;
 
 		public TextSourceScanner(string source)
 		{
-			_sourceString = source;
 			_source = source.AsMemory();
 		}
 
-		public char InvalidItem => InvalidChar;
+		public char InvalidChar => INVALIDCHAR;
 
-		public int CurrentSourceLine { get; private set; } = -1;
+		public int CurrentSourceLine { get; private set; } = 0;
 
 		public int Offset => Position - Base;
 
@@ -26,38 +24,62 @@ namespace Twister.Compiler.Lexer
 
 		public int Position { get; private set; } = -1;
 
-		public int SourceLength => _sourceString.Length;
+		public int SourceLength => _source.Length;
 
-		public string CurrentWindow => string.Join(string.Empty, _source.Slice(Base, Offset).ToArray());
+		// Memory<char>.ToString converts char buffer to proper string
+		// https://docs.microsoft.com/en-us/dotnet/api/system.memory-1.tostring?view=netcore-2.2#System_Memory_1_ToString
+		public string CurrentWindow => _source.Slice(Base, Offset).ToString();
 
-		public char Advance()
-		{
-			if (IsAtEnd()) return InvalidChar;
-			if (Position + 1 > SourceLength) return InvalidChar;
-
-			return _sourceString[++Position];
-		}
+		public char Advance() => Advance(1);
 
 		public char Advance(int count)
 		{
-			if (IsAtEnd()) return InvalidChar;
-			if (Position + count > SourceLength) return InvalidChar;
+			if (IsAtEnd())
+				return InvalidChar;
 
-			return _sourceString[Position = Position + count];
+			if (count == 0)
+				return _source.Slice(Position, 1).Span[0];
+
+			if (count < 0)
+				throw new InvalidOperationException($"{nameof(TextSourceScanner)}" +
+					$".{nameof(TextSourceScanner.Advance)} can only advance forward");
+
+			if (Position + count > SourceLength)
+				return InvalidChar;
+
+			Position += count;
+
+			var currentSlice = _source.Slice(Position, count).Span;
+			CheckForNewlines(ref currentSlice);
+
+			// Return last char in slice
+			return currentSlice.Slice(currentSlice.Length - 1, 1)[0];
 		}
 
-		public char PeekNext()
+		private void CheckForNewlines(ref ReadOnlySpan<char> currentSlice)
 		{
-			return Position + 1 < SourceLength
-				? _sourceString[Position + 1]
-				: InvalidItem;
+			if (currentSlice.Length != 1)
+			{
+				CurrentSourceLine += currentSlice.Count(NewLine.AsSpan());
+				return;
+			}
+
+			if (currentSlice[0] == '\n')
+			{
+				// if non-unix newlines only increment if there is a carriage return
+				if (NewLine[0] == '\r' && PeekNext(-1) != '\r')
+					return;
+				CurrentSourceLine++;
+			}
 		}
+
+		public char PeekNext() => PeekNext(1);
 
 		public char PeekNext(int count)
 		{
-			return Position + count < SourceLength
-				? _sourceString[Position + count]
-				: InvalidItem;
+			return Position + count < SourceLength && Position + count >= 0
+				? _source.Slice(Position + count, 1).Span[0]
+				: InvalidChar;
 		}
 
 		public bool IsAtEnd()
@@ -70,6 +92,22 @@ namespace Twister.Compiler.Lexer
 			CurrentSourceLine = 0;
 			Base = 0;
 			Position = -1;
+		}
+
+	}
+
+	public static class SourceScannerExtensions
+	{
+		public static int Count(this ReadOnlySpan<char> span, ReadOnlySpan<char> item)
+		{
+			if (!span.Contains(item, StringComparison.InvariantCulture))
+				return 0;
+
+			var indexOfItem = span.IndexOf(item);
+			if (indexOfItem >= span.Length - item.Length)
+				return 1;
+
+			return span.Slice(indexOfItem).Count(item) + 1;
 		}
 	}
 }
