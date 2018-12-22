@@ -43,8 +43,10 @@ namespace Twister.Compiler.Lexer
 
             // Remove whitespace first
             while (char.IsWhiteSpace(currentChar) || char.IsControl(currentChar))
+            {
                 currentChar = _scanner.Advance();
-
+                _scanner.Base = _scanner.Position;
+            }
 
             switch (currentChar)
             {
@@ -126,10 +128,10 @@ namespace Twister.Compiler.Lexer
                     info.TokenType = TokenType.QuestionMark;
                     break;
                 case '\'':
-                    ScanCharLiteral(ref info, currentChar);
+                    ScanCharLiteral(ref info);
                     break;
                 case '\"':
-                    ScanStringLiteral(ref info, currentChar);
+                    ScanStringLiteral(ref info);
                     break;
                 case '(':
                     {
@@ -261,7 +263,7 @@ namespace Twister.Compiler.Lexer
 
         }
 
-        private void ScanCharLiteral(ref TokenInfo info, char current)
+        private void ScanCharLiteral(ref TokenInfo info)
         {
             if (_scanner.PeekNext(2) == '\'')
             {
@@ -285,14 +287,13 @@ namespace Twister.Compiler.Lexer
             // empty escaped chars not allowed
             throw new IllegalCharacterException("Empty escaped char literal", _scanner.CurrentSourceLine)
             { Character = '\\' };
-
         }
 
-        private void ScanStringLiteral(ref TokenInfo info, char current)
+        private void ScanStringLiteral(ref TokenInfo info)
         {
+            var current = _scanner.Advance();
             while (current != '\"')
             {
-                current = _scanner.Advance();
                 if (!_flags.AllowUnicode() && current > 127)
                     throw new IllegalCharacterException("Only ASCII characters are currently enabled",
                          _scanner.CurrentSourceLine)

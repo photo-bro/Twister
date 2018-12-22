@@ -6,6 +6,8 @@ namespace Twister.Test.UnitTest.Lexer
 {
     public class SourceScannerExtensionsTest
     {
+#pragma warning disable CS1701 // Assuming assembly reference matches identity
+
         [Theory]
         [InlineData("abcdefghijklmnopqrstuvq", "ghi", 1)]
         [InlineData("", "", 0)]
@@ -21,4 +23,6 @@ namespace Twister.Test.UnitTest.Lexer
             Assert.Equal(expectedCount, actualCount);
         }
     }
+
+#pragma warning restore CS1701 // Assuming assembly reference matches identity
 }

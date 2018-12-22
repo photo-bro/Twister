@@ -6,6 +6,9 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
@@ -17,5 +20,8 @@
     <Folder Include="Data\" />
     <Folder Include="UnitTest\" />
     <Folder Include="UnitTest\Lexer\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Twister.Compiler\Twister.Compiler.csproj" />
   </ItemGroup>
 </Project>

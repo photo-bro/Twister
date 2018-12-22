@@ -1,5 +1,5 @@
-﻿using System;
-using Twister.Compiler.Lexer.Interface;
+﻿using Twister.Compiler.Lexer.Interface;
+using System;
 
 namespace Twister.Compiler.Lexer
 {
@@ -22,7 +22,7 @@ namespace Twister.Compiler.Lexer
 
         public int Base { get; set; } = 0;
 
-        public int Position { get; private set; } = -1;
+        public int Position { get; private set; } = 0;
 
         public int SourceLength => _source.Length;
 
@@ -37,36 +37,41 @@ namespace Twister.Compiler.Lexer
             if (IsAtEnd())
                 return InvalidChar;
 
+            if (Position + count > SourceLength)
+                return InvalidChar;
+
             if (count == 0)
-                return _source.Slice(Position, 1).Span[0];
+                return _source.Span[Position];
 
             if (count < 0)
                 throw new InvalidOperationException($"{nameof(TextSourceScanner)}" +
                     $".{nameof(TextSourceScanner.Advance)} can only advance forward");
 
-            if (Position + count > SourceLength)
-                return InvalidChar;
+            var currentSpan = _source.Slice(Position, count).Span;
+            CheckForNewlines(ref currentSpan);
 
             Position += count;
 
-            var currentSlice = _source.Slice(Position, count).Span;
-            CheckForNewlines(ref currentSlice);
-
             // Return last char in slice
-            return currentSlice.Slice(currentSlice.Length - 1, 1)[0];
+            return currentSpan[count - 1];
         }
 
         public char PeekNext() => PeekNext(1);
 
         public char PeekNext(int count)
         {
-            return Position + count < SourceLength && Position + count >= 0
-                ? _source.Slice(Position + count, 1).Span[0]
-                : InvalidChar;
+            if (Position + count > SourceLength)
+                return InvalidChar;
+
+            if (Position + count < 1)
+                return InvalidChar;
+
+            return _source.Span[Position + count - 1];
         }
 
         public bool IsAtEnd()
         {
+            if (SourceLength == 0) return true;
             return Position >= SourceLength;
         }
 
@@ -99,7 +104,7 @@ namespace Twister.Compiler.Lexer
     {
         public static int Count(this ReadOnlySpan<char> span, ReadOnlySpan<char> item)
         {
-            if (item.Length < 1 || span.Length < 1 || item.Length> span.Length)
+            if (item.Length < 1 || span.Length < 1 || item.Length > span.Length)
                 return 0;
 
             if (!span.Contains(item, StringComparison.InvariantCulture))
