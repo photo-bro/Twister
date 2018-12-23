@@ -17,7 +17,7 @@ namespace Twister.Compiler.Lexer
             _createScannerFunc = createSourceReader;
         }
 
-        public IList<IToken> LexicalAnalysis(string sourceCode, LexerFlag flags)
+        public IEnumerable<IToken> LexicalAnalysis(string sourceCode, LexerFlag flags)
         {
             _scanner = _createScannerFunc(sourceCode);
             _flags = flags;
@@ -28,10 +28,8 @@ namespace Twister.Compiler.Lexer
             while (ScanToken(ref tokenInfo))
             {
                 var token = TokenFactory.Create(ref tokenInfo, ref _flags);
-                tokens.Add(token);
+                yield return token;
             }
-
-            return tokens;
         }
 
         private bool ScanToken(ref TokenInfo info)
@@ -64,7 +62,7 @@ namespace Twister.Compiler.Lexer
                     break;
                 case '=':
                     {
-                        if (_scanner.PeekNext() == '>')
+                        if (_scanner.Peek() == '>')
                         {
                             _scanner.Advance();
                             info.TokenType = TokenType.Define;
@@ -76,7 +74,7 @@ namespace Twister.Compiler.Lexer
                     }
                 case '<':
                     {
-                        if (_scanner.PeekNext() == '<')
+                        if (_scanner.Peek() == '<')
                         {
                             _scanner.Advance();
                             info.TokenType = TokenType.Operator;
@@ -88,7 +86,7 @@ namespace Twister.Compiler.Lexer
                     }
                 case '>':
                     {
-                        if (_scanner.PeekNext() == '>')
+                        if (_scanner.Peek() == '>')
                         {
                             _scanner.Advance();
                             info.TokenType = TokenType.Operator;
@@ -109,7 +107,7 @@ namespace Twister.Compiler.Lexer
                     break;
                 case '.':
                     {
-                        var peekChar = _scanner.PeekNext();
+                        var peekChar = _scanner.Peek();
                         if (peekChar == '.')
                         {
                             _scanner.Advance();
@@ -119,7 +117,10 @@ namespace Twister.Compiler.Lexer
 
                         // Real literals don't have to start with a digit (e.g. .123)
                         if (char.IsDigit(peekChar))
-                            goto numeric;
+                        {
+                            ScanNumeric(ref info, currentChar);
+                            break;
+                        }
 
                         info.TokenType = TokenType.Dot;
                         break;
@@ -135,10 +136,10 @@ namespace Twister.Compiler.Lexer
                     break;
                 case '(':
                     {
-                        if (_scanner.PeekNext() == '*')
+                        if (_scanner.Peek() == '*')
                         {
                             currentChar = _scanner.Advance();
-                            ConsumeComment(currentChar);
+                            ConsumeComment();
                             break;
                         }
 
@@ -166,7 +167,6 @@ namespace Twister.Compiler.Lexer
                     ScanIdentifierOrKeyword(ref info, currentChar);
                     break;
                 case char c when char.IsDigit(c):
-                numeric:
                     ScanNumeric(ref info, currentChar);
                     break;
                 case char c when c == _scanner.InvalidChar:
@@ -216,9 +216,15 @@ namespace Twister.Compiler.Lexer
         private void ScanNumeric(ref TokenInfo info, char current)
         {
             var dotCount = 0;
-            var uCount = 0;
+            var isUnsignedLiteral = false;
 
-            while (current == '.' || current == 'U' || current == 'u' || char.IsDigit(current))
+            if (current == '.')
+                dotCount++;
+
+            while ((current == '.' ||
+                    current == 'U' ||
+                    current == 'u' ||
+                    char.IsDigit(current)) && !isUnsignedLiteral)
             {
                 switch (current)
                 {
@@ -233,14 +239,8 @@ namespace Twister.Compiler.Lexer
                         }
                     case 'U':
                     case 'u':
-                        {
-                            uCount++;
-                            if (uCount > 1)
-                                throw new UnexpectedCharacterException("Unsigned integer literal cannot have more than " +
-                                    "one postfix", _scanner.CurrentSourceLine)
-                                { Character = current };
-                            break;
-                        }
+                        isUnsignedLiteral = true;
+                        break;
                     case char c when char.IsDigit(c):
                         break;
                 }
@@ -248,7 +248,7 @@ namespace Twister.Compiler.Lexer
                 current = _scanner.Advance();
             }
 
-            if (uCount > 0)
+            if (isUnsignedLiteral)
             {
                 if (dotCount > 0)
                     throw new IllegalCharacterException("Unsigned real numbers are not supported", _scanner.CurrentSourceLine)
@@ -265,16 +265,16 @@ namespace Twister.Compiler.Lexer
 
         private void ScanCharLiteral(ref TokenInfo info)
         {
-            if (_scanner.PeekNext(2) == '\'')
+            if (_scanner.Peek(2) == '\'')
             {
                 _scanner.Advance(2);
                 info.TokenType = TokenType.CharLiteral;
                 return;
             }
 
-            if (_scanner.PeekNext() == '\\')
+            if (_scanner.Peek() == '\\')
             {
-                var escapedChar = _scanner.PeekNext(2);
+                var escapedChar = _scanner.Peek(2);
                 if (escapedChar == '\\' || escapedChar == '\'' || escapedChar == '\"' ||
                     escapedChar == '\n' || escapedChar == '\r' || escapedChar == '\0')
                 {
@@ -303,9 +303,10 @@ namespace Twister.Compiler.Lexer
             info.TokenType = TokenType.StringLiteral;
         }
 
-        private void ConsumeComment(char current)
+        private void ConsumeComment()
         {
-            while (current != '*' && _scanner.PeekNext() != ')')
+            var current = _scanner.Advance();
+            while (current != '*' && _scanner.Peek() != ')')
                 current = _scanner.Advance();
             _scanner.Advance(); // ending ')'
         }

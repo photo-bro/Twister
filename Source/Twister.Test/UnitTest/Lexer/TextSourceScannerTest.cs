@@ -87,7 +87,7 @@ namespace Twister.Test.UnitTest.Lexer
 
             var startPosition = scanner.Position;
 
-            var actual = scanner.PeekNext(peekCount);
+            var actual = scanner.Peek(peekCount);
             Assert.Equal(expected, actual);
             Assert.Equal(startPosition, scanner.Position);
         }

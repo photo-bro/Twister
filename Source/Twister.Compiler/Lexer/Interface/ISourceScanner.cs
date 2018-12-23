@@ -20,9 +20,9 @@
 
         char Advance(int count);
 
-        char PeekNext();
+        char Peek();
 
-        char PeekNext(int count);
+        char Peek(int count);
 
         bool IsAtEnd();
 

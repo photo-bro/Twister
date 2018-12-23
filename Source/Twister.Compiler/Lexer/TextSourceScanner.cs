@@ -56,9 +56,9 @@ namespace Twister.Compiler.Lexer
             return currentSpan[count - 1];
         }
 
-        public char PeekNext() => PeekNext(1);
+        public char Peek() => Peek(1);
 
-        public char PeekNext(int count)
+        public char Peek(int count)
         {
             if (Position + count > SourceLength)
                 return InvalidChar;
@@ -93,7 +93,7 @@ namespace Twister.Compiler.Lexer
             if (currentSlice[0] == '\n')
             {
                 // if non-unix newlines only increment if there is a carriage return
-                if (NewLine[0] == '\r' && PeekNext(-1) != '\r')
+                if (NewLine[0] == '\r' && Peek(-1) != '\r')
                     return;
                 CurrentSourceLine++;
             }
