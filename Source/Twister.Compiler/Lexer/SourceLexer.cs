@@ -5,19 +5,19 @@ using Twister.Compiler.Lexer.Token;
 
 namespace Twister.Compiler.Lexer
 {
-    public class Lexer : ILexer
+    public class SourceLexer : ILexer
     {
         private readonly Func<string, ISourceScanner> _createScannerFunc;
         private ISourceScanner _scanner;
 
         private LexerFlag _flags;
 
-        public Lexer(Func<string, ISourceScanner> createSourceReader)
+        public SourceLexer(Func<string, ISourceScanner> createSourceReader)
         {
             _createScannerFunc = createSourceReader;
         }
 
-        public IEnumerable<IToken> LexicalAnalysis(string sourceCode, LexerFlag flags)
+        public IEnumerable<IToken> Tokenize(string sourceCode, LexerFlag flags)
         {
             _scanner = _createScannerFunc(sourceCode);
             _flags = flags;
@@ -41,10 +41,9 @@ namespace Twister.Compiler.Lexer
 
             // Remove whitespace first
             while (char.IsWhiteSpace(currentChar) || char.IsControl(currentChar))
-            {
                 currentChar = _scanner.Advance();
-                _scanner.Base = _scanner.Position;
-            }
+
+            _scanner.Base = _scanner.Position;
 
             switch (currentChar)
             {
@@ -138,9 +137,9 @@ namespace Twister.Compiler.Lexer
                     {
                         if (_scanner.Peek() == '*')
                         {
-                            currentChar = _scanner.Advance();
+                            _scanner.Advance();
                             ConsumeComment();
-                            break;
+                            return ScanToken(ref info);
                         }
 
                         info.TokenType = TokenType.LeftParen;
@@ -230,8 +229,7 @@ namespace Twister.Compiler.Lexer
                 {
                     case '.':
                         {
-                            dotCount++;
-                            if (dotCount > 1)
+                            if (dotCount++ > 1)
                                 throw new UnexpectedCharacterException("Numeric literal cannot have more than one period",
                                     _scanner.CurrentSourceLine)
                                 { Character = current };
@@ -298,6 +296,8 @@ namespace Twister.Compiler.Lexer
                     throw new IllegalCharacterException("Only ASCII characters are currently enabled",
                          _scanner.CurrentSourceLine)
                     { Character = current };
+
+                current = _scanner.Advance();
             }
 
             info.TokenType = TokenType.StringLiteral;
@@ -309,6 +309,7 @@ namespace Twister.Compiler.Lexer
             while (current != '*' && _scanner.Peek() != ')')
                 current = _scanner.Advance();
             _scanner.Advance(); // ending ')'
+            _scanner.Base = _scanner.Position; // move window over comment
         }
     }
 }

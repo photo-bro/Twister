@@ -2,59 +2,59 @@
 
 namespace Twister.Compiler.Lexer.Token
 {
-    public struct SignedIntToken : IValueToken<long>
+    public class SignedIntToken : BaseToken, IValueToken<long>
     {
         public long Value { get; set; }
-        public TokenType Type => TokenType.SignedInt;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.SignedInt;
+        public override string ToString() => $"{base.ToString()}Value: {Value};";
     }
 
-    public struct UnsignedIntToken : IValueToken<ulong>
+    public class UnsignedIntToken : BaseToken, IValueToken<ulong>
     {
         public ulong Value { get; set; }
-        public TokenType Type => TokenType.UnsignedInt;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.UnsignedInt;
+        public override string ToString() => $"{base.ToString()}Value: {Value};";
     }
 
-    public struct RealToken : IValueToken<double>
+    public class RealToken : BaseToken, IValueToken<double>
     {
         public double Value { get; set; }
-        public TokenType Type => TokenType.Real;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.Real;
+        public override string ToString() => $"{base.ToString()}Value: {Value};";
     }
 
-    public struct IdToken : IValueToken<string>
+    public class IdToken : BaseToken, IValueToken<string>
     {
         public string Value { get; set; }
-        public TokenType Type => TokenType.Identifier;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.Identifier;
+        public override string ToString() => $"{base.ToString()}Value: {Value};";
     }
 
-    public struct KeywordToken : IValueToken<Keyword>
+    public class KeywordToken : BaseToken, IValueToken<Keyword>
     {
         public Keyword Value { get; set; }
-        public TokenType Type => TokenType.Keyword;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.Keyword;
+        public override string ToString() => $"{base.ToString()}Value: {Value};";
     }
 
-    public struct OperatorToken : IValueToken<Operator>
+    public class OperatorToken : BaseToken, IValueToken<Operator>
     {
         public Operator Value { get; set; }
-        public TokenType Type => TokenType.Operator;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.Operator;
+        public override string ToString() => $"{base.ToString()}Value: {Value};";
     }
 
-    public struct StringLiteralToken : IValueToken<string>
+    public class StringLiteralToken : BaseToken, IValueToken<string>
     {
         public string Value { get; set; }
-        public TokenType Type => TokenType.StringLiteral;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.StringLiteral;
+        public override string ToString() => $"{base.ToString()}Value: {Value};";
     }
 
-    public struct CharLiteralToken : IValueToken<char>
+    public class CharLiteralToken : BaseToken, IValueToken<char>
     {
         public char Value { get; set; }
-        public TokenType Type => TokenType.StringLiteral;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.StringLiteral;
+        public override string ToString() => $"{base.ToString()}Value: {Value};";
     }
 }

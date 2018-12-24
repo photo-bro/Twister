@@ -4,6 +4,6 @@ namespace Twister.Compiler.Lexer.Interface
 {
     public interface ILexer
     {
-        IEnumerable<IToken> LexicalAnalysis(string sourceCode, LexerFlag flags);
+        IEnumerable<IToken> Tokenize(string sourceCode, LexerFlag flags);
     }
 }

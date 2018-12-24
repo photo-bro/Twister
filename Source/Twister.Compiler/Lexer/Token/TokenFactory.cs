@@ -47,9 +47,8 @@ namespace Twister.Compiler.Lexer.Token
                 case TokenType.GreaterThan:
                     return new GreaterThan { LineNumber = info.SourceLineNumber };
                 default:
-                    return new Token
+                    return new EmptyToken
                     {
-                        Type = info.TokenType,
                         LineNumber = info.SourceLineNumber
                     };
             }
@@ -75,8 +74,8 @@ namespace Twister.Compiler.Lexer.Token
                     }
                 case TokenType.UnsignedInt:
                     {
-                        if (!ulong.TryParse(info.Text, out var longValue))
-                            throw new InvalidTokenException("Unable to parse 64bit signed integer value", info.SourceLineNumber)
+                        if (!ulong.TryParse(info.Text.TrimEnd('u').TrimEnd('U'), out var longValue))
+                            throw new InvalidTokenException("Unable to parse 64bit unsigned integer value", info.SourceLineNumber)
                             { InvalidText = info.Text };
 
                         return new UnsignedIntToken
@@ -88,7 +87,7 @@ namespace Twister.Compiler.Lexer.Token
                 case TokenType.Real:
                     {
                         if (!double.TryParse(info.Text, out var longValue))
-                            throw new InvalidTokenException("Unable to parse 64bit signed integer value", info.SourceLineNumber)
+                            throw new InvalidTokenException("Unable to parse double precision floating point value", info.SourceLineNumber)
                             { InvalidText = info.Text };
 
                         return new RealToken

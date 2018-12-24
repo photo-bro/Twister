@@ -2,111 +2,96 @@
 
 namespace Twister.Compiler.Lexer.Token
 {
-    public struct Token : IToken
+    public abstract class BaseToken : IToken
     {
-        public TokenType Type { get; set; }
+        public abstract TokenType Type { get; }
         public int LineNumber { get; set; }
+
+        public override string ToString() => $"TokenType: {Type}; Line: {LineNumber};";
     }
 
-    public struct EmptyToken : IToken
+    public class EmptyToken : BaseToken
     {
-        public TokenType Type => TokenType.None;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.None;
     }
 
-    public struct DefineToken : IToken
+    public class DefineToken : BaseToken
     {
-        public TokenType Type => TokenType.Define;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.Define;
     }
 
-    public struct AssignToken : IToken
+    public class AssignToken : BaseToken
     {
-        public TokenType Type => TokenType.Assign;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.Assign;
     }
 
-    public struct ColonToken : IToken
+    public class ColonToken : BaseToken
     {
-        public TokenType Type => TokenType.Colon;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.Colon;
     }
 
-    public struct SemiColonToken : IToken
+    public class SemiColonToken : BaseToken
     {
-        public TokenType Type => TokenType.Semicolon;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.Semicolon;
     }
 
-    public struct CommaToken : IToken
+    public class CommaToken : BaseToken
     {
-        public TokenType Type => TokenType.Comma;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.Comma;
     }
 
-    public struct DotToken : IToken
+    public class DotToken : BaseToken
     {
-        public TokenType Type => TokenType.Dot;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.Dot;
     }
 
-    public struct DotDotToken : IToken
+    public class DotDotToken : BaseToken
     {
-        public TokenType Type => TokenType.DotDot;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.DotDot;
     }
 
-    public struct QuestionMarkToken : IToken
+    public class QuestionMarkToken : BaseToken
     {
-        public TokenType Type => TokenType.QuestionMark;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.QuestionMark;
     }
 
-    public struct LeftParenToken : IToken
+    public class LeftParenToken : BaseToken
     {
-        public TokenType Type => TokenType.LeftParen;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.LeftParen;
     }
 
-    public struct RightParenToken : IToken
+    public class RightParenToken : BaseToken
     {
-        public TokenType Type => TokenType.RightParen;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.RightParen;
     }
 
-    public struct LeftBrackToken : IToken
+    public class LeftBrackToken : BaseToken
     {
-        public TokenType Type => TokenType.LeftBrack;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.LeftBrack;
     }
 
-    public struct RightBrackToken : IToken
+    public class RightBrackToken : BaseToken
     {
-        public TokenType Type => TokenType.RightBrack;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.RightBrack;
     }
 
-    public struct LeftSquareBrackToken : IToken
+    public class LeftSquareBrackToken : BaseToken
     {
-        public TokenType Type => TokenType.LeftSquareBrack;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.LeftSquareBrack;
     }
 
-    public struct RightSquareBrackToken : IToken
+    public class RightSquareBrackToken : BaseToken
     {
-        public TokenType Type => TokenType.RightSquareBrack;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.RightSquareBrack;
     }
 
-    public struct LessThan : IToken
+    public class LessThan : BaseToken
     {
-        public TokenType Type => TokenType.LessThan;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.LessThan;
     }
 
-    public struct GreaterThan : IToken
+    public class GreaterThan : BaseToken
     {
-        public TokenType Type => TokenType.GreaterThan;
-        public int LineNumber { get; set; }
+        public override TokenType Type => TokenType.GreaterThan;
     }
 }
