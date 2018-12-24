@@ -7,7 +7,7 @@ namespace Twister.Compiler.Lexer.Token
         public abstract TokenType Type { get; }
         public int LineNumber { get; set; }
 
-        public override string ToString() => $"TokenType: {Type}; Line: {LineNumber};";
+        public override string ToString() => $"Line: {LineNumber}; TokenType: {Type};";
     }
 
     public class EmptyToken : BaseToken

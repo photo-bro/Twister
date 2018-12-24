@@ -20,7 +20,7 @@ namespace Twister.Compiler.Lexer
 
         public IllegalCharacterException(string message, int lineNumber) : base(message, lineNumber) { }
 
-        public override string Message => $"{base.Message} Char: '{Character}';";
+        public override string Message => $"{base.Message} Char: '{Character}'";
     }
 
 
@@ -30,7 +30,7 @@ namespace Twister.Compiler.Lexer
 
         public UnexpectedCharacterException(string message, int lineNumber) : base(message, lineNumber) { }
 
-        public override string Message => $"{base.Message} Char: '{Character}';";
+        public override string Message => $"{base.Message} Char: '{Character}'";
     }
 
     public class UnknownKeywordException : BaseLexerException
@@ -39,7 +39,7 @@ namespace Twister.Compiler.Lexer
 
         public UnknownKeywordException(string message, int lineNumber) : base(message, lineNumber) { }
 
-        public override string Message => $"{base.Message} Unknown Keyword: {UnknownKeyword};";
+        public override string Message => $"{base.Message} Unknown Keyword: \"{UnknownKeyword}\"";
     }
 
     public class InvalidTokenException : BaseLexerException
@@ -48,7 +48,7 @@ namespace Twister.Compiler.Lexer
 
         public InvalidTokenException(string message, int lineNumber) : base(message, lineNumber) { }
 
-        public override string Message => $"{base.Message} Invalid text: {InvalidText};";
+        public override string Message => $"{base.Message} Invalid text: \"{InvalidText}\"";
     }
 
 }

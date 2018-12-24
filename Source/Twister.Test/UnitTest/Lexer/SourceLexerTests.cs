@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Twister.Compiler.Lexer;
 using Twister.Compiler.Lexer.Interface;
+using Twister.Compiler.Lexer.Token;
 using Twister.Test.Data;
 using Xunit;
 
@@ -33,7 +34,7 @@ namespace Twister.Test.UnitTest.Lexer
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount, tokens.Count());
 
-            Console.Write(FormattedTokenString(tokens));
+            Console.Write(tokens.ToFormattedString());
         }
 
         [Theory]
@@ -47,28 +48,30 @@ namespace Twister.Test.UnitTest.Lexer
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount, tokens.Count());
 
-            Console.Write(FormattedTokenString(tokens));
+            Console.Write(tokens.ToFormattedString());
         }
 
         [Theory] 
         [InlineData("", 0)]
         [InlineData("(*   *)", 0)]
-        [InlineData("(* abcdefhuasdfjh  *) 123u (* *)", 1)]
+        [InlineData("(* abcdefhuasdfjh  *)123u(* *)", 1)]
+        [InlineData("(* \n *)123u(* *)", 1)]
         [InlineData("(* \n *) 123u (* *)", 1)]
         public void Test_Lexer_Comments(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount, tokens.Count());
-
         }
 
-        private string FormattedTokenString(IEnumerable<IToken> tokens)
+        [Theory]
+        [InlineData("   ", 0)]
+        [InlineData("\t\t\t\t\t\t\t", 0)]
+        [InlineData("\r\n\r\n\r\n\t\t", 0)]
+        [InlineData("    123 1.000 \"Hello World\"   ", 3)]
+        public void Test_Lexer_Whitespace(string source, int expectedTokenCount)
         {
-            var sb = new StringBuilder();
-            var count = 0;
-            foreach (var token in tokens)
-                sb.AppendLine($"{count++}: {token}");
-            return sb.ToString();
+            var tokens = GetTokens(source, LexerFlag.None);
+            Assert.Equal(expectedTokenCount, tokens.Count());
         }
 #pragma warning restore CS1701 // Assuming assembly reference matches identity
     }

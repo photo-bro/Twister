@@ -38,12 +38,7 @@ namespace Twister.Compiler.Lexer
             info.TokenType = TokenType.None;
 
             char currentChar = _scanner.Advance();
-
-            // Remove whitespace first
-            while (char.IsWhiteSpace(currentChar) || char.IsControl(currentChar))
-                currentChar = _scanner.Advance();
-
-            _scanner.Base = _scanner.Position;
+            ConsumeWhiteSpace(ref currentChar);
 
             switch (currentChar)
             {
@@ -117,7 +112,7 @@ namespace Twister.Compiler.Lexer
                         // Real literals don't have to start with a digit (e.g. .123)
                         if (char.IsDigit(peekChar))
                         {
-                            ScanNumeric(ref info, currentChar);
+                            ScanNumeric(ref info, ref currentChar);
                             break;
                         }
 
@@ -128,17 +123,17 @@ namespace Twister.Compiler.Lexer
                     info.TokenType = TokenType.QuestionMark;
                     break;
                 case '\'':
-                    ScanCharLiteral(ref info);
+                    ScanCharLiteral(ref info, ref currentChar);
                     break;
                 case '\"':
-                    ScanStringLiteral(ref info);
+                    ScanStringLiteral(ref info, ref currentChar);
                     break;
                 case '(':
                     {
                         if (_scanner.Peek() == '*')
                         {
-                            _scanner.Advance();
-                            ConsumeComment();
+                            currentChar = _scanner.Advance();
+                            ConsumeComment(ref currentChar);
                             return ScanToken(ref info);
                         }
 
@@ -163,10 +158,10 @@ namespace Twister.Compiler.Lexer
                     break;
                 case '_':
                 case char c when char.IsLetter(c):
-                    ScanIdentifierOrKeyword(ref info, currentChar);
+                    ScanIdentifierOrKeyword(ref info, ref currentChar);
                     break;
                 case char c when char.IsDigit(c):
-                    ScanNumeric(ref info, currentChar);
+                    ScanNumeric(ref info, ref currentChar);
                     break;
                 case char c when c == _scanner.InvalidChar:
                     // True end of file, exit completely
@@ -193,7 +188,7 @@ namespace Twister.Compiler.Lexer
             return true;
         }
 
-        private void ScanIdentifierOrKeyword(ref TokenInfo info, char current)
+        private void ScanIdentifierOrKeyword(ref TokenInfo info, ref char current)
         {
             do
             {
@@ -212,7 +207,7 @@ namespace Twister.Compiler.Lexer
             info.TokenType = TokenType.Keyword;
         }
 
-        private void ScanNumeric(ref TokenInfo info, char current)
+        private void ScanNumeric(ref TokenInfo info, ref char current)
         {
             var dotCount = 0;
             var isUnsignedLiteral = false;
@@ -225,12 +220,14 @@ namespace Twister.Compiler.Lexer
                     current == 'u' ||
                     char.IsDigit(current)) && !isUnsignedLiteral)
             {
+                current = _scanner.Advance();
+
                 switch (current)
                 {
                     case '.':
                         {
                             if (dotCount++ > 1)
-                                throw new UnexpectedCharacterException("Numeric literal cannot have more than one period",
+                                throw new UnexpectedCharacterException("Real literal cannot have more than one period",
                                     _scanner.CurrentSourceLine)
                                 { Character = current };
                             break;
@@ -242,8 +239,6 @@ namespace Twister.Compiler.Lexer
                     case char c when char.IsDigit(c):
                         break;
                 }
-
-                current = _scanner.Advance();
             }
 
             if (isUnsignedLiteral)
@@ -261,7 +256,7 @@ namespace Twister.Compiler.Lexer
 
         }
 
-        private void ScanCharLiteral(ref TokenInfo info)
+        private void ScanCharLiteral(ref TokenInfo info, ref char current)
         {
             if (_scanner.Peek(2) == '\'')
             {
@@ -276,7 +271,7 @@ namespace Twister.Compiler.Lexer
                 if (escapedChar == '\\' || escapedChar == '\'' || escapedChar == '\"' ||
                     escapedChar == '\n' || escapedChar == '\r' || escapedChar == '\0')
                 {
-                    _scanner.Advance(2);
+                    current = _scanner.Advance(2);
                     info.TokenType = TokenType.CharLiteral;
                     return;
                 }
@@ -287,9 +282,9 @@ namespace Twister.Compiler.Lexer
             { Character = '\\' };
         }
 
-        private void ScanStringLiteral(ref TokenInfo info)
+        private void ScanStringLiteral(ref TokenInfo info, ref char current)
         {
-            var current = _scanner.Advance();
+            current = _scanner.Advance();
             while (current != '\"')
             {
                 if (!_flags.AllowUnicode() && current > 127)
@@ -303,13 +298,23 @@ namespace Twister.Compiler.Lexer
             info.TokenType = TokenType.StringLiteral;
         }
 
-        private void ConsumeComment()
+        private void ConsumeComment(ref char current)
         {
-            var current = _scanner.Advance();
+            current = _scanner.Advance();
             while (current != '*' && _scanner.Peek() != ')')
                 current = _scanner.Advance();
-            _scanner.Advance(); // ending ')'
-            _scanner.Base = _scanner.Position; // move window over comment
+            current = _scanner.Advance();
+            _scanner.Base = _scanner.Position;
+        }
+
+        private void ConsumeWhiteSpace(ref char currentChar)
+        {
+            // Remove whitespace first
+            while (char.IsWhiteSpace(currentChar) || char.IsControl(currentChar))
+            {
+                _scanner.Base = _scanner.Position;
+                currentChar = _scanner.Advance();
+            }
         }
     }
 }

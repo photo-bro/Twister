@@ -23,12 +23,12 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("123", 0, 3, '3')]
         [InlineData("123", 0, 4, EOF)]
         [InlineData("123", 2, 1, '3')]
-        public void Test_Advance_Happy(string source, int initialAdvance, int advanceCount, char expected)
+        public void Test_Advance_Happy(string source, int position, int advanceCount, char expected)
         {
             var scanner = new TextSourceScanner(source);
 
-            if (initialAdvance > 0)
-                scanner.Advance(initialAdvance);
+            if (position > 0)
+                scanner.Advance(position);
 
             var startPosition = scanner.Position;
 
@@ -163,6 +163,29 @@ namespace Twister.Test.UnitTest.Lexer
             Assert.Equal(expected, actual);
         }
 
+        [Theory]
+        [InlineData("", 0, 0, "")]
+        [InlineData("", 0, 1, "")]
+        [InlineData("", 1, 1, "")]
+        [InlineData("0123456789", 0, 9, "012345678")]
+        [InlineData("0123456789", 0, 10, "0123456789")]
+        [InlineData("0123456789", 9, 10, "9")]
+        [InlineData("0123456789", 3, 10, "3456789")]
+        [InlineData("0123456789", 10, 10, "")] 
+        [InlineData("(* \n *) 123u (* *)", 8, 4, "123u")] 
+        public void Test_CurrentWindow_WithBaseAdjust(string source, int position, int advanceCount, string expected)
+        {
+            var scanner = new TextSourceScanner(source);
+
+            scanner.Advance(position);
+            scanner.Base = scanner.Position;
+
+            scanner.Advance(advanceCount);
+
+            var actual = scanner.CurrentWindow;
+
+            Assert.Equal(expected, actual);
+        }
 #pragma warning restore CS1701 // Assuming assembly reference matches identity
     }
 }
