@@ -28,7 +28,19 @@ namespace Twister.Compiler.Lexer
 
         // Memory<char>.ToString converts char buffer to proper string
         // https://docs.microsoft.com/en-us/dotnet/api/system.memory-1.tostring?view=netcore-2.2#System_Memory_1_ToString
-        public string CurrentWindow => _source.Slice(Base, Offset).ToString();
+        public string CurrentWindow
+        {
+            get
+            {
+                if (Base > SourceLength)
+                    return string.Empty;
+
+                if (Base + Offset > SourceLength)
+                    return _source.Slice(Base).ToString();
+
+                return _source.Slice(Base, Offset).ToString();
+            }
+        }
 
         public char Advance() => Advance(1);
 
@@ -38,7 +50,15 @@ namespace Twister.Compiler.Lexer
                 return InvalidChar;
 
             if (Position + count > SourceLength)
+            {
+                // Even though we are advancing past the end of the source we still need to track the newlines
+                // we are advancing past
+                var span = _source.Slice(Position).Span;
+                CheckForNewlines(ref span);
+                // We also need to update position too or else IsAtEnd() will still think we're inside the source
+                Position += count;
                 return InvalidChar;
+            }
 
             if (count == 0)
                 return _source.Span[Position];
