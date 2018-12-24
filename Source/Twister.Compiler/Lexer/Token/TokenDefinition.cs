@@ -54,8 +54,7 @@ namespace Twister.Compiler.Lexer.Token
         Int,
         UInt,
         Float,
-        UFloat,
-        String,
+        Str,
         Char,
     }
 

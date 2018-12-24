@@ -190,58 +190,65 @@ namespace Twister.Compiler.Lexer
 
         private void ScanIdentifierOrKeyword(ref TokenInfo info, ref char current)
         {
-            do
+            var cannotBeKeyword = current == '_';
+
+            while (_scanner.Peek().IsTwisterIdentifierOrKeywordChar())
             {
-                if (!_flags.AllowUnicode() && current > 127)
+                if (current > 127 && !_flags.AllowUnicode())
                     throw new IllegalCharacterException("Only ASCII characters are currently enabled",
                          _scanner.CurrentSourceLine)
                     { Character = current };
 
+                cannotBeKeyword |= current == '_';
                 current = _scanner.Advance();
-            } while (char.IsLetterOrDigit(current));
+            }
 
+            // We are aware of '_' in this context and can use that as a determinate for Identifier token
+            //
             // Unfortunately there has to be some coupling of the scanning/lexing phase since to determine if an 
             // identifier is a keyword we must have knowledge of the language keywords. In TokenFactory when given
             // a TokenType.Keyword we will check the window value if it is a keyword but default back to identifier if 
             // not.
-            info.TokenType = TokenType.Keyword;
+            info.TokenType = cannotBeKeyword
+                ? TokenType.Identifier
+                : TokenType.Keyword;
         }
 
         private void ScanNumeric(ref TokenInfo info, ref char current)
         {
             var dotCount = 0;
-            var isUnsignedLiteral = false;
+
+            while (_scanner.Peek().IsTwisterNumericChar())
+            {
+                switch (current)
+                {
+                    case char c when char.IsDigit(c):
+                        // short circuit switch statement for common case
+                        break;
+                    case '.':
+                        dotCount++;
+                        break;
+                    default:
+                        throw new UnexpectedCharacterException("Unexpected character found in number",
+                            _scanner.CurrentSourceLine)
+                        { Character = current };
+                }
+                current = _scanner.Advance();
+            }
+
+            if (char.IsLetter(_scanner.Peek()) || _scanner.Peek() == '_')
+                throw new UnexpectedCharacterException("Identifiers cannot begin with a number", _scanner.CurrentSourceLine)
+                { Character = current };
 
             if (current == '.')
                 dotCount++;
 
-            while ((current == '.' ||
-                    current == 'U' ||
-                    current == 'u' ||
-                    char.IsDigit(current)) && !isUnsignedLiteral)
-            {
-                current = _scanner.Advance();
+            if (dotCount > 1)
+                throw new UnexpectedCharacterException("Real literal cannot have more than one period",
+                    _scanner.CurrentSourceLine)
+                { Character = current };
 
-                switch (current)
-                {
-                    case '.':
-                        {
-                            if (dotCount++ > 1)
-                                throw new UnexpectedCharacterException("Real literal cannot have more than one period",
-                                    _scanner.CurrentSourceLine)
-                                { Character = current };
-                            break;
-                        }
-                    case 'U':
-                    case 'u':
-                        isUnsignedLiteral = true;
-                        break;
-                    case char c when char.IsDigit(c):
-                        break;
-                }
-            }
-
-            if (isUnsignedLiteral)
+            if (current == 'u' || current == 'U')
             {
                 if (dotCount > 0)
                     throw new IllegalCharacterException("Unsigned real numbers are not supported", _scanner.CurrentSourceLine)

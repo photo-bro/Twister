@@ -101,16 +101,16 @@ namespace Twister.Compiler.Lexer.Token
                     {
                         var text = info.Text;
                         var keyword = Enum.GetNames(typeof(Keyword)).FirstOrDefault(kw => kw.ToLower() == text);
-                        if (keyword == null)
-                            return new IdToken
+                        if (keyword != null)
+                            return new KeywordToken
                             {
-                                Value = info.Text,
+                                Value = Enum.Parse<Keyword>(keyword),
                                 LineNumber = info.SourceLineNumber
                             };
 
-                        return new KeywordToken
+                        return new IdToken
                         {
-                            Value = Enum.Parse<Keyword>(keyword),
+                            Value = info.Text,
                             LineNumber = info.SourceLineNumber
                         };
                     }
