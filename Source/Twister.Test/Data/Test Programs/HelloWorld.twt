@@ -1,0 +1,4 @@
+﻿func HelloWorld : {
+    string: s = “Hello World!”;
+    _print[s];
+}

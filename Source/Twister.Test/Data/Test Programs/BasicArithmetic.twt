@@ -1,0 +1,11 @@
+﻿func BasicArithmetic : {
+    int: a;
+    float: x;
+    
+    int: b = a + a;
+    b = a * b;
+    
+    float: z = x / a;
+    
+    int: modulous = b % d;
+}

@@ -1,0 +1,13 @@
+﻿func FizzBuzz : {
+    int: i = 0;
+    while i < 15 : {
+        if i % 3 > 1 && i % 5 > 1 : {
+            _print[i];
+            cont;
+        }
+        if i % 3 == 0 : 
+            _print[“fizz\n”];
+        if i % 5 == 0 :
+            _print[“buzz\n”];
+    }
+}

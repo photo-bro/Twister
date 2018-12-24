@@ -1,0 +1,9 @@
+﻿func Main : =>{
+    int: a = 123;
+    uint: b = 456u;
+    float: f = 1.0;
+    float: g = .999;
+    str: s = "Howdy!";
+    char: c = 'T';
+    char: d = '\n';
+}
