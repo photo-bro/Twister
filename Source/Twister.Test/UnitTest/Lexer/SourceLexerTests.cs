@@ -4,6 +4,7 @@ using System.Linq;
 using Twister.Compiler.Lexer;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
+using Twister.Test.Data;
 using Xunit;
 
 namespace Twister.Test.UnitTest.Lexer
@@ -32,7 +33,7 @@ namespace Twister.Test.UnitTest.Lexer
         {
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount,
-                         tokens.Count(tk=> tk is SignedIntToken || tk is UnsignedIntToken || tk is RealToken));
+                         tokens.Count(tk => tk is SignedIntToken || tk is UnsignedIntToken || tk is RealToken));
         }
 
         [Theory]
@@ -41,6 +42,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("'\n'", 1)]
         [InlineData("\"Hello World!\"", 1)]
         [InlineData("\"\"", 1)]
+        [InlineData("\"123 \\\" \"", 1)]
         public void Test_Lexer_StringCharLiteral(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);
@@ -105,32 +107,67 @@ namespace Twister.Test.UnitTest.Lexer
 
         // TODO Rainy Day cases too
 
-        // TODO
-        //[Theory]
-        //public void Test_Lexer_RegularTokens(string source, int expectedTokenCount)
+        [Theory]
+        [InlineData("+-%*", 4)]
+        [InlineData("/^&|", 4)]
+        [InlineData("&& ||", 2)]
+        [InlineData("&&||", 2)]
+        [InlineData("&||", 2)]
+        [InlineData("&&&", 2)]
+        [InlineData("|||", 2)]
+        [InlineData("<< >>", 2)]
+        [InlineData("== !=", 2)]
+        public void Test_Lexer_Operator(string source, int expectedTokenCount)
+        {
+            var tokens = GetTokens(source, LexerFlag.None);
+            Assert.Equal(expectedTokenCount, tokens.OfType<OperatorToken>().Count());
+        }
+
+        [Theory]
+        [InlineData("{}()[]<>", 8)]
+        [InlineData(".,:;?", 5)]
+        [InlineData("...", 2)]
+        [InlineData("<<<", 2)]
+        [InlineData("===", 2)]
+        [InlineData(">>>", 2)]
+        [InlineData("=>", 1)]
+        [InlineData("==>", 2)]
+        [InlineData("==>>", 2)]
+        [InlineData("==>=>", 3)]
+        public void Test_Lexer_RegularTokens(string source, int expectedTokenCount)
+        {
+            var tokens = GetTokens(source, LexerFlag.None);
+            Assert.Equal(expectedTokenCount, tokens.Count());
+        }
+
+        [Theory]
+        [InlineData("\"\"", 1)]
+        [InlineData("\"åéô\"", 1)]
+        [InlineData("\"©™Ω\" \"ºℨ\"", 2)]
+        public void Test_Lexer_Flag_AllowUnicode(string source, int expectedTokenCount)
+        {
+            var tokens = GetTokens(source, LexerFlag.AllowUnicode);
+            Assert.Equal(expectedTokenCount, tokens.Count());
+        }
+
+        [Theory]
+        [InlineData("\"\"", typeof(IllegalCharacterException))]
+        [InlineData("\"åéô\"", typeof(IllegalCharacterException))]
+        [InlineData("\"©™Ω\" \"ºℨ\"", typeof(IllegalCharacterException))]
+        public void Test_Lexer_Flag_NoUnicode(string source, Type expectedExceptionType)
+        {
+            Assert.Throws(expectedExceptionType, () => GetTokens(source, LexerFlag.None).ToList());
+        }
+
+        // TODO - Defect somewhere (could be VS Mac) where newline escapes are getting duplicated, 
+        // which is breaking char parsing
+        //[Fact]
+        //public void Test_Lexer_Combined()
         //{
-        //    var tokens = GetTokens(source, LexerFlag.None);
-        //    Assert.Equal(expectedTokenCount, tokens.Count());
-        //}
-
-        //[Theory]
-        //public void Test_Lexer_Flag_AllowUnicode(string source, int expectedTokenCount)
-        //{
-
-        //}
-
-        //[Theory]
-        //public void Test_Lexer_Flag_NoUnicode(string source, Type expectedExceptionType)
-        //{
-        //    Assert.Throws(expectedExceptionType, () => GetTokens(source, LexerFlag.None));
-
-        //}
-
-        //    [Theory]
-        //public void Test_Lexer_Combined(string source, int expectedTokenCount)
-        //{
-        //    var tokens = GetTokens(source, LexerFlag.None);
-        //    Assert.Equal(expectedTokenCount, tokens.Count());
+        //    foreach (var file in TestProgramLoader.AllPrograms())
+        //    {
+        //        var tokens = GetTokens(file, LexerFlag.None).ToList();
+        //    }
         //}
 #pragma warning restore CS1701 // Assuming assembly reference matches identity
     }

@@ -126,7 +126,7 @@ namespace Twister.Compiler.Lexer.Token
                 case TokenType.CharLiteral:
                     {
                         var rawChar = info.Text.TrimStart('\'').TrimEnd('\'');
-                        if (rawChar.Length > 1)
+                        if (rawChar.Length > 1 && (rawChar[0] != '\\' || rawChar.Length > 2))
                             throw new InvalidTokenException("Char literal too long", info.SourceLineNumber)
                             { InvalidText = rawChar };
 

@@ -6,8 +6,8 @@
             cont;
         }
         if i % 3 == 0 : 
-            _print[“fizz\n”];
+            _print["fizz\n"];
         if i % 5 == 0 :
-            _print[“buzz\n”];
+            _print["buzz\n"];
     }
 }

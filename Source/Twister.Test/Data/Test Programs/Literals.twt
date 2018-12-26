@@ -6,4 +6,5 @@
     str: s = "Howdy!";
     char: c = 'T';
     char: d = '\n';
+    return;
 }

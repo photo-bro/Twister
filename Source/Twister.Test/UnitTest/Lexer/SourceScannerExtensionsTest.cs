@@ -22,6 +22,15 @@ namespace Twister.Test.UnitTest.Lexer
 
             Assert.Equal(expectedCount, actualCount);
         }
+
+        [Fact]
+        public void Test_LexerFlag_AllowUnicode()
+        {
+            var flag = LexerFlag.AllowUnicode;
+            Assert.True(flag.AllowUnicode());
+            var defaultFlag = LexerFlag.None;
+            Assert.False(defaultFlag.AllowUnicode());
+        }
     }
 
 #pragma warning restore CS1701 // Assuming assembly reference matches identity

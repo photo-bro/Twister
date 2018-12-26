@@ -102,6 +102,7 @@ namespace Twister.Compiler.Lexer.Token
             [Operator.Multiplication] = "*",
             [Operator.ForwardSlash] = "/",
             [Operator.BitAnd] = "&",
+            [Operator.BitOr] = "|",
             [Operator.BitExOr] = "^",
             [Operator.BitNot] = "!",
             [Operator.LeftShift] = "<<",

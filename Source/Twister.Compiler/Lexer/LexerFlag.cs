@@ -6,7 +6,7 @@ namespace Twister.Compiler.Lexer
     public enum LexerFlag
     {
         None = 0,
-        AllowUnicode = None << 1
+        AllowUnicode = 1
     }
 
     public static class LexerFlagExtensions

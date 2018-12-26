@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Twister.Test.Data
 {
@@ -13,5 +14,11 @@ namespace Twister.Test.Data
         public static string FizzBuzz => File.ReadAllText(ProgramDirectory + @"FizzBuzz.twt");
 
         public static string Literals => File.ReadAllText(ProgramDirectory + @"Literals.twt");
+
+        public static IEnumerable<string> AllPrograms()
+        {
+            foreach (var file in Directory.GetFiles(ProgramDirectory, "*.twt"))
+                yield return File.ReadAllText(file);
+        }
     }
 }

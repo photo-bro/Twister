@@ -48,10 +48,23 @@ namespace Twister.Compiler.Lexer
                 case '*':
                 case '/':
                 case '\\':
-                case '&':
-                case '|':
                 case '^':
+                    info.TokenType = TokenType.Operator;
+                    break;
+                case '&':
+                    if (_scanner.Peek() == '&')
+                        _scanner.Advance();
+                    info.TokenType = TokenType.Operator;
+                    break;
+                case '|':
+                    if (_scanner.Peek() == '|')
+                        _scanner.Advance();
+                    info.TokenType = TokenType.Operator;
+                    break;
                 case '!':
+                    if (_scanner.Peek() == '=')
+                        _scanner.Advance();
+
                     info.TokenType = TokenType.Operator;
                     break;
                 case '=':
@@ -62,7 +75,12 @@ namespace Twister.Compiler.Lexer
                             info.TokenType = TokenType.Define;
                             break;
                         }
-
+                        if (_scanner.Peek() == '=')
+                        {
+                            _scanner.Advance();
+                            info.TokenType = TokenType.Operator;
+                            break;
+                        }
                         info.TokenType = TokenType.Assign;
                         break;
                     }
@@ -276,7 +294,7 @@ namespace Twister.Compiler.Lexer
             {
                 var escapedChar = _scanner.Peek(2);
                 if (escapedChar == '\\' || escapedChar == '\'' || escapedChar == '\"' ||
-                    escapedChar == '\n' || escapedChar == '\r' || escapedChar == '\0')
+                    escapedChar == 'n' || escapedChar == 'r' || escapedChar == '0')
                 {
                     current = _scanner.Advance(2);
                     info.TokenType = TokenType.CharLiteral;
@@ -294,6 +312,9 @@ namespace Twister.Compiler.Lexer
             current = _scanner.Advance();
             while (current != '\"')
             {
+                if (current == '\\' && _scanner.Peek() == '\"')
+                    current = _scanner.Advance();
+
                 if (!_flags.AllowUnicode() && current > 127)
                     throw new IllegalCharacterException("Only ASCII characters are currently enabled",
                          _scanner.CurrentSourceLine)
