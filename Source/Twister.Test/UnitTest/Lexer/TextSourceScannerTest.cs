@@ -59,10 +59,13 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("123", 0, 3, '3')]
         [InlineData("123", 0, 4, EOF)]
         [InlineData("123", 3, -1, '2')]
-        [InlineData("abcdefghijklmnopqrstuv", 5, -5, EOF)]
+        [InlineData("abcdefghijklmnopqrstuv", 5, -5, 'a')]
         [InlineData("abcdefghijklmnopqrstuv", 1, 0, 'a')]
         [InlineData("abcdefghijklmnopqrstuv", 2, -1, 'a')]
-        [InlineData("abcdefghijklmnopqrstuv", 1, -1, EOF)]
+        [InlineData("abcdefghijklmnopqrstuv", 10, -5, 'e')]
+        [InlineData("true", 4, -4, 't')]
+        [InlineData("false", 5, -5, 'f')]
+        [InlineData("abcdefghijklmnopqrstuv", 1, -1, 'a')]
         [InlineData("abcdefghijklmnopqrstuv", 5, -10, EOF)]
         public void Test_PeekNext_Happy(string source, int position, int peekCount, char expected)
         {

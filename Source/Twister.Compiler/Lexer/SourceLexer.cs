@@ -63,7 +63,7 @@ namespace Twister.Compiler.Lexer
                     break;
                 case '!':
                     if (_scanner.Peek() == '=')
-                        _scanner.Advance(); 
+                        _scanner.Advance();
                     info.TokenType = TokenType.Operator;
                     break;
                 case '=':
@@ -222,6 +222,14 @@ namespace Twister.Compiler.Lexer
 
                 cannotBeKeyword |= current == '_';
                 current = _scanner.Advance();
+            }
+
+            // A bit ugly, but we need to check if it's a bool literal
+            if ((_scanner.Offset == 4 && _scanner.Peek(-4) == 't') ||
+                (_scanner.Offset == 5 && _scanner.Peek(-5) == 'f'))
+            {
+                info.TokenType = TokenType.BoolLiteral;
+                return;
             }
 
             // We are aware of '_' in this context and can use that as a determinate for Identifier token

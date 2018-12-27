@@ -44,6 +44,13 @@ namespace Twister.Compiler.Lexer.Token
         public override string ToString() => $"{base.ToString()} Value: {Value};";
     }
 
+    public class BoolLiteralToken : BaseToken, IValueToken<bool>
+    {
+        public bool Value { get; set; }
+        public override TokenType Type => TokenType.BoolLiteral;
+        public override string ToString() => $"{base.ToString()} Value: {Value};";
+    }
+
     public class StringLiteralToken : BaseToken, IValueToken<string>
     {
         public string Value { get; set; }

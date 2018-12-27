@@ -32,6 +32,7 @@ namespace Twister.Compiler.Lexer.Token
         UnsignedInt,
         Real,
 
+        BoolLiteral,
         StringLiteral,
         CharLiteral,
         Identifier,
@@ -41,7 +42,7 @@ namespace Twister.Compiler.Lexer.Token
 
     public enum Keyword
     {
-        None = 0,          // default
+        None = 0,
         If,
         Else,
         Func,
@@ -56,6 +57,7 @@ namespace Twister.Compiler.Lexer.Token
         Float,
         Str,
         Char,
+        Bool
     }
 
     public enum Operator
@@ -88,6 +90,7 @@ namespace Twister.Compiler.Lexer.Token
             TokenType.Real,
             TokenType.Identifier,
             TokenType.Keyword,
+            TokenType.BoolLiteral,
             TokenType.StringLiteral,
             TokenType.CharLiteral,
             TokenType.Operator

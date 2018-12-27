@@ -83,6 +83,9 @@ namespace Twister.Compiler.Lexer
             if (Position + count > SourceLength)
                 return InvalidChar;
 
+            if (Position + count == 0)
+                return _source.Span[0];
+
             if (Position + count < 1)
                 return InvalidChar;
 

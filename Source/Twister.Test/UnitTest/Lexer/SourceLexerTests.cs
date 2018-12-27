@@ -51,6 +51,27 @@ namespace Twister.Test.UnitTest.Lexer
         }
 
         [Theory]
+        [InlineData("true", 1)]
+        [InlineData("toot", 0)]
+        [InlineData("false", 1)]
+        [InlineData("fools", 0)]
+        [InlineData("truefalse", 0)]
+        [InlineData("true false", 1 )]
+        public void Test_Lexer_BoolLiteral(string source, int expectedTokenCount)
+        {
+            var tokens = GetTokens(source, LexerFlag.None);
+            Assert.Equal(expectedTokenCount, tokens.Count(tk => tk is BoolLiteralToken));
+        }
+
+        [Theory]
+        [InlineData("fALSE", typeof(InvalidTokenException))]
+        [InlineData("truE", typeof(InvalidTokenException))]
+        public void Test_Lexer_InvalidBool(string source, Type expectedExceptionType)
+        {
+            Assert.Throws(expectedExceptionType, () => GetTokens(source, LexerFlag.None).ToList());
+        }
+
+        [Theory]
         [InlineData("", 0)]
         [InlineData("(*   *)", 0)]
         [InlineData("(* abcdefhuasdfjh  *)123u(* *)", 1)]
@@ -97,7 +118,7 @@ namespace Twister.Test.UnitTest.Lexer
 
         [Theory]
         [InlineData("func", 1)]
-        [InlineData("int uint float str char struct", 6)]
+        [InlineData("int uint float str char struct bool", 7)]
         [InlineData("if else while break cont return", 6)]
         public void Test_Lexer_Keyword(string source, int expectedTokenCount)
         {

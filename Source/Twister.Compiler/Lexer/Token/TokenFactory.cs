@@ -114,6 +114,35 @@ namespace Twister.Compiler.Lexer.Token
                             LineNumber = info.SourceLineNumber
                         };
                     }
+                case TokenType.BoolLiteral:
+                    {
+                        switch (info.Text)
+                        {
+                            case "true":
+                            case "false":
+                                if (!bool.TryParse(info.Text, out var boolValue))
+                                    throw new InvalidTokenException("Unable to parse bool literal", info.SourceLineNumber)
+                                    { InvalidText = info.Text };
+
+                                return new BoolLiteralToken
+                                {
+                                    Value = boolValue,
+                                    LineNumber = info.SourceLineNumber
+                                };
+                            case string s when s.ToLower() == "true" || s.ToLower() == "false":
+                                throw new InvalidTokenException("Unable to parse bool literal", info.SourceLineNumber)
+                                { InvalidText = info.Text };
+                            default:
+                                // Lexer only does a basic check for literal, there is an edge case where an identifer
+                                // can sneek past that check
+                                return new IdToken
+                                {
+                                    Value = info.Text,
+                                    LineNumber = info.SourceLineNumber
+                                };
+
+                        }
+                    }
                 case TokenType.StringLiteral:
                     {
                         var stringValue = info.Text.TrimStart('\"').TrimEnd('\"');
