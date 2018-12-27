@@ -1,26 +1,68 @@
-program        ::= { function } main_function
-main_function  ::= "func" "main" "[ int argc, str[] args] => int :" <expr_body>
-function       ::= “func” <identifier> [ “[“ <args> “]” ] [ “=>” <type> “:” ] <expr_body>
-type           ::= "int" | "uint" | "float" | "str" | <struct>
-struct         ::= "def" struct" <identifier> ":" {"   "}" <eol>
-struct_args    ::= <struct_arg> { "," <struct_args> }
-struct_arg     ::= <type> ":" <identifier>
-args           ::= <arg> { “,” <arg> }
-arg            ::= <type> <identifier>
-expr_body      ::= “{“ [ {expr} ] “}”
-expr           ::= <lhs> = <rhs> <eol> | <rhs> <eol>
-statement      ::= 
-lhs            ::= <identifier>
-rhs            ::= <identifier> <eol> | <arithmetic_expr> 
-eol            ::= “;”
-str            ::= """ { <letter> | <digit> } """
-char           ::= "'" ( "\" ( "\" | "n" | "r" | "t" ) | ( <letter> | <digit> ) )"'"
-identifier     ::= ( <letter> | “_” ) { <letter> | <digit> | “_” }
-float          ::= <integer> “.” [ { digit } ]
-integer        ::= [ “-“ ] digit { digit }
-uinteger       ::= [ “-“ ] digit { digit } ( 'u' | 'U' ) 
-letter         ::= A-Z | a-z
-digit          ::= 0-9
-logic_op       ::= "&&" | "||" | "==" "!="
-arithmetic_op  ::= "+" | "-" | "*" | "/" | "%" | "<<" | ">>" | "&" | "|" | "^"
-symbol         ::=  "[" | "]" | "{" | "}" | "(" | ")" | "<" | ">" | "'" | '"' | "=" | "." | "," | ";"
+*** Statements
+if_stmt
+else_stmt
+ifelse_stmt
+while_stmt
+
+
+*** Expressions
+expression      ::= 
+return_expr     ::= return (literal | identifier | expression) scolon
+arith_exp       ::= (digit | identifier) {arith_op (digit | identifier)}
+
+
+*** Declaration + Assignment (Expressions)
+var_das         ::= bool_das | char_das | str_das | int_das | uint_das | float_das
+bool_das        ::= bool identifier assign (true | false) scolon
+char_das        ::= char identifier assign char_lit scolon
+string_das      ::= str identifier assign str_lit scolon
+int_das         ::= int identifier assign int_lit scolon
+uint_das        ::= uint identifier assign uint_lit scolon
+float_das       ::= float identifier assign float_lit scolon
+ 
+*** Literals 
+literal         ::= bool_lit | char_lit | str_lit | int_lit | uint_lit | float_lit
+bool_lit        ::= true | false
+char_lit        ::= '(letter | digit)'
+str_lit         ::= "{unicode}"
+int_lit         ::= {-} digit {digit}
+uint_lit        ::= digit {digit} (u | U)
+float_lit       ::= {-} {digit} dot {digit}
+
+*** Declarations
+struct_decl     ::= def struct identifier colon lbrack params rbrack scolon
+var_decl        ::= type colon identifier scolon 
+
+*** Parameter
+params          ::= param {comma param}
+param           ::= type colon identifier
+
+*** Types
+type            ::= primitiveType | complexType
+complexType     ::= struct
+primitiveType   ::= int | uint | float | char | str | bool 
+
+*** Operators
+expr_operator   ::= logical_op | arithmetic_op 
+logical_op      ::= && | || | == | != | < | > | <= | >=
+arithmetic_op   ::= + | - | * | / | % | & | | | ^ | << | >>
+assign_op       ::= = 
+define_op       ::= =>
+
+*** Brackets
+lbrack          ::= {
+rbrack          ::= }
+rsqbrack        ::= [
+lsqrbrack       ::= ]
+lparen          ::= (
+rparen          ::= )
+
+*** Primitives
+identifier      ::= (letter | _ ) { letter | digit | _ }
+unicode         ::= UTF-16 unicode
+letter          ::= (a-z) | (A-Z)
+digit           ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+colon           ::= :
+scolon          ::= ;
+comma           ::= ,
+dot             ::= .
