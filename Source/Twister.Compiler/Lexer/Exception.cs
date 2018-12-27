@@ -51,4 +51,13 @@ namespace Twister.Compiler.Lexer
         public override string Message => $"{base.Message} Invalid text: \"{InvalidText}\"";
     }
 
+    public class FeatureNotSupportedException : BaseLexerException
+    {
+        public string FeatureName { get; set; }
+
+        public FeatureNotSupportedException(string message, int lineNumber) : base(message, lineNumber) { }
+
+        public override string Message => $"{base.Message} Feature: {FeatureName}";
+    }
+
 }

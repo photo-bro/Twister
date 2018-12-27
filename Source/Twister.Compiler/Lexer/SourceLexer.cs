@@ -63,8 +63,7 @@ namespace Twister.Compiler.Lexer
                     break;
                 case '!':
                     if (_scanner.Peek() == '=')
-                        _scanner.Advance();
-
+                        _scanner.Advance(); 
                     info.TokenType = TokenType.Operator;
                     break;
                 case '=':
@@ -196,8 +195,12 @@ namespace Twister.Compiler.Lexer
                     // Should be end of file, otherwise it is in a bad state, exit
                     return false;
                 default:
-                    throw new IllegalCharacterException("Character not allowed", _scanner.CurrentSourceLine)
-                    { Character = currentChar };
+                    if (!_flags.AllowUnicode())
+                        throw new IllegalCharacterException("Character not allowed", _scanner.CurrentSourceLine)
+                        { Character = currentChar };
+                    throw new FeatureNotSupportedException("Unicode identifiers currently not supported",
+                         _scanner.CurrentSourceLine)
+                    { FeatureName = "Unicode Identifiers" };
             }
 
             info.Text = _scanner.CurrentWindow;
