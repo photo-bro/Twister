@@ -1,0 +1,26 @@
+program        ::= { function } main_function
+main_function  ::= "func" "main" "[ int argc, str[] args] => int :" <expr_body>
+function       ::= “func” <identifier> [ “[“ <args> “]” ] [ “=>” <type> “:” ] <expr_body>
+type           ::= "int" | "uint" | "float" | "str" | <struct>
+struct         ::= "def" struct" <identifier> ":" {"   "}" <eol>
+struct_args    ::= <struct_arg> { "," <struct_args> }
+struct_arg     ::= <type> ":" <identifier>
+args           ::= <arg> { “,” <arg> }
+arg            ::= <type> <identifier>
+expr_body      ::= “{“ [ {expr} ] “}”
+expr           ::= <lhs> = <rhs> <eol> | <rhs> <eol>
+statement      ::= 
+lhs            ::= <identifier>
+rhs            ::= <identifier> <eol> | <arithmetic_expr> 
+eol            ::= “;”
+str            ::= """ { <letter> | <digit> } """
+char           ::= "'" ( "\" ( "\" | "n" | "r" | "t" ) | ( <letter> | <digit> ) )"'"
+identifier     ::= ( <letter> | “_” ) { <letter> | <digit> | “_” }
+float          ::= <integer> “.” [ { digit } ]
+integer        ::= [ “-“ ] digit { digit }
+uinteger       ::= [ “-“ ] digit { digit } ( 'u' | 'U' ) 
+letter         ::= A-Z | a-z
+digit          ::= 0-9
+logic_op       ::= "&&" | "||" | "==" "!="
+arithmetic_op  ::= "+" | "-" | "*" | "/" | "%" | "<<" | ">>" | "&" | "|" | "^"
+symbol         ::=  "[" | "]" | "{" | "}" | "(" | ")" | "<" | ">" | "'" | '"' | "=" | "." | "," | ";"
