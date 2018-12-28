@@ -1,31 +1,10 @@
-﻿namespace Twister.Compiler.Lexer.Interface
+﻿using Twister.Compiler.Common.Interface;
+namespace Twister.Compiler.Lexer.Interface
 {
-    public interface ISourceScanner
+    public interface ISourceScanner : IScanner<char>
     {
-        char InvalidChar { get; }
-
         int CurrentSourceLine { get; }
 
-        int Offset { get; }
-
-        int Base { get; set; }
-
-        int Position { get; }
-
-        int SourceLength { get; }
-
-        string CurrentWindow { get; }
-
-        char Advance();
-
-        char Advance(int count);
-
-        char Peek();
-
-        char Peek(int count);
-
-        bool IsAtEnd();
-
-        void Reset();
+        new string CurrentWindow { get; }
     }
 }

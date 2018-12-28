@@ -1,4 +1,4 @@
-﻿using Twister.Compiler.Lexer.Token;
+﻿using Twister.Compiler.Lexer.Enum;
 
 namespace Twister.Compiler.Lexer.Interface
 {

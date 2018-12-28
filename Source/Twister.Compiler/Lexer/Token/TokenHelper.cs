@@ -1,86 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Twister.Compiler.Lexer.Enum;
 
 namespace Twister.Compiler.Lexer.Token
 {
-    public enum TokenType
-    {
-        None = 0,          // default
-
-        Operator,
-
-        Define,
-        Assign,
-        Colon,
-        Semicolon,
-        Comma,
-        Dot,
-        DotDot,
-        QuestionMark,
-
-        // Brackets
-        LeftParen,
-        RightParen,
-        LeftBrack,
-        RightBrack,
-        LeftSquareBrack,
-        RightSquareBrack,
-        LessThan,
-        GreaterThan,
-
-        SignedInt,
-        UnsignedInt,
-        Real,
-
-        BoolLiteral,
-        StringLiteral,
-        CharLiteral,
-        Identifier,
-        Keyword,
-
-    }
-
-    public enum Keyword
-    {
-        None = 0,
-        If,
-        Else,
-        Func,
-        Def,
-        Struct,
-        Return,
-        While,
-        Cont,
-        Break,
-        Int,
-        UInt,
-        Float,
-        Str,
-        Char,
-        Bool
-    }
-
-    public enum Operator
-    {
-        None = 0,
-        Plus,
-        Minus,
-        Modulo,
-        Multiplication,
-        ForwardSlash,
-        BitAnd,
-        BitOr,
-        BitExOr,
-        BitNot,
-        LeftShift,
-        RightShift,
-        LogAnd,
-        LogOr,
-        LogEqual,
-        LogNotEqual
-    }
-
-
     public static class TokenHelper
     {
         public static TokenType[] ValueTokens => new TokenType[]

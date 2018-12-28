@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Twister.Compiler.Lexer.Enum;
 namespace Twister.Compiler.Lexer.Token
 {
     public struct TokenInfo

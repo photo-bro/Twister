@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using Twister.Compiler.Lexer.Interface;
+using Twister.Compiler.Lexer.Enum;
 
 namespace Twister.Compiler.Lexer.Token
 {
     public static class TokenFactory
     {
-
         public static IToken Create(ref TokenInfo info, ref LexerFlag flags)
         {
             if (info.TokenType.IsValueToken())
@@ -100,11 +100,11 @@ namespace Twister.Compiler.Lexer.Token
                 case TokenType.Identifier:
                     {
                         var text = info.Text;
-                        var keyword = Enum.GetNames(typeof(Keyword)).FirstOrDefault(kw => kw.ToLower() == text);
+                        var keyword = System.Enum.GetNames(typeof(Keyword)).FirstOrDefault(kw => kw.ToLower() == text);
                         if (keyword != null)
                             return new KeywordToken
                             {
-                                Value = Enum.Parse<Keyword>(keyword),
+                                Value = System.Enum.Parse<Keyword>(keyword),
                                 LineNumber = info.SourceLineNumber
                             };
 

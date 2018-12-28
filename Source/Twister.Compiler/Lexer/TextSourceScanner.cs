@@ -1,5 +1,7 @@
 ﻿using Twister.Compiler.Lexer.Interface;
 using System;
+using System.Collections.Generic;
+using Twister.Compiler.Common.Interface;
 
 namespace Twister.Compiler.Lexer
 {
@@ -14,7 +16,7 @@ namespace Twister.Compiler.Lexer
             _source = source.AsMemory();
         }
 
-        public char InvalidChar => INVALIDCHAR;
+        public char InvalidItem => INVALIDCHAR;
 
         public int CurrentSourceLine { get; private set; } = 0;
 
@@ -42,12 +44,14 @@ namespace Twister.Compiler.Lexer
             }
         }
 
+        IEnumerable<char> IScanner<char>.CurrentWindow => CurrentWindow;
+
         public char Advance() => Advance(1);
 
         public char Advance(int count)
         {
             if (IsAtEnd())
-                return InvalidChar;
+                return InvalidItem;
 
             if (Position + count > SourceLength)
             {
@@ -57,7 +61,7 @@ namespace Twister.Compiler.Lexer
                 CheckForNewlines(ref span);
                 // We also need to update position too or else IsAtEnd() will still think we're inside the source
                 Position += count;
-                return InvalidChar;
+                return InvalidItem;
             }
 
             if (count == 0)
@@ -81,13 +85,13 @@ namespace Twister.Compiler.Lexer
         public char Peek(int count)
         {
             if (Position + count > SourceLength)
-                return InvalidChar;
+                return InvalidItem;
 
             if (Position + count == 0)
                 return _source.Span[0];
 
             if (Position + count < 1)
-                return InvalidChar;
+                return InvalidItem;
 
             return _source.Span[Position + count - 1];
         }

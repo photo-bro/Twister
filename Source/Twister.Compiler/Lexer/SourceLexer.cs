@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
+using Twister.Compiler.Lexer.Enum;
 
 namespace Twister.Compiler.Lexer
 {
@@ -180,7 +181,7 @@ namespace Twister.Compiler.Lexer
                 case char c when char.IsDigit(c):
                     ScanNumeric(ref info, ref currentChar);
                     break;
-                case char c when c == _scanner.InvalidChar:
+                case char c when c == _scanner.InvalidItem:
                     // True end of file, exit completely
                     if (_scanner.IsAtEnd())
                         return false;
