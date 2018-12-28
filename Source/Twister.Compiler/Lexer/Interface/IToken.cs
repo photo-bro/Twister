@@ -4,7 +4,7 @@ namespace Twister.Compiler.Lexer.Interface
 {
     public interface IToken
     {
-        TokenType Type { get; }
+        TokenKind Kind { get; }
 
         int LineNumber { get; }
     }

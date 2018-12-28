@@ -14,37 +14,37 @@ namespace Twister.Compiler.Lexer.Token
 
             switch (info.TokenType)
             {
-                case TokenType.Define:
+                case TokenKind.Define:
                     return new DefineToken { LineNumber = info.SourceLineNumber };
-                case TokenType.Assign:
+                case TokenKind.Assign:
                     return new AssignToken { LineNumber = info.SourceLineNumber };
-                case TokenType.Colon:
+                case TokenKind.Colon:
                     return new ColonToken { LineNumber = info.SourceLineNumber };
-                case TokenType.Semicolon:
+                case TokenKind.Semicolon:
                     return new SemiColonToken { LineNumber = info.SourceLineNumber };
-                case TokenType.Comma:
+                case TokenKind.Comma:
                     return new CommaToken { LineNumber = info.SourceLineNumber };
-                case TokenType.Dot:
+                case TokenKind.Dot:
                     return new DotToken { LineNumber = info.SourceLineNumber };
-                case TokenType.DotDot:
+                case TokenKind.DotDot:
                     return new DotDotToken { LineNumber = info.SourceLineNumber };
-                case TokenType.QuestionMark:
+                case TokenKind.QuestionMark:
                     return new QuestionMarkToken { LineNumber = info.SourceLineNumber };
-                case TokenType.LeftParen:
+                case TokenKind.LeftParen:
                     return new LeftParenToken { LineNumber = info.SourceLineNumber };
-                case TokenType.RightParen:
+                case TokenKind.RightParen:
                     return new RightParenToken { LineNumber = info.SourceLineNumber };
-                case TokenType.LeftBrack:
+                case TokenKind.LeftBrack:
                     return new LeftBrackToken { LineNumber = info.SourceLineNumber };
-                case TokenType.RightBrack:
+                case TokenKind.RightBrack:
                     return new RightBrackToken { LineNumber = info.SourceLineNumber };
-                case TokenType.LeftSquareBrack:
+                case TokenKind.LeftSquareBrack:
                     return new LeftSquareBrackToken { LineNumber = info.SourceLineNumber };
-                case TokenType.RightSquareBrack:
+                case TokenKind.RightSquareBrack:
                     return new RightSquareBrackToken { LineNumber = info.SourceLineNumber };
-                case TokenType.LessThan:
+                case TokenKind.LessThan:
                     return new LessThan { LineNumber = info.SourceLineNumber };
-                case TokenType.GreaterThan:
+                case TokenKind.GreaterThan:
                     return new GreaterThan { LineNumber = info.SourceLineNumber };
                 default:
                     return new EmptyToken
@@ -60,7 +60,7 @@ namespace Twister.Compiler.Lexer.Token
         {
             switch (info.TokenType)
             {
-                case TokenType.SignedInt:
+                case TokenKind.SignedInt:
                     {
                         if (!long.TryParse(info.Text, out var longValue))
                             throw new InvalidTokenException("Unable to parse 64bit signed integer value", info.SourceLineNumber)
@@ -72,7 +72,7 @@ namespace Twister.Compiler.Lexer.Token
                             LineNumber = info.SourceLineNumber
                         };
                     }
-                case TokenType.UnsignedInt:
+                case TokenKind.UnsignedInt:
                     {
                         if (!ulong.TryParse(info.Text.TrimEnd('u').TrimEnd('U'), out var longValue))
                             throw new InvalidTokenException("Unable to parse 64bit unsigned integer value", info.SourceLineNumber)
@@ -84,7 +84,7 @@ namespace Twister.Compiler.Lexer.Token
                             LineNumber = info.SourceLineNumber
                         };
                     }
-                case TokenType.Real:
+                case TokenKind.Real:
                     {
                         if (!double.TryParse(info.Text, out var longValue))
                             throw new InvalidTokenException("Unable to parse double precision floating point value", info.SourceLineNumber)
@@ -96,8 +96,8 @@ namespace Twister.Compiler.Lexer.Token
                             LineNumber = info.SourceLineNumber
                         };
                     }
-                case TokenType.Keyword:
-                case TokenType.Identifier:
+                case TokenKind.Keyword:
+                case TokenKind.Identifier:
                     {
                         var text = info.Text;
                         var keyword = System.Enum.GetNames(typeof(Keyword)).FirstOrDefault(kw => kw.ToLower() == text);
@@ -114,7 +114,7 @@ namespace Twister.Compiler.Lexer.Token
                             LineNumber = info.SourceLineNumber
                         };
                     }
-                case TokenType.BoolLiteral:
+                case TokenKind.BoolLiteral:
                     {
                         switch (info.Text)
                         {
@@ -143,7 +143,7 @@ namespace Twister.Compiler.Lexer.Token
 
                         }
                     }
-                case TokenType.StringLiteral:
+                case TokenKind.StringLiteral:
                     {
                         var stringValue = info.Text.TrimStart('\"').TrimEnd('\"');
                         return new StringLiteralToken
@@ -152,7 +152,7 @@ namespace Twister.Compiler.Lexer.Token
                             LineNumber = info.SourceLineNumber
                         };
                     }
-                case TokenType.CharLiteral:
+                case TokenKind.CharLiteral:
                     {
                         var rawChar = info.Text.TrimStart('\'').TrimEnd('\'');
                         if (rawChar.Length > 1 && (rawChar[0] != '\\' || rawChar.Length > 2))
@@ -174,7 +174,7 @@ namespace Twister.Compiler.Lexer.Token
                             LineNumber = info.SourceLineNumber
                         };
                     }
-                case TokenType.Operator:
+                case TokenKind.Operator:
                     {
                         var text = info.Text;
                         var operatorValue = TokenHelper.OperatorValueMap

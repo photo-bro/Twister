@@ -5,94 +5,94 @@ namespace Twister.Compiler.Lexer.Token
 {
     public abstract class BaseToken : IToken
     {
-        public abstract TokenType Type { get; }
+        public abstract TokenKind Kind { get; }
         public int LineNumber { get; set; }
 
-        public override string ToString() => $"Line: {LineNumber}; TokenType: {Type};";
+        public override string ToString() => $"Line: {LineNumber}; TokenType: {Kind};";
     }
 
     public class EmptyToken : BaseToken
     {
-        public override TokenType Type => TokenType.None;
+        public override TokenKind Kind => TokenKind.None;
     }
 
     public class DefineToken : BaseToken
     {
-        public override TokenType Type => TokenType.Define;
+        public override TokenKind Kind => TokenKind.Define;
     }
 
     public class AssignToken : BaseToken
     {
-        public override TokenType Type => TokenType.Assign;
+        public override TokenKind Kind => TokenKind.Assign;
     }
 
     public class ColonToken : BaseToken
     {
-        public override TokenType Type => TokenType.Colon;
+        public override TokenKind Kind => TokenKind.Colon;
     }
 
     public class SemiColonToken : BaseToken
     {
-        public override TokenType Type => TokenType.Semicolon;
+        public override TokenKind Kind => TokenKind.Semicolon;
     }
 
     public class CommaToken : BaseToken
     {
-        public override TokenType Type => TokenType.Comma;
+        public override TokenKind Kind => TokenKind.Comma;
     }
 
     public class DotToken : BaseToken
     {
-        public override TokenType Type => TokenType.Dot;
+        public override TokenKind Kind => TokenKind.Dot;
     }
 
     public class DotDotToken : BaseToken
     {
-        public override TokenType Type => TokenType.DotDot;
+        public override TokenKind Kind => TokenKind.DotDot;
     }
 
     public class QuestionMarkToken : BaseToken
     {
-        public override TokenType Type => TokenType.QuestionMark;
+        public override TokenKind Kind => TokenKind.QuestionMark;
     }
 
     public class LeftParenToken : BaseToken
     {
-        public override TokenType Type => TokenType.LeftParen;
+        public override TokenKind Kind => TokenKind.LeftParen;
     }
 
     public class RightParenToken : BaseToken
     {
-        public override TokenType Type => TokenType.RightParen;
+        public override TokenKind Kind => TokenKind.RightParen;
     }
 
     public class LeftBrackToken : BaseToken
     {
-        public override TokenType Type => TokenType.LeftBrack;
+        public override TokenKind Kind => TokenKind.LeftBrack;
     }
 
     public class RightBrackToken : BaseToken
     {
-        public override TokenType Type => TokenType.RightBrack;
+        public override TokenKind Kind => TokenKind.RightBrack;
     }
 
     public class LeftSquareBrackToken : BaseToken
     {
-        public override TokenType Type => TokenType.LeftSquareBrack;
+        public override TokenKind Kind => TokenKind.LeftSquareBrack;
     }
 
     public class RightSquareBrackToken : BaseToken
     {
-        public override TokenType Type => TokenType.RightSquareBrack;
+        public override TokenKind Kind => TokenKind.RightSquareBrack;
     }
 
     public class LessThan : BaseToken
     {
-        public override TokenType Type => TokenType.LessThan;
+        public override TokenKind Kind => TokenKind.LessThan;
     }
 
     public class GreaterThan : BaseToken
     {
-        public override TokenType Type => TokenType.GreaterThan;
+        public override TokenKind Kind => TokenKind.GreaterThan;
     }
 }

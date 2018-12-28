@@ -5,7 +5,7 @@ namespace Twister.Compiler.Lexer.Token
     {
         public string Text { get; set; }
 
-        public TokenType TokenType { get; set; }
+        public TokenKind TokenType { get; set; }
 
         public int SourceLineNumber { get; set; }
     }

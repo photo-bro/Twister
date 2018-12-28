@@ -6,17 +6,17 @@ namespace Twister.Compiler.Lexer.Token
 {
     public static class TokenHelper
     {
-        public static TokenType[] ValueTokens => new TokenType[]
+        public static TokenKind[] ValueTokens => new TokenKind[]
         {
-            TokenType.SignedInt,
-            TokenType.UnsignedInt,
-            TokenType.Real,
-            TokenType.Identifier,
-            TokenType.Keyword,
-            TokenType.BoolLiteral,
-            TokenType.StringLiteral,
-            TokenType.CharLiteral,
-            TokenType.Operator
+            TokenKind.SignedInt,
+            TokenKind.UnsignedInt,
+            TokenKind.Real,
+            TokenKind.Identifier,
+            TokenKind.Keyword,
+            TokenKind.BoolLiteral,
+            TokenKind.StringLiteral,
+            TokenKind.CharLiteral,
+            TokenKind.Operator
         };
 
         public static IReadOnlyDictionary<Operator, string> OperatorValueMap => new Dictionary<Operator, string>
@@ -39,7 +39,7 @@ namespace Twister.Compiler.Lexer.Token
             [Operator.LogNotEqual] = "!=",
         };
 
-        public static bool IsValueToken(this TokenType tokType) => ValueTokens.Any(vt => vt == tokType);
+        public static bool IsValueToken(this TokenKind tokType) => ValueTokens.Any(vt => vt == tokType);
 
     }
 }

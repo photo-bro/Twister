@@ -1,6 +1,6 @@
 ﻿namespace Twister.Compiler.Lexer.Enum
 {
-    public enum TokenType
+    public enum TokenKind
     {
         None = 0,          // default
 

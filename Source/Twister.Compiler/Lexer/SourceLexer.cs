@@ -36,7 +36,7 @@ namespace Twister.Compiler.Lexer
         private bool ScanToken(ref TokenInfo info)
         {
             info.Text = string.Empty;
-            info.TokenType = TokenType.None;
+            info.TokenType = TokenKind.None;
 
             char currentChar = _scanner.Advance();
             ConsumeWhiteSpace(ref currentChar);
@@ -50,38 +50,38 @@ namespace Twister.Compiler.Lexer
                 case '/':
                 case '\\':
                 case '^':
-                    info.TokenType = TokenType.Operator;
+                    info.TokenType = TokenKind.Operator;
                     break;
                 case '&':
                     if (_scanner.Peek() == '&')
                         _scanner.Advance();
-                    info.TokenType = TokenType.Operator;
+                    info.TokenType = TokenKind.Operator;
                     break;
                 case '|':
                     if (_scanner.Peek() == '|')
                         _scanner.Advance();
-                    info.TokenType = TokenType.Operator;
+                    info.TokenType = TokenKind.Operator;
                     break;
                 case '!':
                     if (_scanner.Peek() == '=')
                         _scanner.Advance();
-                    info.TokenType = TokenType.Operator;
+                    info.TokenType = TokenKind.Operator;
                     break;
                 case '=':
                     {
                         if (_scanner.Peek() == '>')
                         {
                             _scanner.Advance();
-                            info.TokenType = TokenType.Define;
+                            info.TokenType = TokenKind.Define;
                             break;
                         }
                         if (_scanner.Peek() == '=')
                         {
                             _scanner.Advance();
-                            info.TokenType = TokenType.Operator;
+                            info.TokenType = TokenKind.Operator;
                             break;
                         }
-                        info.TokenType = TokenType.Assign;
+                        info.TokenType = TokenKind.Assign;
                         break;
                     }
                 case '<':
@@ -89,11 +89,11 @@ namespace Twister.Compiler.Lexer
                         if (_scanner.Peek() == '<')
                         {
                             _scanner.Advance();
-                            info.TokenType = TokenType.Operator;
+                            info.TokenType = TokenKind.Operator;
                             break;
                         }
 
-                        info.TokenType = TokenType.LessThan;
+                        info.TokenType = TokenKind.LessThan;
                         break;
                     }
                 case '>':
@@ -101,21 +101,21 @@ namespace Twister.Compiler.Lexer
                         if (_scanner.Peek() == '>')
                         {
                             _scanner.Advance();
-                            info.TokenType = TokenType.Operator;
+                            info.TokenType = TokenKind.Operator;
                             break;
                         }
 
-                        info.TokenType = TokenType.GreaterThan;
+                        info.TokenType = TokenKind.GreaterThan;
                         break;
                     }
                 case ':':
-                    info.TokenType = TokenType.Colon;
+                    info.TokenType = TokenKind.Colon;
                     break;
                 case ';':
-                    info.TokenType = TokenType.Semicolon;
+                    info.TokenType = TokenKind.Semicolon;
                     break;
                 case ',':
-                    info.TokenType = TokenType.Comma;
+                    info.TokenType = TokenKind.Comma;
                     break;
                 case '.':
                     {
@@ -123,7 +123,7 @@ namespace Twister.Compiler.Lexer
                         if (peekChar == '.')
                         {
                             _scanner.Advance();
-                            info.TokenType = TokenType.DotDot;
+                            info.TokenType = TokenKind.DotDot;
                             break;
                         }
 
@@ -134,11 +134,11 @@ namespace Twister.Compiler.Lexer
                             break;
                         }
 
-                        info.TokenType = TokenType.Dot;
+                        info.TokenType = TokenKind.Dot;
                         break;
                     }
                 case '?':
-                    info.TokenType = TokenType.QuestionMark;
+                    info.TokenType = TokenKind.QuestionMark;
                     break;
                 case '\'':
                     ScanCharLiteral(ref info, ref currentChar);
@@ -155,24 +155,24 @@ namespace Twister.Compiler.Lexer
                             return ScanToken(ref info);
                         }
 
-                        info.TokenType = TokenType.LeftParen;
+                        info.TokenType = TokenKind.LeftParen;
                         break;
                     }
                 case ')':
                     // ScanComment will handle comment endings
-                    info.TokenType = TokenType.RightParen;
+                    info.TokenType = TokenKind.RightParen;
                     break;
                 case '{':
-                    info.TokenType = TokenType.LeftBrack;
+                    info.TokenType = TokenKind.LeftBrack;
                     break;
                 case '}':
-                    info.TokenType = TokenType.RightBrack;
+                    info.TokenType = TokenKind.RightBrack;
                     break;
                 case '[':
-                    info.TokenType = TokenType.LeftSquareBrack;
+                    info.TokenType = TokenKind.LeftSquareBrack;
                     break;
                 case ']':
-                    info.TokenType = TokenType.RightSquareBrack;
+                    info.TokenType = TokenKind.RightSquareBrack;
                     break;
                 case '_':
                 case char c when char.IsLetter(c):
@@ -229,7 +229,7 @@ namespace Twister.Compiler.Lexer
             if ((_scanner.Offset == 4 && _scanner.Peek(-4) == 't') ||
                 (_scanner.Offset == 5 && _scanner.Peek(-5) == 'f'))
             {
-                info.TokenType = TokenType.BoolLiteral;
+                info.TokenType = TokenKind.BoolLiteral;
                 return;
             }
 
@@ -240,8 +240,8 @@ namespace Twister.Compiler.Lexer
             // a TokenType.Keyword we will check the window value if it is a keyword but default back to identifier if 
             // not.
             info.TokenType = cannotBeKeyword
-                ? TokenType.Identifier
-                : TokenType.Keyword;
+                ? TokenKind.Identifier
+                : TokenKind.Keyword;
         }
 
         private void ScanNumeric(ref TokenInfo info, ref char current)
@@ -284,12 +284,12 @@ namespace Twister.Compiler.Lexer
                     throw new IllegalCharacterException("Unsigned real numbers are not supported", _scanner.CurrentSourceLine)
                     { Character = '.' };
 
-                info.TokenType = TokenType.UnsignedInt;
+                info.TokenType = TokenKind.UnsignedInt;
             }
             else if (dotCount > 0)
-                info.TokenType = TokenType.Real;
+                info.TokenType = TokenKind.Real;
             else
-                info.TokenType = TokenType.SignedInt;
+                info.TokenType = TokenKind.SignedInt;
 
         }
 
@@ -298,7 +298,7 @@ namespace Twister.Compiler.Lexer
             if (_scanner.Peek(2) == '\'')
             {
                 _scanner.Advance(2);
-                info.TokenType = TokenType.CharLiteral;
+                info.TokenType = TokenKind.CharLiteral;
                 return;
             }
 
@@ -309,7 +309,7 @@ namespace Twister.Compiler.Lexer
                     escapedChar == 'n' || escapedChar == 'r' || escapedChar == '0')
                 {
                     current = _scanner.Advance(2);
-                    info.TokenType = TokenType.CharLiteral;
+                    info.TokenType = TokenKind.CharLiteral;
                     return;
                 }
             }
@@ -335,7 +335,7 @@ namespace Twister.Compiler.Lexer
                 current = _scanner.Advance();
             }
 
-            info.TokenType = TokenType.StringLiteral;
+            info.TokenType = TokenKind.StringLiteral;
         }
 
         private void ConsumeComment(ref char current)
