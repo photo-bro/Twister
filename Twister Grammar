@@ -1,17 +1,26 @@
-*** Statements
-if_stmt
-else_stmt
-ifelse_stmt
-while_stmt
+*** Program
 
+*** Functions
+function        ::= func identifier lsqrbrack params rsqrbrack define_op colon rbrack {(expression | statement)} return_expr lbrack
+func_call       ::= identifier rsqrbrack {args} lsqrbrack scolon
+args            ::= (literal | identifier) {comma (literal | identifier)}
+
+*** Statements
+if_stmt         ::= if cond_exp colon expression_body {(else_stmt | else if_stmt}
+else_stmt       ::= else (expression | lbrack {expression} rbrack)
+while_stmt      :: while cond_exp : expression_body
 
 *** Expressions
-expression      ::= 
-return_expr     ::= return (literal | identifier | expression) scolon
-arith_exp       ::= (numeric_lit | identifier) {arith_op (numeric_lit | identifier)}
+expression_body ::= (expression | lbrack {expression} rbrack)
+expression      ::= (general_exp | return_exp)
+return_expr     ::= ret (literal | identifier | expression) scolon
+general_exp     ::= (cond_exp | arith_exp)
+cond_exp        ::= (identifier | cond_exp) {logical_op (identifier | numeric_lit | conditional_exp | arith_exp)}
+arith_exp       ::= (numeric_lit | identifier | arith_exp) {arith_op (numeric_lit | identifier)}
 
 
 *** Declaration + Assignment (Expressions)
+general_das     ::= type assign (arith_exp | func_call)
 var_das         ::= bool_das | char_das | str_das | int_das | uint_das | float_das
 bool_das        ::= bool identifier assign (true | false) scolon
 char_das        ::= char identifier assign char_lit scolon
@@ -53,8 +62,8 @@ define_op       ::= =>
 *** Brackets
 lbrack          ::= {
 rbrack          ::= }
-rsqbrack        ::= [
-lsqrbrack       ::= ]
+lsqbrack        ::= [
+rsqrbrack       ::= ]
 lparen          ::= (
 rparen          ::= )
 
