@@ -8,7 +8,7 @@ while_stmt
 *** Expressions
 expression      ::= 
 return_expr     ::= return (literal | identifier | expression) scolon
-arith_exp       ::= (digit | identifier) {arith_op (digit | identifier)}
+arith_exp       ::= (numeric_lit | identifier) {arith_op (numeric_lit | identifier)}
 
 
 *** Declaration + Assignment (Expressions)
@@ -22,6 +22,7 @@ float_das       ::= float identifier assign float_lit scolon
  
 *** Literals 
 literal         ::= bool_lit | char_lit | str_lit | int_lit | uint_lit | float_lit
+numeric_lit     ::= int_lit | uint_lit | float_lit
 bool_lit        ::= true | false
 char_lit        ::= '(letter | digit)'
 str_lit         ::= "{unicode}"

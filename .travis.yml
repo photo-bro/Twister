@@ -1,0 +1,10 @@
+language: csharp
+mono: none
+dotnet: 2.1
+
+install:
+- dotnet restore Source/
+
+script:
+- dotnet build Source/
+- dotnet test Source/Twister.Test/Twister.Test.csproj
