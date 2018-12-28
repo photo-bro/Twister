@@ -6,8 +6,8 @@ namespace Twister.Compiler.Parser.Interface
     {
         NodeKind Kind { get; }
 
-        INode Left { get; set; }
+        INode Left { get; }
 
-        INode Right { get; set; }
+        INode Right { get; }
     }
 }

@@ -2,6 +2,6 @@
 {
     public interface IValueNode<T> : INode
     {
-        T Value { get; set; }
+        T Value { get; }
     }
 }

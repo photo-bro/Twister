@@ -6,7 +6,7 @@ namespace Twister.Compiler.Parser.Node
 {
     public class StatementNode : INode
     {
-        public NodeKind Kind => throw new NotImplementedException();
+        public NodeKind Kind => NodeKind.Statement;
 
         public INode Left { get; set; }
 

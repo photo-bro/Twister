@@ -39,7 +39,16 @@ namespace Twister.Compiler.Lexer.Token
             [Operator.LogNotEqual] = "!=",
         };
 
+        public static Operator[] ConditionalOperators => new[]
+        {
+            Operator.LogAnd,
+            Operator.LogOr,
+            Operator.LogEqual,
+            Operator.LogNotEqual
+        };
+
         public static bool IsValueToken(this TokenKind tokType) => ValueTokens.Any(vt => vt == tokType);
 
+        public static bool IsConditionalOperator(this Operator @operator) => ConditionalOperators.Any(co => co == @operator);
     }
 }
