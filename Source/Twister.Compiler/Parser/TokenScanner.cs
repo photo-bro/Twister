@@ -18,44 +18,82 @@ namespace Twister.Compiler.Parser
 
         public IToken InvalidItem => _invalidToken;
 
-        public int Offset => throw new NotImplementedException();
+        public int Offset => Position - Base;
 
-        public int Base { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int Base { get; set; } = 0;
 
-        public int Position => throw new NotImplementedException();
+        public int Position { get; set; } = 0;
 
-        public int SourceLength => throw new NotImplementedException();
+        public int SourceLength => _tokens.Length;
 
-        public IEnumerable<IToken> CurrentWindow => throw new NotImplementedException();
-
-        public char Advance()
+        /// <summary>
+        /// Return current tokens in window. If at or past end of source tokens then an <see cref="IEnumerable{IToken}"/>
+        /// with <see cref="InvalidItem"/> is returned.
+        /// </summary>
+        public IEnumerable<IToken> CurrentWindow
         {
-            throw new NotImplementedException();
+            get
+            {
+                if (Base > SourceLength)
+                    return new[] { _invalidToken };
+
+                if (Base + Offset > SourceLength)
+                    return _tokens.Slice(Base).ToArray();
+
+                return _tokens.Slice(Base, Offset).ToArray();
+            }
         }
 
-        public char Advance(int count)
+        public IToken Advance() => Advance(1);
+
+        public IToken Advance(int count)
         {
-            throw new NotImplementedException();
+            if (IsAtEnd())
+                return InvalidItem;
+
+            if (Position + count > SourceLength)
+                return InvalidItem;
+
+            if (count == 0)
+                return _tokens.Span[Position];
+
+            if (count < 0)
+                throw new InvalidOperationException($"{nameof(TokenScanner)}" +
+                    $".{nameof(TokenScanner.Advance)} can only advance forward");
+
+            var currentSpan = _tokens.Slice(Position, count).Span;
+
+            Position += count;
+
+            return currentSpan[count - 1];
         }
 
         public bool IsAtEnd()
         {
-            throw new NotImplementedException();
+            if (SourceLength == 0) return true;
+            return Position >= SourceLength;
         }
 
-        public char Peek()
-        {
-            throw new NotImplementedException();
-        }
+        public IToken Peek() => Peek(1);
 
-        public char Peek(int count)
+        public IToken Peek(int count)
         {
-            throw new NotImplementedException();
+            if (Position + count > SourceLength)
+                return InvalidItem;
+
+            if (Position + count == 0)
+                return _tokens.Span[0];
+
+            if (Position + count < 1)
+                return InvalidItem;
+
+            return _tokens.Span[Position + count - 1];
         }
 
         public void Reset()
         {
-            throw new NotImplementedException();
+            Base = 0;
+            Position = -1;
         }
     }
 }

@@ -15,13 +15,13 @@ namespace Twister.Compiler.Common.Interface
 
         IEnumerable<T> CurrentWindow { get; }
 
-        char Advance();
+        T Advance();
 
-        char Advance(int count);
+        T Advance(int count);
 
-        char Peek();
+        T Peek();
 
-        char Peek(int count);
+        T Peek(int count);
 
         bool IsAtEnd();
 
