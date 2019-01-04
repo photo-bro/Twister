@@ -5,6 +5,7 @@ namespace Twister.Compiler.Parser.Enum
     {
         General = 0,
         Conditional,
-        Arithemtic
+        BinaryArithemtic,
+        UnaryArithmetic
     }
 }

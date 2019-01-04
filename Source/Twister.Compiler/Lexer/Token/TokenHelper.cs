@@ -47,7 +47,7 @@ namespace Twister.Compiler.Lexer.Token
             Operator.LogNotEqual
         };
 
-        public static Operator[] ArithmeticOperators => new[]
+        public static Operator[] BinaryArithmeticOperators => new[]
         {
             Operator.Plus,
             Operator.Minus,
@@ -62,10 +62,19 @@ namespace Twister.Compiler.Lexer.Token
             Operator.RightShift
         };
 
+        public static Operator[] UnaryArithmeticOperators => new Operator[]
+        {
+            Operator.Plus,
+            Operator.Minus,
+            Operator.BitNot
+        };
+
         public static bool IsValueToken(this TokenKind tokType) => ValueTokens.Any(vt => vt == tokType);
 
         public static bool IsConditionalOperator(this Operator @operator) => ConditionalOperators.Any(co => co == @operator);
 
-        public static bool IsArithmeticOperator(this Operator @operator) => ArithmeticOperators.Any(co => co == @operator);
+        public static bool IsBinaryArithmeticOperator(this Operator @operator) => BinaryArithmeticOperators.Any(co => co == @operator);
+
+        public static bool IsUnaryArithmeticOperator(this Operator @operator) => UnaryArithmeticOperators.Any(co => co == @operator);
     }
 }

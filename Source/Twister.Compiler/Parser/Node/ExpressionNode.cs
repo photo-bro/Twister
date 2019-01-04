@@ -23,16 +23,18 @@ namespace Twister.Compiler.Parser.Node
     {
         private Operator _operator;
 
-        public ConditionalExpressionNode(IExpressionNode<TwisterPrimitive> left, IExpressionNode<TwisterPrimitive> right)
+        public ConditionalExpressionNode(IExpressionNode<TwisterPrimitive> left, IExpressionNode<TwisterPrimitive> right,
+            Operator @operator)
         {
             Left = left;
             Right = right;
+            Operator = @operator;
         }
 
         public Operator Operator
         {
             get => _operator;
-            set
+            private set
             {
                 if (!value.IsConditionalOperator())
                     throw new InvalidOperatorException("Expecting conditional operator")
@@ -45,19 +47,19 @@ namespace Twister.Compiler.Parser.Node
         {
             get
             {
-                var l = (IExpressionNode<TwisterPrimitive>)Left;
-                var r = (IExpressionNode<TwisterPrimitive>)Right;
+                var l = ((IExpressionNode<TwisterPrimitive>)Left).Value;
+                var r = ((IExpressionNode<TwisterPrimitive>)Right).Value;
 
                 switch (_operator)
                 {
                     case Operator.LogAnd:
-                        return l.Value && r.Value;
+                        return l && r;
                     case Operator.LogOr:
-                        return l.Value || r.Value;
+                        return l || r;
                     case Operator.LogEqual:
-                        return l.Value == r.Value;
+                        return l == r;
                     case Operator.LogNotEqual:
-                        return l.Value != r.Value;
+                        return l != r;
                     default:
                         throw new InvalidOperatorException("Expecting conditional operator")
                         { InvalidOperator = _operator };
@@ -75,23 +77,25 @@ namespace Twister.Compiler.Parser.Node
 
     }
 
-    public class ArithemeticExpressionNode : IExpressionNode<TwisterPrimitive>
+    public class BinaryArithemeticExpressionNode : IExpressionNode<TwisterPrimitive>
     {
         private Operator _operator;
 
-        public ArithemeticExpressionNode(IExpressionNode<TwisterPrimitive> left, IExpressionNode<TwisterPrimitive> right)
+        public BinaryArithemeticExpressionNode(IExpressionNode<TwisterPrimitive> left, IExpressionNode<TwisterPrimitive> right,
+                Operator @operator)
         {
-            Left = Left;
+            Left = left;
             Right = right;
+            Operator = @Operator;
         }
 
         public Operator Operator
         {
             get => _operator;
-            set
+            private set
             {
-                if (!value.IsArithmeticOperator())
-                    throw new InvalidOperatorException("Expecting conditional operator")
+                if (!value.IsBinaryArithmeticOperator())
+                    throw new InvalidOperatorException("Expecting binary arithmetic operator")
                     { InvalidOperator = value };
                 _operator = value;
             }
@@ -122,27 +126,109 @@ namespace Twister.Compiler.Parser.Node
                         return l | r;
                     case Operator.BitExOr:
                         return l ^ r;
-                    //case Operator.BitNot:
-                    //    return !l;  // TODO - Move to unary expression?
-                    //case Operator.LeftShift:
-                    //    return l << r; // TODO - Evaluate r as int
-                    //case Operator.RightShift:
-                        //return l >> r; // TODO - Evaluate r as int
+                    case Operator.LeftShift:
+                        {
+                            var shiftAmount = 0;
+                            switch (r.Type)
+                            {
+                                case PrimitiveType.Int:
+                                    shiftAmount = r.GetValueOrDefault<int>();
+                                    break;
+                                case PrimitiveType.UInt:
+                                    shiftAmount = (int)r.GetValueOrDefault<uint>();
+                                    break;
+                                default:
+                                    throw new InvalidCastException("Shift can only be performed with int or uint types.")
+                                    { Type = r.Type };
+                            }
+
+                            return l << shiftAmount;
+                        }
+                    case Operator.RightShift:
+                        {
+                            var shiftAmount = 0;
+                            switch (r.Type)
+                            {
+                                case PrimitiveType.Int:
+                                    shiftAmount = r.GetValueOrDefault<int>();
+                                    break;
+                                case PrimitiveType.UInt:
+                                    shiftAmount = (int)r.GetValueOrDefault<uint>();
+                                    break;
+                                default:
+                                    throw new InvalidCastException("Shift can only be performed with int or uint types.")
+                                    { Type = r.Type };
+                            }
+
+                            return l >> shiftAmount;
+                        }
                 }
-                throw new InvalidOperatorException("Expecting arithmetic operator")
+                throw new InvalidOperatorException("Expecting binary arithmetic operator")
                 { InvalidOperator = _operator };
             }
         }
 
         public NodeKind Kind => NodeKind.Expression;
 
-        public ExpressionKind ExpressionKind => ExpressionKind.Arithemtic;
+        public ExpressionKind ExpressionKind => ExpressionKind.BinaryArithemtic;
 
-        public INode Left { get; set; }
+        public INode Left { get; private set; }
 
-        public INode Right { get; set; }
+        public INode Right { get; private set; }
+    }
 
 
+    public class UnaryArithmeticExpressionNode : IExpressionNode<TwisterPrimitive>
+    {
+        private Operator _operator;
+
+        public UnaryArithmeticExpressionNode(IExpressionNode<TwisterPrimitive> node, Operator @operator)
+        {
+            Left = node;
+            Operator = @operator;
+        }
+
+        public Operator Operator
+        {
+            get => _operator;
+            private set
+            {
+                if (!value.IsUnaryArithmeticOperator())
+                    throw new InvalidOperatorException("Expecting unary arithmetic operator")
+                    { InvalidOperator = value };
+                _operator = value;
+            }
+        }
+
+        public TwisterPrimitive Value
+        {
+            get
+            {
+                var l = ((IExpressionNode<TwisterPrimitive>)Left).Value;
+                var r = ((IExpressionNode<TwisterPrimitive>)Right).Value;
+
+                switch (_operator)
+                {
+                    case Operator.Plus:
+                        return l;
+                    case Operator.Minus:
+                        var negOne = new TwisterPrimitive { Int = -1 };
+                        return negOne * l;
+                    case Operator.BitNot:
+                        return !l;
+                }
+                throw new InvalidOperatorException("Expecting unary arithmetic operator")
+                { InvalidOperator = _operator };
+            }
+        }
+
+        public NodeKind Kind => NodeKind.Expression;
+
+        public ExpressionKind ExpressionKind => ExpressionKind.BinaryArithemtic;
+
+        public INode Left { get; private set; }
+
+        public INode Right { get; private set; }
     }
 
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using Twister.Compiler.Lexer.Enum;
+using Twister.Compiler.Parser.Enum;
+
 namespace Twister.Compiler.Parser
 {
     public class InvalidOperatorException : Exception
@@ -16,6 +18,15 @@ namespace Twister.Compiler.Parser
         public string Type { get; set; }
 
         public InvalidComparisonException(string message) : base(message) { }
+
+        public override string Message => $"{base.Message}. Type: '{Type}'";
+    }
+
+    public class InvalidCastException : Exception
+    {
+        public PrimitiveType Type { get; set; }
+
+        public InvalidCastException(string message) : base(message) { }
 
         public override string Message => $"{base.Message}. Type: '{Type}'";
     }
