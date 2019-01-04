@@ -6,9 +6,9 @@ using Twister.Compiler.Parser.Interface;
 
 namespace Twister.Compiler.Parser.Node
 {
-    public class ExpressionNode : IExpressionNode<PrimitiveValue>
+    public class ExpressionNode : IExpressionNode<TwisterPrimitive>
     {
-        public PrimitiveValue Value { get; set; }
+        public TwisterPrimitive Value { get; set; }
 
         public NodeKind Kind => NodeKind.Expression;
 
@@ -23,9 +23,9 @@ namespace Twister.Compiler.Parser.Node
     {
         private Operator _operator;
 
-        public ConditionalExpressionNode(IExpressionNode<PrimitiveValue> left, IExpressionNode<PrimitiveValue> right)
+        public ConditionalExpressionNode(IExpressionNode<TwisterPrimitive> left, IExpressionNode<TwisterPrimitive> right)
         {
-            Left = Left;
+            Left = left;
             Right = right;
         }
 
@@ -48,17 +48,17 @@ namespace Twister.Compiler.Parser.Node
                 switch (_operator)
                 {
                     case Operator.LogAnd:
-                        return ((IExpressionNode<PrimitiveValue>)Left).Value 
-                            && ((IExpressionNode<PrimitiveValue>)Right).Value;
+                        return ((IExpressionNode<TwisterPrimitive>)Left).Value 
+                            && ((IExpressionNode<TwisterPrimitive>)Right).Value;
                     case Operator.LogOr:
-                        return ((IExpressionNode<PrimitiveValue>)Left).Value
-                            || ((IExpressionNode<PrimitiveValue>)Right).Value;
+                        return ((IExpressionNode<TwisterPrimitive>)Left).Value
+                            || ((IExpressionNode<TwisterPrimitive>)Right).Value;
                     case Operator.LogEqual:
-                        return ((IExpressionNode<PrimitiveValue>)Left).Value
-                            == ((IExpressionNode<PrimitiveValue>)Right).Value;
+                        return ((IExpressionNode<TwisterPrimitive>)Left).Value
+                            == ((IExpressionNode<TwisterPrimitive>)Right).Value;
                     case Operator.LogNotEqual:
-                        return ((IExpressionNode<PrimitiveValue>)Left).Value
-                            != ((IExpressionNode<PrimitiveValue>)Right).Value;
+                        return ((IExpressionNode<TwisterPrimitive>)Left).Value
+                            != ((IExpressionNode<TwisterPrimitive>)Right).Value;
                     default:
                         throw new InvalidOperatorException("Expecting conditional operator")
                         { InvalidOperator = _operator };

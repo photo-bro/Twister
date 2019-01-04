@@ -1,8 +1,9 @@
 ﻿using System;
+using Twister.Compiler.Common;
 using Twister.Compiler.Parser.Enum;
 namespace Twister.Compiler.Parser
 {
-    public struct PrimitiveValue : IEquatable<PrimitiveValue>
+    public struct TwisterPrimitive : IEquatable<TwisterPrimitive>
     {
         public PrimitiveType Type { get; set; }
 
@@ -20,15 +21,74 @@ namespace Twister.Compiler.Parser
 
         #region Operator overrides
 
-        public static bool operator ==(PrimitiveValue instance, PrimitiveValue other) => Equals(instance, other);
+        public static bool operator ==(TwisterPrimitive instance, TwisterPrimitive other)
+        {
+            if (instance.Type == other.Type)
+            {
+                switch (instance.Type)
+                {
+                    case PrimitiveType.Str:
+                        {
+                            var l = instance.GetValueOrDefault<string>();
+                            var r = other.GetValueOrDefault<string>();
+                            return string.Compare(l, r) == 0;
+                        }
+                    case PrimitiveType.Int:
+                        {
+                            var l = instance.GetValueOrDefault<int>();
+                            var r = other.GetValueOrDefault<int>();
+                            return l == r;
+                        }
+                    case PrimitiveType.UInt:
+                        {
+                            var l = instance.GetValueOrDefault<uint>();
+                            var r = other.GetValueOrDefault<uint>();
+                            return l == r;
+                        }
+                    case PrimitiveType.Float:
+                        {
+                            var l = instance.GetValueOrDefault<double>();
+                            var r = other.GetValueOrDefault<double>();
+                            return Math.Abs(l - r) < Constants.DefaultEpsilon;
+                        }
+                    case PrimitiveType.Char:
+                        {
+                            var l = instance.GetValueOrDefault<char>();
+                            var r = other.GetValueOrDefault<char>();
+                            return l == r;
+                        }
+                    default:
+                        return false;
+                }
+            }
 
-        public static bool operator !=(PrimitiveValue instance, PrimitiveValue other) => !Equals(instance, other);
+            if ((instance.Type == PrimitiveType.Str && other.Type != PrimitiveType.Str) ||
+                (instance.Type != PrimitiveType.Str && other.Type == PrimitiveType.Str))
+                throw new InvalidComparisonException("Cannot compare str against numeric type.")
+                { Type = $"{PrimitiveType.Str}" };
 
-        public static bool operator >(PrimitiveValue instance, PrimitiveValue other)
+            var lc = instance.GetValueOrNull<char>();
+            var rc = other.GetValueOrNull<char>();
+            var li = instance.GetValueOrNull<int>();
+            var ri = other.GetValueOrNull<int>();
+            var lu = instance.GetValueOrNull<uint>();
+            var ru = other.GetValueOrNull<uint>();
+            var lf = instance.GetValueOrNull<double>();
+            var rf = other.GetValueOrNull<double>();
+
+            var left = lc ?? lu ?? li ?? lf ?? default(double);
+            var right = rc ?? ru ?? ri ?? rf ?? default(double);
+
+            return Math.Abs(left - right) < Constants.DefaultEpsilon;
+        }
+
+        public static bool operator !=(TwisterPrimitive instance, TwisterPrimitive other) => !(instance == other);
+
+        public static bool operator >(TwisterPrimitive instance, TwisterPrimitive other)
         {
             if (instance.Type == PrimitiveType.Str || other.Type == PrimitiveType.Str)
-                throw new InvalidComparisonException("Cannot compare.")
-                { Type = $"{instance.Type}" }; ;
+                throw new InvalidComparisonException("Cannot compare str types for greater or less than.")
+                { Type = $"{instance.Type}" };
 
             if (instance.Type == other.Type)
             {
@@ -78,16 +138,16 @@ namespace Twister.Compiler.Parser
             return left > right;
         }
 
-        public static bool operator <(PrimitiveValue instance, PrimitiveValue other) =>
+        public static bool operator <(TwisterPrimitive instance, TwisterPrimitive other) =>
                                                                             !(instance > other) && instance != other;
 
-        public static bool operator >=(PrimitiveValue instance, PrimitiveValue other) =>
+        public static bool operator >=(TwisterPrimitive instance, TwisterPrimitive other) =>
                                                                             instance > other || instance == other;
 
-        public static bool operator <=(PrimitiveValue instance, PrimitiveValue other) =>
+        public static bool operator <=(TwisterPrimitive instance, TwisterPrimitive other) =>
                                                                             instance < other || instance == other;
 
-        public static implicit operator bool(PrimitiveValue instance)
+        public static implicit operator bool(TwisterPrimitive instance)
         {
             if (instance.Type == PrimitiveType.Bool)
                 return instance.GetValueOrDefault<bool>();
@@ -108,7 +168,7 @@ namespace Twister.Compiler.Parser
 
         #region IEquatable and Equal overrides
 
-        public bool Equals(PrimitiveValue other) => Equals(this, other);
+        public bool Equals(TwisterPrimitive other) => Equals(this, other);
 
         public override bool Equals(object obj) => Equals(this, obj);
 
@@ -125,12 +185,12 @@ namespace Twister.Compiler.Parser
             return hash;
         }
 
-        public static bool Equals(PrimitiveValue instance, object obj)
+        public static bool Equals(TwisterPrimitive instance, object obj)
         {
-            if (!(obj is PrimitiveValue))
+            if (!(obj is TwisterPrimitive))
                 return false;
 
-            var other = (PrimitiveValue)obj;
+            var other = (TwisterPrimitive)obj;
 
             if (instance.Type != other.Type)
                 return false;
@@ -151,7 +211,7 @@ namespace Twister.Compiler.Parser
         /// Returns value for Twister equivalent type of T, returns null if instance
         /// has a differing PrimitiveType
         /// </summary>
-        private static T? GetValueOrNull<T>(PrimitiveValue instance) where T : struct
+        private static T? GetValueOrNull<T>(TwisterPrimitive instance) where T : struct
         {
             var type = typeof(T);
 
@@ -178,7 +238,7 @@ namespace Twister.Compiler.Parser
         /// Returns value for Twister equivalent type of T, returns default(T) if instance
         /// has a differing PrimitiveType
         /// </summary>
-        private static T GetValueOrDefault<T>(PrimitiveValue instance)
+        private static T GetValueOrDefault<T>(TwisterPrimitive instance)
         {
             var type = typeof(T);
             T value = default(T);
@@ -215,15 +275,15 @@ namespace Twister.Compiler.Parser
         /// Returns value for Twister equivalent type of T, returns null if instance
         /// has a differing PrimitiveType
         /// </summary>
-        public static T? GetValueOrNull<T>(this PrimitiveValue instance) where T : struct => GetValueOrNull<T>(instance);
+        public static T? GetValueOrNull<T>(this TwisterPrimitive instance) where T : struct => GetValueOrNull<T>(instance);
 
         /// <summary>
         /// Returns value for Twister equivalent type of T, returns default(T) if instance
         /// has a differing PrimitiveType
         /// </summary>
-        public static T GetValueOrDefault<T>(this PrimitiveValue instance) => GetValueOrDefault<T>(instance);
+        public static T GetValueOrDefault<T>(this TwisterPrimitive instance) => GetValueOrDefault<T>(instance);
 
-        public static bool IsNumeric(this PrimitiveValue instance) => instance.Type == PrimitiveType.Int ||
+        public static bool IsNumeric(this TwisterPrimitive instance) => instance.Type == PrimitiveType.Int ||
                                                                       instance.Type == PrimitiveType.UInt ||
                                                                       instance.Type == PrimitiveType.Float ||
                                                                       instance.Type == PrimitiveType.Char;
