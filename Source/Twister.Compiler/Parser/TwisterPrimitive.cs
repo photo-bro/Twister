@@ -164,6 +164,74 @@ namespace Twister.Compiler.Parser
             return (c ?? u ?? i ?? f ?? 0.0d) > 0.0d;
         }
 
+
+        // TODO - Implement these
+
+        public static bool operator true(TwisterPrimitive instance)
+        {
+            return true;
+        }
+
+        public static bool operator false(TwisterPrimitive instance)
+        {
+            return false;
+        }
+
+        public static TwisterPrimitive operator +(TwisterPrimitive instance, TwisterPrimitive other)
+        {
+            return default(TwisterPrimitive);
+        }
+
+        public static TwisterPrimitive operator -(TwisterPrimitive instance, TwisterPrimitive other)
+        {
+            return default(TwisterPrimitive);
+        }
+
+        public static TwisterPrimitive operator %(TwisterPrimitive instance, TwisterPrimitive other)
+        {
+            return default(TwisterPrimitive);
+        }
+
+        public static TwisterPrimitive operator *(TwisterPrimitive instance, TwisterPrimitive other)
+        {
+            return default(TwisterPrimitive);
+        }
+
+        public static TwisterPrimitive operator /(TwisterPrimitive instance, TwisterPrimitive other)
+        {
+            return default(TwisterPrimitive);
+        }
+
+        public static TwisterPrimitive operator &(TwisterPrimitive instance, TwisterPrimitive other)
+        {
+            return default(TwisterPrimitive);
+        }
+
+        public static TwisterPrimitive operator |(TwisterPrimitive instance, TwisterPrimitive other)
+        {
+            return default(TwisterPrimitive);
+        }
+
+        public static TwisterPrimitive operator ^(TwisterPrimitive instance, TwisterPrimitive other)
+        {
+            return default(TwisterPrimitive);
+        }
+
+        public static TwisterPrimitive operator !(TwisterPrimitive instance)
+        {
+            return default(TwisterPrimitive);
+        }
+
+        public static TwisterPrimitive operator <<(TwisterPrimitive instance, int shift)
+        {
+            return default(TwisterPrimitive);
+        }
+
+        public static TwisterPrimitive operator >>(TwisterPrimitive instance, int shift)
+        {
+            return default(TwisterPrimitive);
+        }
+
         #endregion
 
         #region IEquatable and Equal overrides
