@@ -1,6 +1,4 @@
-﻿using System;
-using Twister.Compiler.Common;
-using Twister.Compiler.Parser.Enum;
+﻿using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser.Primitive
 {
@@ -23,33 +21,120 @@ namespace Twister.Compiler.Parser.Primitive
             return (c ?? u ?? i ?? f ?? default(double)) > default(double);
         }
 
-        // C# primitive to TwisterPrimitive
+
         public static implicit operator int(TwisterPrimitive p)
         {
-            var val = p.GetValue(out var t);
-
-            switch (t)
+            switch (p.Type)
             {
                 case PrimitiveType.Bool:
-                    break;
+                    return p.Bool ? 1 : 0;
                 case PrimitiveType.Int:
-                    break;
+                    return p.Int;
                 case PrimitiveType.UInt:
-                    break;
+                    return (int)p.UInt;
                 case PrimitiveType.Float:
-                    break;
+                    return (int)p.Float;
                 case PrimitiveType.Char:
-                    break;
-                case PrimitiveType.Str:
-                    break;
+                    return p.Char;
             }
 
-
+            throw new InvalidCastException("Cannot implicitly cast to value to int")
+            {
+                FromType = $"{p.Type}",
+                ToType = "int"
+            };
         }
-        public static implicit operator uint(TwisterPrimitive p) => p.UInt;
-        public static implicit operator double(TwisterPrimitive p) => p.Float;
-        public static implicit operator char(TwisterPrimitive p) => p.Char;
-        public static implicit operator string(TwisterPrimitive p) => p.Str;
+
+        public static implicit operator uint(TwisterPrimitive p)
+        {
+            switch (p.Type)
+            {
+                case PrimitiveType.Bool:
+                    return p.Bool ? 1u : 0u;
+                case PrimitiveType.Int:
+                    return (uint)p.Int;
+                case PrimitiveType.UInt:
+                    return p.UInt;
+                case PrimitiveType.Float:
+                    return (uint)p.Float;
+                case PrimitiveType.Char:
+                    return p.Char;
+            }
+
+            throw new InvalidCastException("Cannot implicitly cast to value to uint")
+            {
+                FromType = $"{p.Type}",
+                ToType = "uint"
+            };
+        }
+        public static implicit operator double(TwisterPrimitive p)
+        {
+            switch (p.Type)
+            {
+                case PrimitiveType.Bool:
+                    return p.Bool ? 1 : 0;
+                case PrimitiveType.Int:
+                    return p.Int;
+                case PrimitiveType.UInt:
+                    return p.UInt;
+                case PrimitiveType.Float:
+                    return p.Float;
+                case PrimitiveType.Char:
+                    return p.Char;
+            }
+
+            throw new InvalidCastException("Cannot implicitly cast to value to double")
+            {
+                FromType = $"{p.Type}",
+                ToType = "double"
+            };
+        }
+
+        public static implicit operator char(TwisterPrimitive p)
+        {
+            switch (p.Type)
+            {
+                case PrimitiveType.Int:
+                    return (char)p.Int;
+                case PrimitiveType.UInt:
+                    return (char)p.UInt;
+                case PrimitiveType.Float:
+                    return (char)p.Float;
+                case PrimitiveType.Char:
+                    return p.Char;
+            }
+
+            throw new InvalidCastException("Cannot implicitly cast to value to char")
+            {
+                FromType = $"{p.Type}",
+                ToType = "char"
+            };
+        }
+
+        public static implicit operator string(TwisterPrimitive p)
+        {
+            switch (p.Type)
+            {
+                case PrimitiveType.Bool:
+                    return p.Bool ? "true" : "false";
+                case PrimitiveType.Int:
+                    return $"{p.Int}";
+                case PrimitiveType.UInt:
+                    return $"{p.UInt}";
+                case PrimitiveType.Float:
+                    return $"{p.Float}";
+                case PrimitiveType.Char:
+                    return $"{p.Char}";
+                case PrimitiveType.Str:
+                    return p.Str;
+            }
+
+            throw new InvalidCastException("Cannot implicitly cast to value to string")
+            {
+                FromType = $"{p.Type}",
+                ToType = "string"
+            };
+        }
 
         public static implicit operator TwisterPrimitive(int i) => new TwisterPrimitive(PrimitiveType.Int) { Int = i };
         public static implicit operator TwisterPrimitive(uint u) => new TwisterPrimitive(PrimitiveType.UInt) { UInt = u };

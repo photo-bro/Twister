@@ -23,6 +23,11 @@ namespace Twister.Compiler.Parser.Primitive
         /// </summary>
         public static object GetValue(this TwisterPrimitive instance, out PrimitiveType type) => GetValue(instance, out type);
 
+        /// <summary>
+        /// Return the value of the <see cref="TwisterPrimitive"/> as a boxed object
+        /// </summary>
+        public static object GetValue(this TwisterPrimitive instance) => GetValue(instance, out var type);
+
         public static bool IsNumeric(this TwisterPrimitive instance) => instance.Type == PrimitiveType.Int ||
                                                                         instance.Type == PrimitiveType.UInt ||
                                                                         instance.Type == PrimitiveType.Float ||

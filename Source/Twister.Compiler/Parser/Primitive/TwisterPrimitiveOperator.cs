@@ -1,5 +1,6 @@
 ﻿using System;
 using Twister.Compiler.Common;
+using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser.Primitive
@@ -138,46 +139,15 @@ namespace Twister.Compiler.Parser.Primitive
 
         public static TwisterPrimitive operator +(TwisterPrimitive instance, TwisterPrimitive other)
         {
-            if (instance.Type == other.Type)
-            {
-                switch (instance.Type)
-                {
-                    case PrimitiveType.Int:
-                        {
-                            var l = instance.GetValueOrDefault<int>();
-                            var r = other.GetValueOrDefault<int>();
-                            return l + r;
-                        }
-                    case PrimitiveType.UInt:
-                        {
-                            var l = instance.GetValueOrDefault<uint>();
-                            var r = other.GetValueOrDefault<uint>();
-                            return l + r;
-                        }
-                    case PrimitiveType.Float:
-                        {
-                            var l = instance.GetValueOrDefault<double>();
-                            var r = other.GetValueOrDefault<double>();
-                            return l + r;
-                        }
-                    case PrimitiveType.Char:
-                        {
-                            var l = instance.GetValueOrDefault<char>();
-                            var r = other.GetValueOrDefault<char>();
-                            return (char)(l + r);
-                        }
-                    case PrimitiveType.Str: // allow for implicit string concatenation
-                        {
-                            var l = instance.GetValueOrDefault<string>();
-                            var r = other.GetValueOrDefault<string>();
-                            return $"{l}{r}";
-                        }
-                }
-            }
-
-            // More implicit string/char concatenation
+            // Implicit string/char concatenation
             switch (instance.Type)
             {
+                case PrimitiveType.Str when other.Type == PrimitiveType.Str:
+                    {
+                        var l = instance.GetValueOrDefault<string>();
+                        var r = other.GetValueOrDefault<string>();
+                        return $"{l}{r}";
+                    }
                 case PrimitiveType.Str when other.Type == PrimitiveType.Char:
                     {
                         var l = instance.GetValueOrDefault<string>();
@@ -190,73 +160,423 @@ namespace Twister.Compiler.Parser.Primitive
                         var r = other.GetValueOrDefault<string>();
                         return $"{l}{r}";
                     }
+                case PrimitiveType.Char when other.Type == PrimitiveType.Char:
+                    {
+                        var l = instance.GetValueOrDefault<char>();
+                        var r = other.GetValueOrDefault<char>();
+                        return $"{l}{r}";
+                    }
             }
 
-            var lc = instance.GetValueOrNull<char>();
-            var rc = other.GetValueOrNull<char>();
-            var li = instance.GetValueOrNull<int>();
-            var ri = other.GetValueOrNull<int>();
-            var lu = instance.GetValueOrNull<uint>();
-            var ru = other.GetValueOrNull<uint>();
-            var lf = instance.GetValueOrNull<double>();
-            var rf = other.GetValueOrNull<double>();
-
-            // This is sloppy and lazy.....
-            var left = lc ?? lu ?? li ?? lf ?? default(double);
-            var right = rc ?? ru ?? ri ?? rf ?? default(double);
-
-            return left + right;
+            // Numeric
+            var result = Calculate(instance, other, Operator.Plus);
+            if (result != null)
+                return result.Value;
+           
+            throw new InvalidExpressionException("Cannot evaluate expression")
+            {
+                Left = $"{instance.Type}",
+                Right = $"{other.Type}",
+                Operation = $"{Operator.Plus}"
+            };
         }
 
         public static TwisterPrimitive operator -(TwisterPrimitive instance, TwisterPrimitive other)
         {
-            return default(TwisterPrimitive);
+            var result = Calculate(instance, other, Operator.Minus);
+            if (result != null)
+                return result.Value;
+
+            throw new InvalidExpressionException("Cannot evaluate expression")
+            {
+                Left = $"{instance.Type}",
+                Right = $"{other.Type}",
+                Operation = $"{Operator.Minus}"
+            };
         }
 
         public static TwisterPrimitive operator %(TwisterPrimitive instance, TwisterPrimitive other)
         {
-            return default(TwisterPrimitive);
+            var result = Calculate(instance, other, Operator.Modulo);
+            if (result != null)
+                return result.Value;
+
+            throw new InvalidExpressionException("Cannot evaluate expression")
+            {
+                Left = $"{instance.Type}",
+                Right = $"{other.Type}",
+                Operation = $"{Operator.Modulo}"
+            };
         }
 
         public static TwisterPrimitive operator *(TwisterPrimitive instance, TwisterPrimitive other)
         {
-            return default(TwisterPrimitive);
+            var result = Calculate(instance, other, Operator.Multiplication);
+            if (result != null)
+                return result.Value;
+
+            throw new InvalidExpressionException("Cannot evaluate expression")
+            {
+                Left = $"{instance.Type}",
+                Right = $"{other.Type}",
+                Operation = $"{Operator.Multiplication}"
+            };
         }
 
         public static TwisterPrimitive operator /(TwisterPrimitive instance, TwisterPrimitive other)
         {
-            return default(TwisterPrimitive);
+            var result = Calculate(instance, other, Operator.ForwardSlash);
+            if (result != null)
+                return result.Value;
+
+            throw new InvalidExpressionException("Cannot evaluate expression")
+            {
+                Left = $"{instance.Type}",
+                Right = $"{other.Type}",
+                Operation = $"{Operator.ForwardSlash}"
+            };
         }
 
         public static TwisterPrimitive operator &(TwisterPrimitive instance, TwisterPrimitive other)
         {
-            return default(TwisterPrimitive);
+            var result = Calculate(instance, other, Operator.BitAnd);
+            if (result != null)
+                return result.Value;
+
+            throw new InvalidExpressionException("Cannot evaluate expression")
+            {
+                Left = $"{instance.Type}",
+                Right = $"{other.Type}",
+                Operation = $"{Operator.BitAnd}"
+            };
         }
 
         public static TwisterPrimitive operator |(TwisterPrimitive instance, TwisterPrimitive other)
         {
-            return default(TwisterPrimitive);
+            var result = Calculate(instance, other, Operator.BitOr);
+            if (result != null)
+                return result.Value;
+
+            throw new InvalidExpressionException("Cannot evaluate expression")
+            {
+                Left = $"{instance.Type}",
+                Right = $"{other.Type}",
+                Operation = $"{Operator.BitOr}"
+            };
         }
 
         public static TwisterPrimitive operator ^(TwisterPrimitive instance, TwisterPrimitive other)
         {
-            return default(TwisterPrimitive);
+            var result = Calculate(instance, other, Operator.BitExOr);
+            if (result != null)
+                return result.Value;
+
+            throw new InvalidExpressionException("Cannot evaluate expression")
+            {
+                Left = $"{instance.Type}",
+                Right = $"{other.Type}",
+                Operation = $"{Operator.BitExOr}"
+            };
         }
 
-        public static TwisterPrimitive operator !(TwisterPrimitive instance)
+        public static TwisterPrimitive operator !(TwisterPrimitive instance) => !instance;
+
+        public static TwisterPrimitive operator <<(TwisterPrimitive instance, int shift) => instance << shift;
+
+        public static TwisterPrimitive operator >>(TwisterPrimitive instance, int shift) => instance >> shift;
+
+        private static TwisterPrimitive? Calculate(TwisterPrimitive left, TwisterPrimitive right, Operator o)
         {
-            return default(TwisterPrimitive);
-        }
+            switch (left.Type)
+            {
+                case PrimitiveType.Int:
+                    {
+                        var l = left.GetValueOrDefault<int>();
+                        switch (right.Type)
+                        {
+                            case PrimitiveType.Int:
+                                {
+                                    var r = right.GetValueOrDefault<int>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                        case Operator.BitAnd: return l & r;
+                                        case Operator.BitOr: return l | r;
+                                        case Operator.BitExOr: return l ^ r;
+                                        case Operator.LeftShift: return l << r;
+                                        case Operator.RightShift: return l >> r;
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.UInt:
+                                {
+                                    var r = right.GetValueOrDefault<uint>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return (uint)(l + r);
+                                        case Operator.Minus: return (uint)(l - r);
+                                        case Operator.Modulo: return (uint)(l % r);
+                                        case Operator.Multiplication: return (uint)(l * r);
+                                        case Operator.ForwardSlash: return (uint)(l / r);
+                                        case Operator.BitAnd: return (uint)(l & r);
+                                        case Operator.BitOr: return (uint)(l | (int)r);
+                                        case Operator.BitExOr: return (uint)(l ^ r);
+                                        case Operator.LeftShift: return (uint)(l << (int)r);
+                                        case Operator.RightShift: return (uint)(l >> (int)r);
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.Float:
+                                {
+                                    var r = right.GetValueOrDefault<double>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.Char:
+                                {
+                                    var r = right.GetValueOrDefault<char>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                        case Operator.BitAnd: return l & r;
+                                        case Operator.BitOr: return l | r;
+                                        case Operator.BitExOr: return l ^ r;
+                                        case Operator.LeftShift: return l << r;
+                                        case Operator.RightShift: return l >> r;
+                                    }
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case PrimitiveType.UInt:
+                    {
+                        var l = left.GetValueOrDefault<uint>();
+                        switch (right.Type)
+                        {
+                            case PrimitiveType.Int:
+                                {
+                                    var r = right.GetValueOrDefault<int>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return (int)(l + r);
+                                        case Operator.Minus: return (int)(l - r);
+                                        case Operator.Modulo: return (int)(l % r);
+                                        case Operator.Multiplication: return (int)(l * r);
+                                        case Operator.ForwardSlash: return (int)(l / r);
+                                        case Operator.BitAnd: return (int)(l & r);
+                                        case Operator.BitOr: return (int)l | r;
+                                        case Operator.BitExOr: return (int)(l ^ r);
+                                        case Operator.LeftShift: return (int)(l << r);
+                                        case Operator.RightShift: return (int)(l >> r);
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.UInt:
+                                {
+                                    var r = right.GetValueOrDefault<uint>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                        case Operator.BitAnd: return l & r;
+                                        case Operator.BitOr: return l | r;
+                                        case Operator.BitExOr: return l ^ r;
+                                        case Operator.LeftShift: return l << (int)r;
+                                        case Operator.RightShift: return l >> (int)r;
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.Float:
+                                {
+                                    var r = right.GetValueOrDefault<double>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.Char:
+                                {
+                                    var r = right.GetValueOrDefault<char>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                        case Operator.BitAnd: return l & r;
+                                        case Operator.BitOr: return l | r;
+                                        case Operator.BitExOr: return l ^ r;
+                                        case Operator.LeftShift: return l << r;
+                                        case Operator.RightShift: return l >> r;
+                                    }
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case PrimitiveType.Float:
+                    {
+                        var l = left.GetValueOrDefault<double>();
+                        switch (right.Type)
+                        {
+                            case PrimitiveType.Int:
+                                {
+                                    var r = right.GetValueOrDefault<int>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.UInt:
+                                {
+                                    var r = right.GetValueOrDefault<uint>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.Float:
+                                {
+                                    var r = right.GetValueOrDefault<double>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.Char:
+                                {
+                                    var r = right.GetValueOrDefault<char>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                    }
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case PrimitiveType.Char:
+                    {
+                        var l = left.GetValueOrDefault<char>();
+                        switch (right.Type)
+                        {
+                            case PrimitiveType.Int:
+                                {
+                                    var r = right.GetValueOrDefault<int>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                        case Operator.BitAnd: return l & r;
+                                        case Operator.BitOr: return l | r;
+                                        case Operator.BitExOr: return l ^ r;
+                                        case Operator.LeftShift: return l << r;
+                                        case Operator.RightShift: return l >> r;
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.UInt:
+                                {
+                                    var r = right.GetValueOrDefault<uint>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                        case Operator.BitAnd: return l & r;
+                                        case Operator.BitOr: return l | r;
+                                        case Operator.BitExOr: return l ^ r;
+                                        case Operator.LeftShift: return (uint)l << (int)r;
+                                        case Operator.RightShift: return (uint)l >> (int)r;
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.Float:
+                                {
+                                    var r = right.GetValueOrDefault<double>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.Char:
+                                {
+                                    var r = right.GetValueOrDefault<char>();
+                                    switch (o)
+                                    {
+                                        case Operator.Plus: return l + r;
+                                        case Operator.Minus: return l - r;
+                                        case Operator.Modulo: return l % r;
+                                        case Operator.Multiplication: return l * r;
+                                        case Operator.ForwardSlash: return l / r;
+                                        case Operator.BitAnd: return l & r;
+                                        case Operator.BitOr: return l | r;
+                                        case Operator.BitExOr: return l ^ r;
+                                        case Operator.LeftShift: return l << r;
+                                        case Operator.RightShift: return l >> r;
+                                    }
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+            }
 
-        public static TwisterPrimitive operator <<(TwisterPrimitive instance, int shift)
-        {
-            return default(TwisterPrimitive);
+            return null;
         }
-
-        public static TwisterPrimitive operator >>(TwisterPrimitive instance, int shift)
-        {
-            return default(TwisterPrimitive);
-        }
-
     }
 }

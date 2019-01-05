@@ -129,39 +129,39 @@ namespace Twister.Compiler.Parser.Node
                         return l ^ r;
                     case Operator.LeftShift:
                         {
-                            var shiftAmount = 0;
                             switch (r.Type)
                             {
                                 case PrimitiveType.Int:
-                                    shiftAmount = r.GetValueOrDefault<int>();
                                     break;
                                 case PrimitiveType.UInt:
-                                    shiftAmount = (int)r.GetValueOrDefault<uint>();
                                     break;
                                 default:
                                     throw new InvalidCastException("Shift can only be performed with int or uint types.")
-                                    { Type = r.Type };
+                                    {
+                                        FromType = $"{r.Type}",
+                                        ToType = $"int"
+                                    };
                             }
 
-                            return l << shiftAmount;
+                            return l << r;
                         }
                     case Operator.RightShift:
                         {
-                            var shiftAmount = 0;
                             switch (r.Type)
                             {
                                 case PrimitiveType.Int:
-                                    shiftAmount = r.GetValueOrDefault<int>();
                                     break;
                                 case PrimitiveType.UInt:
-                                    shiftAmount = (int)r.GetValueOrDefault<uint>();
                                     break;
                                 default:
                                     throw new InvalidCastException("Shift can only be performed with int or uint types.")
-                                    { Type = r.Type };
+                                    {
+                                        FromType = $"{r.Type}",
+                                        ToType = $"int"
+                                    };
                             }
 
-                            return l >> shiftAmount;
+                            return l >> r;
                         }
                 }
                 throw new InvalidOperatorException("Expecting binary arithmetic operator")
@@ -206,15 +206,12 @@ namespace Twister.Compiler.Parser.Node
             get
             {
                 var l = ((IExpressionNode<TwisterPrimitive>)Left).Value;
-                var r = ((IExpressionNode<TwisterPrimitive>)Right).Value;
-
                 switch (_operator)
                 {
                     case Operator.Plus:
                         return l;
                     case Operator.Minus:
-                        var negOne = new TwisterPrimitive { Int = -1 };
-                        return negOne * l;
+                        return -1 * l;
                     case Operator.BitNot:
                         return !l;
                 }

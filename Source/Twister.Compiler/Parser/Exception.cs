@@ -24,10 +24,26 @@ namespace Twister.Compiler.Parser
 
     public class InvalidCastException : Exception
     {
-        public PrimitiveType Type { get; set; }
+        public string FromType { get; set; }
+
+        public string ToType { get; set; }
 
         public InvalidCastException(string message) : base(message) { }
 
-        public override string Message => $"{base.Message}. Type: '{Type}'";
+        public override string Message => $"{base.Message}. From type: '{FromType}' to type: '{ToType}'";
+    }
+
+    public class InvalidExpressionException : Exception
+    {
+        public string Left { get; set; }
+
+        public string Right { get; set; }
+
+        public string Operation { get; set; }
+
+        public InvalidExpressionException(string message) : base(message) { }
+
+        public override string Message
+            => $"{base.Message}. Left side: '{Left}' Operation: '{Operation}' Right side: '{Right}'";
     }
 }
