@@ -25,5 +25,6 @@
     <Folder Include="Common\Interface\" />
     <Folder Include="Parser\Enum\" />
     <Folder Include="Lexer\Enum\" />
+    <Folder Include="Parser\Primitive\" />
   </ItemGroup>
 </Project>

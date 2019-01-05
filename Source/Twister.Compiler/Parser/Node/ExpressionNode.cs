@@ -3,6 +3,7 @@ using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Token;
 using Twister.Compiler.Parser.Enum;
 using Twister.Compiler.Parser.Interface;
+using Twister.Compiler.Parser.Primitive;
 
 namespace Twister.Compiler.Parser.Node
 {
