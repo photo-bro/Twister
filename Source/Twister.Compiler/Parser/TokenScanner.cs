@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Twister.Compiler.Common.Interface;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
+using Twister.Compiler.Parser.Interface;
+using Twister.Compiler.Common.Interface;
+using Twister.Compiler.Lexer.Enum;
+
 namespace Twister.Compiler.Parser
 {
-    public class TokenScanner : IScanner<IToken>
+    public class TokenScanner : ITokenScanner, IScanner<IToken>
     {
         private IToken _invalidToken { get; } = new EmptyToken();
         private readonly Memory<IToken> _tokens;
@@ -94,6 +97,66 @@ namespace Twister.Compiler.Parser
         {
             Base = 0;
             Position = -1;
+        }
+
+        public T ScanNext<T>() where T : IToken
+        {
+            var next = Peek();
+            var expectedNext = (T)next;
+            if (next == null)
+                throw new UnexpectedTokenException("Unexpected token")
+                {
+                    UnexpectedToken = next,
+                    ExpectedTokenType = typeof(T)
+                };
+
+            return (T)Advance();
+        }
+
+        public T PeekNext<T>() where T : IToken => PeekNext<T>(1);
+
+        public T PeekNext<T>(int count) where T : IToken
+        {
+            var peek = Peek(count);
+            if (peek == InvalidItem)
+                return default(T);
+
+            var expectedNext = (T)peek;
+            if (peek == null)
+                throw new UnexpectedTokenException("Unexpected token")
+                {
+                    UnexpectedToken = peek,
+                    ExpectedTokenType = typeof(T)
+                };
+
+            return expectedNext;
+        }
+
+        public void ConsumeNext(TokenKind kind)
+        {
+            var peek = Peek();
+            if (peek.Kind != kind)
+                throw new UnexpectedTokenException("Unexpected token")
+                {
+                    UnexpectedToken = peek,
+                    ExpectedTokenType = kind.GetType()
+                };
+
+            Advance();
+        }
+        public void ConsumeNextPattern(TokenKind[] pattern)
+        {
+            foreach (var k in pattern)
+            {
+                var actual = PeekNext<IToken>();
+                if (k != actual.Kind)
+                    throw new UnexpectedTokenException("Unexpected token")
+                    {
+                        UnexpectedToken = actual,
+                        ExpectedTokenType = k.GetType()
+                    };
+                Advance();
+            }
         }
     }
 }

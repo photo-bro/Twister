@@ -30,13 +30,14 @@ namespace Twister.Compiler.Lexer.Token
             [Operator.BitAnd] = "&",
             [Operator.BitOr] = "|",
             [Operator.BitExOr] = "^",
-            [Operator.BitNot] = "!",
+            [Operator.BitNot] = "~",
             [Operator.LeftShift] = "<<",
             [Operator.RightShift] = ">>",
             [Operator.LogAnd] = "&&",
             [Operator.LogOr] = "||",
             [Operator.LogEqual] = "==",
             [Operator.LogNotEqual] = "!=",
+            [Operator.LogNot] = "!"
         };
 
         public static Operator[] ConditionalOperators => new[]
@@ -44,7 +45,8 @@ namespace Twister.Compiler.Lexer.Token
             Operator.LogAnd,
             Operator.LogOr,
             Operator.LogEqual,
-            Operator.LogNotEqual
+            Operator.LogNotEqual,
+            Operator.LogNot
         };
 
         public static Operator[] BinaryArithmeticOperators => new[]

@@ -6,6 +6,7 @@ namespace Twister.Compiler.Parser.Enum
         None = 0,
         Statement,
         Expression,
-        Function
+        Function,
+        Symbol
     }
 }

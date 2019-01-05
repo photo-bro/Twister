@@ -1,5 +1,6 @@
 ﻿using System;
 using Twister.Compiler.Lexer.Enum;
+using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser
@@ -45,5 +46,32 @@ namespace Twister.Compiler.Parser
 
         public override string Message
             => $"{base.Message}. Left side: '{Left}' Operation: '{Operation}' Right side: '{Right}'";
+    }
+
+    public class InvalidIdentifierException : Exception
+    {
+        public string InvalidIdentifier { get; set; }
+
+        public InvalidIdentifierException(string message) : base(message) { }
+
+        public override string Message => $"{base.Message}. InvalidIdentifier: '{InvalidIdentifier}'";
+    }
+
+    public class UnexpectedTokenException : Exception
+    {
+        public IToken UnexpectedToken { get; set; }
+
+        public Type ExpectedTokenType { get; set; }
+
+        public UnexpectedTokenException(string message) : base(message) { }
+
+        public override string Message
+            => $"{base.Message}. Unexpected token: '{UnexpectedToken.Kind}' on line: '{UnexpectedToken.LineNumber}' " +
+               $"Expected token: '{ExpectedTokenType}'";
+    }
+
+    public class InvalidProgramException : Exception
+    {
+        public InvalidProgramException(string message) : base(message) { }
     }
 }

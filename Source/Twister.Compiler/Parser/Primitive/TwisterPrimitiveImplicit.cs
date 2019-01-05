@@ -21,7 +21,6 @@ namespace Twister.Compiler.Parser.Primitive
             return (c ?? u ?? i ?? f ?? default(double)) > default(double);
         }
 
-
         public static implicit operator int(TwisterPrimitive p)
         {
             switch (p.Type)

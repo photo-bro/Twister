@@ -18,7 +18,7 @@ namespace Twister.Compiler.Parser.Primitive
 
         public string Str { get; set; }
 
-        public TwisterPrimitive(PrimitiveType type)
+        private TwisterPrimitive(PrimitiveType type)
         {
             Type = type;
             Bool = default(bool);

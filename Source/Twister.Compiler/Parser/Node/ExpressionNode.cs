@@ -1,5 +1,4 @@
-﻿using System;
-using Twister.Compiler.Lexer.Enum;
+﻿using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Token;
 using Twister.Compiler.Parser.Enum;
 using Twister.Compiler.Parser.Interface;
@@ -7,19 +6,6 @@ using Twister.Compiler.Parser.Primitive;
 
 namespace Twister.Compiler.Parser.Node
 {
-    //public class ExpressionNode : IExpressionNode<TwisterPrimitive>
-    //{
-    //    public TwisterPrimitive Value { get; set; }
-
-    //    public NodeKind Kind => NodeKind.Expression;
-
-    //    public ExpressionKind ExpressionKind => ExpressionKind.General;
-
-    //    public INode Left { get; set; }
-
-    //    public INode Right { get; set; }
-    //}
-
     public class ConditionalExpressionNode : IExpressionNode<bool>
     {
         private Operator _operator;
@@ -179,11 +165,11 @@ namespace Twister.Compiler.Parser.Node
     }
 
 
-    public class UnaryArithmeticExpressionNode : IExpressionNode<TwisterPrimitive>
+    public class UnaryExpressionNode : IExpressionNode<TwisterPrimitive>
     {
         private Operator _operator;
 
-        public UnaryArithmeticExpressionNode(IExpressionNode<TwisterPrimitive> node, Operator @operator)
+        public UnaryExpressionNode(IExpressionNode<TwisterPrimitive> node, Operator @operator)
         {
             Left = node;
             Operator = @operator;
@@ -212,8 +198,10 @@ namespace Twister.Compiler.Parser.Node
                         return l;
                     case Operator.Minus:
                         return -1 * l;
-                    case Operator.BitNot:
+                    case Operator.LogNot:
                         return !l;
+                    case Operator.BitNot:
+                        return ~l;
                 }
                 throw new InvalidOperatorException("Expecting unary arithmetic operator")
                 { InvalidOperator = _operator };
@@ -222,11 +210,11 @@ namespace Twister.Compiler.Parser.Node
 
         public NodeKind Kind => NodeKind.Expression;
 
-        public ExpressionKind ExpressionKind => ExpressionKind.BinaryArithemtic;
+        public ExpressionKind ExpressionKind => ExpressionKind.Unary;
 
         public INode Left { get; private set; }
 
-        public INode Right { get; private set; }
+        public INode Right => null;
     }
 
 }

@@ -1,4 +1,5 @@
 *** Program
+program         ::= func {func}
 
 *** Functions
 function        ::= func identifier lsqrbrack params rsqrbrack define_op colon rbrack {(expression | statement)} return_expr lbrack
@@ -6,7 +7,7 @@ func_call       ::= identifier rsqrbrack {args} lsqrbrack scolon
 args            ::= (literal | identifier) {comma (literal | identifier)}
 
 *** Statements
-if_stmt         ::= if cond_exp colon expression_body {(else_stmt | else if_stmt}
+if_stmt         ::= if cond_exp colon expression_body {(else_stmt | else if_stmt)}
 else_stmt       ::= else (expression | lbrack {expression} rbrack)
 while_stmt      :: while cond_exp : expression_body
 
