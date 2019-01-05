@@ -14,6 +14,7 @@
         BitNot,
         LeftShift,
         RightShift,
+        LogNot,
         LogAnd,
         LogOr,
         LogEqual,

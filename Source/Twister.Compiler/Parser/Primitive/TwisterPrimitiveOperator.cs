@@ -172,7 +172,7 @@ namespace Twister.Compiler.Parser.Primitive
             var result = Calculate(instance, other, Operator.Plus);
             if (result != null)
                 return result.Value;
-           
+
             throw new InvalidExpressionException("Cannot evaluate expression")
             {
                 Left = $"{instance.Type}",
@@ -279,11 +279,71 @@ namespace Twister.Compiler.Parser.Primitive
             };
         }
 
-        public static TwisterPrimitive operator !(TwisterPrimitive instance) => !instance;
+        public static TwisterPrimitive operator !(TwisterPrimitive instance)
+        {
+            switch (instance.Type)
+            {
+                case PrimitiveType.Bool:
+                    return !instance.GetValueOrDefault<bool>();
+            }
 
-        public static TwisterPrimitive operator <<(TwisterPrimitive instance, int shift) => instance << shift;
+            throw new InvalidExpressionException("Cannot evaluate expression")
+            {
+                Left = $"{instance.Type}",
+                Right = $"",
+                Operation = $"{Operator.LogNot}"
+            };
+        }
 
-        public static TwisterPrimitive operator >>(TwisterPrimitive instance, int shift) => instance >> shift;
+        public static TwisterPrimitive operator ~(TwisterPrimitive instance)
+        {
+            switch (instance.Type)
+            {
+                case PrimitiveType.Bool:
+                    return !instance.GetValueOrDefault<bool>();
+                case PrimitiveType.Int:
+                    return ~instance.GetValueOrDefault<int>();
+                case PrimitiveType.UInt:
+                    return ~instance.GetValueOrDefault<uint>();
+            }
+
+            throw new InvalidExpressionException("Cannot evaluate expression")
+            {
+                Left = $"{instance.Type}",
+                Right = $"",
+                Operation = $"{Operator.BitNot}"
+            };
+        }
+
+        public static TwisterPrimitive operator <<(TwisterPrimitive instance, int shift)
+        {
+            var result = Calculate(instance, shift, Operator.LeftShift);
+            if (result != null)
+                return result.Value;
+
+            throw new InvalidExpressionException("Cannot evaluate expression")
+            {
+                Left = $"{instance.Type}",
+                Right = $"int",
+                Operation = $"{Operator.LeftShift}"
+            };
+        }
+
+        public static TwisterPrimitive operator >>(TwisterPrimitive instance, int shift)
+        {
+            {
+                var result = Calculate(instance, shift, Operator.RightShift);
+                if (result != null)
+                    return result.Value;
+
+                throw new InvalidExpressionException("Cannot evaluate expression")
+                {
+                    Left = $"{instance.Type}",
+                    Right = $"int",
+                    Operation = $"{Operator.RightShift}"
+                };
+            }
+        }
 
         private static TwisterPrimitive? Calculate(TwisterPrimitive left, TwisterPrimitive right, Operator o)
         {
