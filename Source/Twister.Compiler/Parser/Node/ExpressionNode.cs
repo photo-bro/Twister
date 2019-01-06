@@ -171,7 +171,7 @@ namespace Twister.Compiler.Parser.Node
 
         public UnaryExpressionNode(IExpressionNode<TwisterPrimitive> node, Operator @operator)
         {
-            Left = node;
+            Node = node;
             Operator = @operator;
         }
 
@@ -191,7 +191,7 @@ namespace Twister.Compiler.Parser.Node
         {
             get
             {
-                var l = ((IExpressionNode<TwisterPrimitive>)Left).Value;
+                var l = ((IExpressionNode<TwisterPrimitive>)Node).Value;
                 switch (_operator)
                 {
                     case Operator.Plus:
@@ -212,9 +212,7 @@ namespace Twister.Compiler.Parser.Node
 
         public ExpressionKind ExpressionKind => ExpressionKind.Unary;
 
-        public INode Left { get; private set; }
-
-        public INode Right => null;
+        public IValueNode<TwisterPrimitive> Node { get; private set; }
     }
 
 }

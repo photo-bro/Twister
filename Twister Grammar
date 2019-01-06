@@ -2,7 +2,7 @@
 program         ::= func {func}
 
 *** Functions
-function        ::= func identifier lsqrbrack params rsqrbrack define_op colon rbrack {(expression | statement)} return_expr lbrack
+function        ::= func identifier lsqrbrack params rsqrbrack {define_op type} colon lbrack {(expression | statement)} return_expr rbrack
 func_call       ::= identifier rsqrbrack {args} lsqrbrack scolon
 args            ::= (literal | identifier) {comma (literal | identifier)}
 

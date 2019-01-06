@@ -20,9 +20,5 @@ namespace Twister.Compiler.Parser.Node
         public TwisterPrimitive Value { get; private set; }
 
         public NodeKind Kind => NodeKind.Symbol;
-
-        public INode Left => null;
-
-        public INode Right => null;
     }
 }

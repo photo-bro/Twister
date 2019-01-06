@@ -1,28 +1,31 @@
-﻿using System;
-using Twister.Compiler.Parser.Enum;
+﻿using Twister.Compiler.Parser.Enum;
 using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Parser.Primitive;
 
 namespace Twister.Compiler.Parser.Node
 {
-    public class FuncNode : IFuncNode<TwisterPrimitive>
+    public class FuncNode<T> : IFuncNode<T>
     {
-        public FuncNode(string identifier, ISymbolNode<TwisterPrimitive>[] arguments)
+        public FuncNode(string identifier, PrimitiveType? returnType, ISymbolNode<TwisterPrimitive>[] arguments,
+             INode[] body, IExpressionNode<T> returnExpression)
         {
             Identifier = identifier;
+            ReturnType = returnType;
             Arguments = arguments;
+            Body = body;
+            Value = returnExpression;
         }
 
         public ISymbolNode<TwisterPrimitive>[] Arguments { get; private set; }
 
         public string Identifier { get; private set; }
 
-        public TwisterPrimitive Value => throw new NotImplementedException(); // TODO
+        public PrimitiveType? ReturnType { get; private set; }
 
-        public NodeKind Kind =>  NodeKind.Expression;
+        public INode[] Body { get; set; }
 
-        public INode Left => null;
+        public IExpressionNode<T> Value { get; set; }
 
-        public INode Right => null;
+        public NodeKind Kind => NodeKind.Expression;
     }
 }

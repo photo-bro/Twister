@@ -1,7 +1,6 @@
 ﻿using System;
 using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
-using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser
 {
@@ -66,12 +65,21 @@ namespace Twister.Compiler.Parser
         public UnexpectedTokenException(string message) : base(message) { }
 
         public override string Message
-            => $"{base.Message}. Unexpected token: '{UnexpectedToken.Kind}' on line: '{UnexpectedToken.LineNumber}' " +
-               $"Expected token: '{ExpectedTokenType}'";
+            => $"{base.Message}. Unexpected token: '{UnexpectedToken.Kind}' on line: '{UnexpectedToken.LineNumber}'" +
+               $"{(ExpectedTokenType != default(Type) ? $" Expected token: '{ExpectedTokenType}'" : string.Empty)}";
     }
 
     public class InvalidProgramException : Exception
     {
         public InvalidProgramException(string message) : base(message) { }
+    }
+
+    public class InvalidTypeException : Exception
+    {
+        public string InvalidType { get; set; }
+
+        public InvalidTypeException(string message) : base(message) { }
+
+        public override string Message => $"{base.Message}. InvalidType: '{InvalidType}'";
     }
 }

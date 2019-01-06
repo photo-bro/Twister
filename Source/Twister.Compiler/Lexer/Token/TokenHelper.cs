@@ -40,7 +40,7 @@ namespace Twister.Compiler.Lexer.Token
             [Operator.LogNot] = "!"
         };
 
-        public static Operator[] ConditionalOperators => new[]
+        public static Operator[] ConditionalOperators =
         {
             Operator.LogAnd,
             Operator.LogOr,
@@ -49,7 +49,7 @@ namespace Twister.Compiler.Lexer.Token
             Operator.LogNot
         };
 
-        public static Operator[] BinaryArithmeticOperators => new[]
+        public static Operator[] BinaryArithmeticOperators =
         {
             Operator.Plus,
             Operator.Minus,
@@ -64,11 +64,21 @@ namespace Twister.Compiler.Lexer.Token
             Operator.RightShift
         };
 
-        public static Operator[] UnaryArithmeticOperators => new Operator[]
+        public static Operator[] UnaryArithmeticOperators =
         {
             Operator.Plus,
             Operator.Minus,
             Operator.BitNot
+        };
+
+        public static Keyword[] PrimitiveTypeKeywords =
+        {
+            Keyword.Bool,
+            Keyword.Char,
+            Keyword.Int,
+            Keyword.UInt,
+            Keyword.Float,
+            Keyword.Str
         };
 
         public static bool IsValueToken(this TokenKind tokType) => ValueTokens.Any(vt => vt == tokType);
@@ -78,5 +88,7 @@ namespace Twister.Compiler.Lexer.Token
         public static bool IsBinaryArithmeticOperator(this Operator @operator) => BinaryArithmeticOperators.Any(co => co == @operator);
 
         public static bool IsUnaryArithmeticOperator(this Operator @operator) => UnaryArithmeticOperators.Any(co => co == @operator);
+
+        public static bool IsTypeKeyword(this Keyword keyword) => PrimitiveTypeKeywords.Any(kw => kw == keyword);
     }
 }

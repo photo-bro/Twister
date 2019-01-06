@@ -4,12 +4,12 @@ using Twister.Compiler.Parser.Interface;
 
 namespace Twister.Compiler.Parser.Node
 {
-    public class StatementNode : INode
+    public class StatementNode : IStatementNode
     {
         public NodeKind Kind => NodeKind.Statement;
 
-        public INode Left { get; set; }
+        public StatementKind StatementKind => StatementKind.Body;
 
-        public INode Right { get; set; }
+        public INode[] Value => throw new NotImplementedException();
     }
 }

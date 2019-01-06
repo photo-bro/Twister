@@ -1,4 +1,6 @@
-﻿using Twister.Compiler.Parser.Enum;
+﻿using Twister.Compiler.Lexer.Enum;
+using Twister.Compiler.Lexer.Token;
+using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser.Primitive
 {
@@ -31,5 +33,26 @@ namespace Twister.Compiler.Parser.Primitive
                                                                         instance.Type == PrimitiveType.UInt ||
                                                                         instance.Type == PrimitiveType.Float ||
                                                                         instance.Type == PrimitiveType.Char;
+
+        public static PrimitiveType ToPrimitiveType(this Keyword keyword)
+        {
+            switch (keyword)
+            {
+                case Keyword.Bool:
+                    return PrimitiveType.Bool;
+                case Keyword.Char:
+                    return PrimitiveType.Char;
+                case Keyword.Int:
+                    return PrimitiveType.Int;
+                case Keyword.UInt:
+                    return PrimitiveType.UInt;
+                case Keyword.Float:
+                    return PrimitiveType.Float;
+                case Keyword.Str:
+                    return PrimitiveType.Str;
+                default:
+                    throw new InvalidTypeException("Specified keyword is not a valid type") { InvalidType = $"{keyword}" };
+            }
+        }
     }
 }

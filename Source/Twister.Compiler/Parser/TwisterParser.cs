@@ -1,79 +1,109 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Twister.Compiler.Common.Interface;
 using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Parser.Node;
 using Twister.Compiler.Parser.Primitive;
+using Twister.Compiler.Lexer.Token;
+using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser
 {
     public class TwisterParser : ITwisterParser
     {
         private readonly Func<ISymbolTable> CreateSymbolTableFunc;
-        private readonly Func<IEnumerable<IToken>, ITokenScanner> CreateTokenScannerFunc;
+        private readonly Func<IEnumerable<IToken>, ITokenMatcher> CreateTokenConsumerFunc;
 
         private ISymbolTable _symbolTable;
-        private ITokenScanner _tokenScanner;
+        private ITokenMatcher _consumer;
         private bool _hasMain;
 
         public TwisterParser(Func<ISymbolTable> createSymbolTableFunc,
-            Func<IEnumerable<IToken>, ITokenScanner> createTokenScannerFunc)
+            Func<IEnumerable<IToken>, ITokenMatcher> createTokenConsumerFunc)
         {
             CreateSymbolTableFunc = createSymbolTableFunc;
-            CreateTokenScannerFunc = createTokenScannerFunc;
+            CreateTokenConsumerFunc = createTokenConsumerFunc;
         }
 
         public INode Parse(IEnumerable<IToken> twisterTokens)
         {
             _symbolTable = CreateSymbolTableFunc();
-            _tokenScanner = CreateTokenScannerFunc(twisterTokens);
+            _consumer = CreateTokenConsumerFunc(twisterTokens);
             _hasMain = false;
 
-            var head = Program();
+            return Program();
+        }
+
+        /// <summary>
+        /// program ::= func {func}
+        /// </summary>
+        private INode Program()
+        {
+            var functionBody = new List<IFuncNode<TwisterPrimitive>>();
+            while (_consumer.PeekNext<IToken>() != null)
+                functionBody.Add(Function());
 
             if (!_hasMain)
                 throw new InvalidProgramException("Program entry point, 'func main', is missing");
 
-            return head;
-        }
-
-        private INode Program()
-        {
-            var functionBody = new List<IFuncNode<TwisterPrimitive>>();
-            while (_tokenScanner.PeekNext<IToken>() != null)
-                functionBody.Add(Function());
-
             return new ProgramNode(functionBody.ToArray());
         }
 
+        /// <summary>
+        /// function ::= func identifier lsqrbrack params rsqrbrack {define_op type} colon lbrack
+        ///  {(expression | statement)} return_expr rbrack
+        /// </summary>
         private IFuncNode<TwisterPrimitive> Function()
         {
-            var funcToken = _tokenScanner.ScanNext<IValueToken<Keyword>>();
-            if (funcToken != null && funcToken.Value == Keyword.Func)
+            var funcToken = _consumer.MatchAndGet<IValueToken<Keyword>>(t => t.Value == Keyword.Func);
+            var idToken = _consumer.MatchAndGet<IValueToken<string>>();
+            if (idToken.Value == "main")
+                _hasMain = true; // TODO : Pattern check full main func signature
+
+            _consumer.Match<LeftSquareBrackToken>(); 
+
+            var @params = Params();
+
+            _consumer.Match<RightSquareBrackToken>();
+
+            PrimitiveType? type = null;
+            if (_consumer.PeekNext<DefineToken>() != null)
             {
-                var idToken = _tokenScanner.ScanNext<IValueToken<string>>();
-                if (idToken.Value == "main")
-                    _hasMain = true;
-
-                _tokenScanner.ConsumeNext(TokenKind.LeftSquareBrack);
-
-                return new FuncNode(idToken.Value, Params().ToArray());
-
+                _consumer.Match();
+                var typeToken = _consumer.MatchAndGet<IValueToken<Keyword>>(t => t.Value.IsTypeKeyword());
+                type = typeToken.Value.ToPrimitiveType();
             }
 
-            throw new UnexpectedTokenException("Expecting a function keyword")
-            {
-                UnexpectedToken = funcToken,
-                ExpectedTokenType = typeof(IValueToken<Keyword>)
-            };
+            _consumer.Match<ColonToken>();
+            _consumer.Match<LeftBrackToken>();
+
+            var body = Body();
+
+            _consumer.MatchAndGet<IValueToken<Keyword>>(t => t.Value == Keyword.Return);
+
+            var returnExpression = Expression<TwisterPrimitive>();
+
+            _consumer.Match<RightBrackToken>();
+
+            return new FuncNode<TwisterPrimitive>(idToken.Value, type, @params, body, returnExpression);
         }
 
-        private IEnumerable<ISymbolNode<TwisterPrimitive>> Params()
+        private ISymbolNode<TwisterPrimitive>[] Params()
         {
 
+            return null;
+        }
+
+        private INode[] Body()
+        {
+
+            return null;
+        }
+
+        private IExpressionNode<T> Expression<T>()
+        {
             return null;
         }
 

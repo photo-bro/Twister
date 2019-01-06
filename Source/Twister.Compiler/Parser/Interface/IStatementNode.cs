@@ -2,10 +2,8 @@
 
 namespace Twister.Compiler.Parser.Interface
 {
-    public interface IStatementNode : INode
+    public interface IStatementNode : IValueNode<INode[]>
     {
         StatementKind StatementKind { get; }
-
-        INode[] Body { get; }
     }
 }

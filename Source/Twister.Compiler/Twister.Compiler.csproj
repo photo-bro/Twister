@@ -20,11 +20,13 @@
     <Folder Include="Parser\Interface\" />
     <Folder Include="Lexer\Token\" />
     <Folder Include="Parser\Node\" />
-    <Folder Include="Parser\Parser\" />
     <Folder Include="Common\" />
     <Folder Include="Common\Interface\" />
     <Folder Include="Parser\Enum\" />
     <Folder Include="Lexer\Enum\" />
     <Folder Include="Parser\Primitive\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Parser\Parser\AssignmentParser.cs" />
   </ItemGroup>
 </Project>

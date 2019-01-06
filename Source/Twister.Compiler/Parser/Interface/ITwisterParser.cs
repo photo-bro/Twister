@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Twister.Compiler.Lexer.Interface;
 
 namespace Twister.Compiler.Parser.Interface
