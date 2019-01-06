@@ -9,9 +9,11 @@
 [![Build Status](https://travis-ci.org/photo-bro/Twister.svg?branch=master)](https://travis-ci.org/photo-bro/Twister)
 
 ## **Current Status:**
+*(1/6/19)*
+Expression parsing is nearly fleshed out. Feel like I've found a good stride with wrapping my head around the parser.
 
 *(1/5/19)*
-More work on the parse. A bit of feeling my way as I write but feel like I'm narrowing myself on the right path. Finished implementing all of TwisterPrimitive. Fine tuning the grammar too.
+More work on the parser. A bit of feeling my way as I write but feel like I'm narrowing myself on the right path. Finished implementing all of TwisterPrimitive. Fine tuning the grammar too.
 
 *(1/4/19)*
 Initial implementation of parser has began. TwisterPrimitive struct is being built up to represent all primitive types of the language. I am taking advantage of C#'s operator overload to hide some of the complexity and boilerplate of writing all the arithmetic operational code.
