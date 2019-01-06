@@ -5,9 +5,13 @@
 ## **Build & Test Status:**
 
 *Twister is built on  .NetCore 2.1 and targets .Net Standard 2.0 compliance.* 
+
 [![Build Status](https://travis-ci.org/photo-bro/Twister.svg?branch=master)](https://travis-ci.org/photo-bro/Twister)
 
 ## **Current Status:**
+
+*(1/5/19)*
+More work on the parse. A bit of feeling my way as I write but feel like I'm narrowing myself on the right path. Finished implementing all of TwisterPrimitive. Fine tuning the grammar too.
 
 *(1/4/19)*
 Initial implementation of parser has began. TwisterPrimitive struct is being built up to represent all primitive types of the language. I am taking advantage of C#'s operator overload to hide some of the complexity and boilerplate of writing all the arithmetic operational code.
