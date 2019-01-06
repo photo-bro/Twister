@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
@@ -11,13 +10,13 @@ using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser
 {
-    public class TwisterParser : ITwisterParser
+    public partial class TwisterParser : ITwisterParser
     {
         private readonly Func<ISymbolTable> CreateSymbolTableFunc;
         private readonly Func<IEnumerable<IToken>, ITokenMatcher> CreateTokenConsumerFunc;
 
         private ISymbolTable _symbolTable;
-        private ITokenMatcher _consumer;
+        private ITokenMatcher _matcher;
         private bool _hasMain;
 
         public TwisterParser(Func<ISymbolTable> createSymbolTableFunc,
@@ -30,7 +29,7 @@ namespace Twister.Compiler.Parser
         public INode Parse(IEnumerable<IToken> twisterTokens)
         {
             _symbolTable = CreateSymbolTableFunc();
-            _consumer = CreateTokenConsumerFunc(twisterTokens);
+            _matcher = CreateTokenConsumerFunc(twisterTokens);
             _hasMain = false;
 
             return Program();
@@ -42,7 +41,7 @@ namespace Twister.Compiler.Parser
         private INode Program()
         {
             var functionBody = new List<IFuncNode<TwisterPrimitive>>();
-            while (_consumer.PeekNext<IToken>() != null)
+            while (_matcher.IsNext<IToken>())
                 functionBody.Add(Function());
 
             if (!_hasMain)
@@ -52,63 +51,96 @@ namespace Twister.Compiler.Parser
         }
 
         /// <summary>
-        /// function ::= func identifier lsqrbrack params rsqrbrack {define_op type} colon lbrack
-        ///  {(expression | statement)} return_expr rbrack
+        /// function ::= func identifier func_params {define_op type} colon funcbody
         /// </summary>
         private IFuncNode<TwisterPrimitive> Function()
         {
-            var funcToken = _consumer.MatchAndGet<IValueToken<Keyword>>(t => t.Value == Keyword.Func);
-            var idToken = _consumer.MatchAndGet<IValueToken<string>>();
+            var funcToken = _matcher.MatchAndGet<IValueToken<Keyword>>(t => t.Value == Keyword.Func);
+            var idToken = _matcher.MatchAndGet<IValueToken<string>>();
             if (idToken.Value == "main")
                 _hasMain = true; // TODO : Pattern check full main func signature
 
-            _consumer.Match<LeftSquareBrackToken>(); 
-
-            var @params = Params();
-
-            _consumer.Match<RightSquareBrackToken>();
+            var funcParams = FuncParams();
 
             PrimitiveType? type = null;
-            if (_consumer.PeekNext<DefineToken>() != null)
+            if (_matcher.IsNext<DefineToken>())
             {
-                _consumer.Match();
-                var typeToken = _consumer.MatchAndGet<IValueToken<Keyword>>(t => t.Value.IsTypeKeyword());
+                _matcher.Match();
+                var typeToken = _matcher.MatchAndGet<IValueToken<Keyword>>(t => t.Value.IsTypeKeyword());
                 type = typeToken.Value.ToPrimitiveType();
             }
 
-            _consumer.Match<ColonToken>();
-            _consumer.Match<LeftBrackToken>();
+            _matcher.Match<ColonToken>();
 
+            return new FuncNode<TwisterPrimitive>(idToken.Value, type, funcParams, FuncBody());
+        }
+
+        /// <summary>
+        /// func_params ::= lsqrbrack params rsqrbrack
+        /// </summary>
+        private IList<ISymbolNode<TwisterPrimitive>> FuncParams()
+        {
+            _matcher.Match<LeftSquareBrackToken>();
+            var @params = Params();
+            _matcher.Match<RightSquareBrackToken>();
+            return @params;
+        }
+
+        //params ::= param {comma param}
+        private IList<ISymbolNode<TwisterPrimitive>> Params()
+        {
+            var @params = new List<ISymbolNode<TwisterPrimitive>> { Param() };
+
+            while (_matcher.IsNext<CommaToken>())
+            {
+                _matcher.Match();
+                @params.Add(Param());
+            }
+
+            return @params;
+        }
+
+        /// <summary>
+        /// param ::= type colon identifier
+        /// </summary>
+        private ISymbolNode<TwisterPrimitive> Param()
+        {
+            var type = _matcher.MatchAndGet<IValueToken<Keyword>>(t => t.Value.IsTypeKeyword());
+            _matcher.Match<ColonToken>();
+            var identifier = _matcher.MatchAndGet<IValueToken<string>>();
+
+            return new SymbolNode(SymbolKind.Parameter, identifier.Value,
+                         new TwisterPrimitive(type.Value.ToPrimitiveType()));
+        }
+
+        /// <summary>
+        /// func_body ::= lbrack body return_expr rbrack
+        /// </summary>
+        private IList<INode> FuncBody()
+        {
+            _matcher.Match<LeftBrackToken>();
             var body = Body();
-
-            _consumer.MatchAndGet<IValueToken<Keyword>>(t => t.Value == Keyword.Return);
-
-            var returnExpression = Expression<TwisterPrimitive>();
-
-            _consumer.Match<RightBrackToken>();
-
-            return new FuncNode<TwisterPrimitive>(idToken.Value, type, @params, body, returnExpression);
+            body.Add(ReturnExpression<TwisterPrimitive>());
+            return body;
         }
 
-        private ISymbolNode<TwisterPrimitive>[] Params()
+        /// <summary>
+        /// body ::= expression | statement | lbrack {(expression | statement)} rbrack
+        /// </summary>
+        /// <returns>The body.</returns>
+        private IList<INode> Body()
         {
+            var next = _matcher.PeekNext();
+            if (next.Kind == TokenKind.LeftBrack)
+            {
+                _matcher.Match();
+                while (!_matcher.IsNext<RightBrackToken>())
+                {
+                    // TODO
+                }
+                _matcher.Match<RightBrackToken>();
+            }
 
-            return null;
-        }
-
-        private INode[] Body()
-        {
-
-            return null;
-        }
-
-        private IExpressionNode<T> Expression<T>()
-        {
-            return null;
-        }
-
-        private INode Assignment(IExpressionNode<TwisterPrimitive> expression)
-        {
 
             return null;
         }

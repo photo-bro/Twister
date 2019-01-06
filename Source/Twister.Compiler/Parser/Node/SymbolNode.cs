@@ -6,11 +6,11 @@ namespace Twister.Compiler.Parser.Node
 {
     public class SymbolNode : ISymbolNode<TwisterPrimitive>
     {
-        public SymbolNode(SymbolKind kind, string identifier, IExpressionNode<TwisterPrimitive> expression)
+        public SymbolNode(SymbolKind kind, string identifier, TwisterPrimitive value)
         {
             SymbolKind = kind;
             Identifier = identifier;
-            Value = expression.Value;
+            Value = value;
         }
 
         public SymbolKind SymbolKind { get; private set; }
@@ -20,5 +20,7 @@ namespace Twister.Compiler.Parser.Node
         public TwisterPrimitive Value { get; private set; }
 
         public NodeKind Kind => NodeKind.Symbol;
+
+        public PrimitiveType Type => Value.Type;
     }
 }

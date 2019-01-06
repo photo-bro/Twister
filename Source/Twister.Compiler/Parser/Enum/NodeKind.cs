@@ -3,10 +3,13 @@ namespace Twister.Compiler.Parser.Enum
 {
     public enum NodeKind
     {
-        None = 0,
+        Terminal = 0,
+        Primitive,
         Statement,
         Expression,
         Function,
-        Symbol
+        Identifier,
+        Symbol,
+        Declaration
     }
 }

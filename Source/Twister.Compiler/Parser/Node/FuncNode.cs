@@ -1,4 +1,5 @@
-﻿using Twister.Compiler.Parser.Enum;
+﻿using System.Collections.Generic;
+using Twister.Compiler.Parser.Enum;
 using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Parser.Primitive;
 
@@ -6,23 +7,23 @@ namespace Twister.Compiler.Parser.Node
 {
     public class FuncNode<T> : IFuncNode<T>
     {
-        public FuncNode(string identifier, PrimitiveType? returnType, ISymbolNode<TwisterPrimitive>[] arguments,
-             INode[] body, IExpressionNode<T> returnExpression)
+        public FuncNode(string identifier, PrimitiveType? returnType, IList<ISymbolNode<TwisterPrimitive>> arguments,
+             IList<INode> body)
         {
             Identifier = identifier;
             ReturnType = returnType;
             Arguments = arguments;
             Body = body;
-            Value = returnExpression;
+            //Value = body.;
         }
 
-        public ISymbolNode<TwisterPrimitive>[] Arguments { get; private set; }
+        public IList<ISymbolNode<TwisterPrimitive>> Arguments { get; private set; }
 
         public string Identifier { get; private set; }
 
         public PrimitiveType? ReturnType { get; private set; }
 
-        public INode[] Body { get; set; }
+        public IList<INode> Body { get; set; }
 
         public IExpressionNode<T> Value { get; set; }
 

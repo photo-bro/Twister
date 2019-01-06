@@ -5,6 +5,7 @@ namespace Twister.Compiler.Parser.Enum
     {
         None = 0,
         Constant,
-        Variable
+        Variable,
+        Parameter
     }
 }

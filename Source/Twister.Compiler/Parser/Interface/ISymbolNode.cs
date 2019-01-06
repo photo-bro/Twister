@@ -1,5 +1,4 @@
-﻿using System;
-using Twister.Compiler.Parser.Enum;
+﻿using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser.Interface
 {
@@ -8,5 +7,7 @@ namespace Twister.Compiler.Parser.Interface
         SymbolKind SymbolKind { get; }
 
         string Identifier { get; }
+
+        PrimitiveType Type { get; }
     }
 }

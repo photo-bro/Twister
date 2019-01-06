@@ -15,23 +15,19 @@ namespace Twister.Compiler.Parser
             _scanner = scanner;
         }
 
-        public T PeekNext<T>() where T : IToken => PeekNext<T>(1);
+        public bool IsNext<T>() where T : IToken => !Equals((T)PeekNext(), default(T));
 
-        public T PeekNext<T>(int count) where T : IToken
+        public bool IsNext<T>(Predicate<T> constraint) where T : IToken => constraint((T)PeekNext());
+
+        public IToken PeekNext() => PeekNext(1);
+
+        public IToken PeekNext(int count)
         {
             var peek = _scanner.Peek(count);
             if (peek == _scanner.InvalidItem)
-                return default(T);
+                return default(IToken);
 
-            var expectedNext = (T)peek;
-            if (peek == null)
-                throw new UnexpectedTokenException("Unexpected token")
-                {
-                    UnexpectedToken = peek,
-                    ExpectedTokenType = typeof(T)
-                };
-
-            return expectedNext;
+            return peek;
         }
 
         public T MatchAndGet<T>() where T : IToken
@@ -68,7 +64,7 @@ namespace Twister.Compiler.Parser
         {
             foreach (var k in pattern)
             {
-                var actual = PeekNext<IToken>();
+                var actual = PeekNext();
                 if (k != actual.Kind)
                     throw new UnexpectedTokenException("Unexpected token")
                     {

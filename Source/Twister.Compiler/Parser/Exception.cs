@@ -82,4 +82,15 @@ namespace Twister.Compiler.Parser
 
         public override string Message => $"{base.Message}. InvalidType: '{InvalidType}'";
     }
+
+    public class InvalidAssignmentException : Exception
+    {
+        public string LeftType { get; set; }
+
+        public string RightType { get; set; }
+
+        public InvalidAssignmentException(string message) : base(message) { }
+
+        public override string Message => $"{base.Message}. Cannot assign value of type '{RightType}' to '{LeftType}'";
+    }
 }

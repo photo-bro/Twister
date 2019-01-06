@@ -10,7 +10,7 @@ namespace Twister.Compiler.Parser.Node
     {
         private Operator _operator;
 
-        public ConditionalExpressionNode(IExpressionNode<TwisterPrimitive> left, IExpressionNode<TwisterPrimitive> right,
+        public ConditionalExpressionNode(IValueNode<TwisterPrimitive> left, IExpressionNode<TwisterPrimitive> right,
             Operator @operator)
         {
             Left = left;
@@ -34,8 +34,8 @@ namespace Twister.Compiler.Parser.Node
         {
             get
             {
-                var l = ((IExpressionNode<TwisterPrimitive>)Left).Value;
-                var r = ((IExpressionNode<TwisterPrimitive>)Right).Value;
+                var l = Left.Value;
+                var r = Right.Value;
 
                 switch (_operator)
                 {
@@ -58,9 +58,9 @@ namespace Twister.Compiler.Parser.Node
 
         public ExpressionKind ExpressionKind => ExpressionKind.Conditional;
 
-        public INode Left { get; private set; }
+        public IValueNode<TwisterPrimitive> Left { get; private set; }
 
-        public INode Right { get; private set; }
+        public IValueNode<TwisterPrimitive> Right { get; private set; }
 
     }
 
