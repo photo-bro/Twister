@@ -10,7 +10,9 @@
 
 ## **Current Status:**
 *(1/6/19)*
-Expression parsing is nearly fleshed out. Feel like I've found a good stride with wrapping my head around the parser.
+Realized that I hadn't implemented any precedence for arithmetic expressions, built out expression nodes to support that. Still wrapping my head around how to parse them...
+
+~~ Expression parsing is nearly fleshed out. Feel like I've found a good stride with wrapping my head around the parser. ~~
 
 *(1/5/19)*
 More work on the parser. A bit of feeling my way as I write but feel like I'm narrowing myself on the right path. Finished implementing all of TwisterPrimitive. Fine tuning the grammar too.
