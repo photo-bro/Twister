@@ -41,11 +41,7 @@ namespace Twister.Compiler.Lexer.Token
                 case TokenKind.LeftSquareBrack:
                     return new LeftSquareBrackToken { LineNumber = info.SourceLineNumber };
                 case TokenKind.RightSquareBrack:
-                    return new RightSquareBrackToken { LineNumber = info.SourceLineNumber };
-                case TokenKind.LessThan:
-                    return new LessThan { LineNumber = info.SourceLineNumber };
-                case TokenKind.GreaterThan:
-                    return new GreaterThan { LineNumber = info.SourceLineNumber };
+                    return new RightSquareBrackToken { LineNumber = info.SourceLineNumber };               
                 default:
                     return new EmptyToken
                     {

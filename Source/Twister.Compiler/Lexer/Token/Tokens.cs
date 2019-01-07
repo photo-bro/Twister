@@ -85,14 +85,4 @@ namespace Twister.Compiler.Lexer.Token
     {
         public override TokenKind Kind => TokenKind.RightSquareBrack;
     }
-
-    public class LessThan : BaseToken
-    {
-        public override TokenKind Kind => TokenKind.LessThan;
-    }
-
-    public class GreaterThan : BaseToken
-    {
-        public override TokenKind Kind => TokenKind.GreaterThan;
-    }
 }

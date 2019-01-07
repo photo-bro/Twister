@@ -37,7 +37,11 @@ namespace Twister.Compiler.Lexer.Token
             [Operator.LogOr] = "||",
             [Operator.LogEqual] = "==",
             [Operator.LogNotEqual] = "!=",
-            [Operator.LogNot] = "!"
+            [Operator.LogNot] = "!",
+            [Operator.LogLess] = "<",
+            [Operator.LogGreater] = ">",
+            [Operator.LogLessEqual] = "<=",
+            [Operator.LogGreaterEqual] = ">="
         };
 
         public static Operator[] ConditionalOperators =
@@ -46,7 +50,11 @@ namespace Twister.Compiler.Lexer.Token
             Operator.LogOr,
             Operator.LogEqual,
             Operator.LogNotEqual,
-            Operator.LogNot
+            Operator.LogNot,
+            Operator.LogLess,
+            Operator.LogGreater,
+            Operator.LogLessEqual,
+            Operator.LogGreaterEqual
         };
 
         public static Operator[] BinaryArithmeticOperators =

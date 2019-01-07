@@ -4,7 +4,7 @@ using Twister.Compiler.Parser.Primitive;
 
 namespace Twister.Compiler.Parser.Interface
 {
-    public interface IFuncNode<T> : IValueNode<IExpressionNode<T>>
+    public interface IFuncNode<T> : IValueNode<TwisterPrimitive>
     {
         IList<ISymbolNode<TwisterPrimitive>> Arguments { get; }
 

@@ -120,28 +120,28 @@ namespace Twister.Compiler.Parser
         {
             _matcher.Match<LeftBrackToken>();
             var body = Body();
-            body.Add(ReturnExpression<TwisterPrimitive>());
+            body.Add(ReturnExpression());
             return body;
         }
 
         /// <summary>
         /// body ::= expression | statement | lbrack {(expression | statement)} rbrack
         /// </summary>
-        /// <returns>The body.</returns>
         private IList<INode> Body()
         {
+            var nodes = new List<INode>();
             var next = _matcher.PeekNext();
             if (next.Kind == TokenKind.LeftBrack)
             {
                 _matcher.Match();
                 while (!_matcher.IsNext<RightBrackToken>())
                 {
-                    // TODO
+                
                 }
                 _matcher.Match<RightBrackToken>();
             }
 
-
+            // TODO
             return null;
         }
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using Twister.Compiler.Lexer.Enum;
+﻿using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
 using Twister.Compiler.Parser.Interface;
@@ -14,62 +13,32 @@ namespace Twister.Compiler.Parser
         /// <summary>
         /// expression ::= (general_exp | return_exp)
         /// </summary>
-        private IExpressionNode<T> Expression<T>() =>
-             _matcher.IsNext<IValueToken<Keyword>>(t => t.Value == Keyword.Return)
-                ? ReturnExpression<T>()
-                : GeneralExpression<T>();
+        private IValueNode<TwisterPrimitive> Expression()
+        {
+            if (_matcher.IsNext<IValueToken<Keyword>>(t => t.Value == Keyword.Return))
+                return ReturnExpression();
+            return ArithmeticExpression();
+        }
 
         /// <summary>
         /// return_expr ::= ret general_exp
         /// </summary>
-        private IExpressionNode<T> ReturnExpression<T>()
+        private IValueNode<TwisterPrimitive> ReturnExpression()
         {
             _matcher.Match<IValueToken<Keyword>>(t => t.Value == Keyword.Return);
 
-            return GeneralExpression<T>();
-        }
-
-        /// <summary>
-        /// general_exp ::= (cond_exp | arith_exp)
-        /// </summary>
-        private IExpressionNode<T> GeneralExpression<T>()
-        {
-            var peek = _matcher.PeekNext();
-            // TODO
-            return null;
-        }
-
-        /// <summary>
-        /// cond_exp ::= (identifier | cond_exp) cond_rest_exp
-        /// </summary>
-        private IExpressionNode<bool> ConditionalExpression()
-        {
-            IValueNode<TwisterPrimitive> left;
-            if (!_matcher.IsNext<IValueToken<string>>())
-                left = (IValueNode<TwisterPrimitive>)ConditionalExpression();
-
-            var next = _matcher.MatchAndGet<IValueToken<string>>();
-            left = (IValueNode<TwisterPrimitive>)new IdentifierNode(next.Value);
-
-            return ConditionalRestExpression(left);
-        }
-
-        /// <summary>
-        /// cond_res_exp ::= {logical_op general_exp}
-        /// </summary>
-        /// <returns>The rest expression.</returns>
-        private IExpressionNode<bool> ConditionalRestExpression(IValueNode<TwisterPrimitive> left)
-        {
-            var op = _matcher.MatchAndGet<IValueToken<Operator>>(t => t.Value.IsConditionalOperator());
-            return new ConditionalExpressionNode(left, GeneralExpression<TwisterPrimitive>(), op.Value);
+            return ArithmeticExpression();
         }
 
         /// <summary>
         /// arith_exp ::= {unary_op} (primitive | arith_exp arith_rest_exp)
         /// </summary>
-        private IExpressionNode<TwisterPrimitive> ArithmeticExpression()
+        private IValueNode<TwisterPrimitive> ArithmeticExpression()
         {
-            IExpressionNode<TwisterPrimitive> left;
+            if (_matcher.IsNext<LeftParenToken>())
+                _matcher.Match();
+
+            IValueNode<TwisterPrimitive> left;
             if (_matcher.IsNext<IValueToken<Operator>>(t => t.Value.IsUnaryArithmeticOperator()))
             {
                 var uop = _matcher.MatchAndGet<IValueToken<Operator>>(t => t.Value.IsUnaryArithmeticOperator());
@@ -79,7 +48,7 @@ namespace Twister.Compiler.Parser
             {
                 var peek = _matcher.PeekNext();
                 left = peek.Kind.IsValueToken() || peek.Kind == TokenKind.Identifier
-                    ? (IExpressionNode<TwisterPrimitive>)Primitive()
+                    ? Primitive()
                     : ArithmeticExpression();
             }
             return ArithmeticRestExpression(left);
@@ -88,17 +57,17 @@ namespace Twister.Compiler.Parser
         /// <summary>
         /// arith_rest_exp ::= {arith_op primitive arith_rest_exp}
         /// </summary>
-        private IExpressionNode<TwisterPrimitive> ArithmeticRestExpression(IExpressionNode<TwisterPrimitive> left)
+        private IExpressionNode<TwisterPrimitive, TwisterPrimitive> ArithmeticRestExpression
+            (IValueNode<TwisterPrimitive> left)
         {
             if (_matcher.IsNext<IValueToken<Operator>>(t => t.Value.IsBinaryArithmeticOperator()))
             {
                 var op = _matcher.MatchAndGet<IValueToken<Operator>>(t => t.Value.IsBinaryArithmeticOperator());
 
-                return new BinaryArithemeticExpressionNode(left,
-                    ArithmeticRestExpression((IExpressionNode<TwisterPrimitive>)Primitive()), op.Value);
+               
             }
-
-            return left;
+            // TODO
+            return null; //left;
         }
 
         /// <summary>

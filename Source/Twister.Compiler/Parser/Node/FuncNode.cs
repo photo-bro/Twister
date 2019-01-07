@@ -14,7 +14,6 @@ namespace Twister.Compiler.Parser.Node
             ReturnType = returnType;
             Arguments = arguments;
             Body = body;
-            //Value = body.;
         }
 
         public IList<ISymbolNode<TwisterPrimitive>> Arguments { get; private set; }
@@ -25,8 +24,8 @@ namespace Twister.Compiler.Parser.Node
 
         public IList<INode> Body { get; set; }
 
-        public IExpressionNode<T> Value { get; set; }
-
         public NodeKind Kind => NodeKind.Expression;
+
+        public TwisterPrimitive Value => throw new System.NotImplementedException(); // TODO
     }
 }

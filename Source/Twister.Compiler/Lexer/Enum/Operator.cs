@@ -18,6 +18,10 @@
         LogAnd,
         LogOr,
         LogEqual,
-        LogNotEqual
+        LogNotEqual,
+        LogLess,
+        LogGreater,
+        LogLessEqual,
+        LogGreaterEqual
     }
 }

@@ -14,7 +14,7 @@ namespace Twister.Compiler.Parser
         /// <summary>
         /// assignment ::= type identifier assign (arith_exp | func_call)
         /// </summary>
-        private IValueNode<TwisterPrimitive> Assign(IExpressionNode<TwisterPrimitive> right)
+        private IValueNode<TwisterPrimitive> Assign(IValueNode<TwisterPrimitive> right)
         {
             var type = _matcher.MatchAndGet<IValueToken<Keyword>>(t => t.Value.IsTypeKeyword());
             var id = _matcher.MatchAndGet<IValueToken<string>>();

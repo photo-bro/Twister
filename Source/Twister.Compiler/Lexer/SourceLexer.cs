@@ -83,31 +83,7 @@ namespace Twister.Compiler.Lexer
                         }
                         info.TokenType = TokenKind.Assign;
                         break;
-                    }
-                case '<':
-                    {
-                        if (_scanner.Peek() == '<')
-                        {
-                            _scanner.Advance();
-                            info.TokenType = TokenKind.Operator;
-                            break;
-                        }
-
-                        info.TokenType = TokenKind.LessThan;
-                        break;
-                    }
-                case '>':
-                    {
-                        if (_scanner.Peek() == '>')
-                        {
-                            _scanner.Advance();
-                            info.TokenType = TokenKind.Operator;
-                            break;
-                        }
-
-                        info.TokenType = TokenKind.GreaterThan;
-                        break;
-                    }
+                    }                
                 case ':':
                     info.TokenType = TokenKind.Colon;
                     break;

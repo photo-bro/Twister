@@ -22,8 +22,6 @@
         RightBrack,
         LeftSquareBrack,
         RightSquareBrack,
-        LessThan,
-        GreaterThan,
 
         SignedInt,
         UnsignedInt,

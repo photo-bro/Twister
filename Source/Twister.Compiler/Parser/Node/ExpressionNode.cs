@@ -6,179 +6,39 @@ using Twister.Compiler.Parser.Primitive;
 
 namespace Twister.Compiler.Parser.Node
 {
-    public class ConditionalExpressionNode : IExpressionNode<bool>
-    {
-        private Operator _operator;
 
-        public ConditionalExpressionNode(IValueNode<TwisterPrimitive> left, IExpressionNode<TwisterPrimitive> right,
-            Operator @operator)
+    public abstract class BaseExpressionNode : IExpressionNode<TwisterPrimitive, TwisterPrimitive>
+    {
+        protected BaseExpressionNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right)
         {
             Left = left;
             Right = right;
-            Operator = @operator;
         }
 
-        public Operator Operator
-        {
-            get => _operator;
-            private set
-            {
-                if (!value.IsConditionalOperator())
-                    throw new InvalidOperatorException("Expecting conditional operator")
-                    { InvalidOperator = value };
-                _operator = value;
-            }
-        }
+        public abstract ExpressionKind ExpressionKind { get; }
 
-        public bool Value
-        {
-            get
-            {
-                var l = Left.Value;
-                var r = Right.Value;
+        public abstract Operator Operator { get; protected set; }
 
-                switch (_operator)
-                {
-                    case Operator.LogAnd:
-                        return l && r;
-                    case Operator.LogOr:
-                        return l || r;
-                    case Operator.LogEqual:
-                        return l == r;
-                    case Operator.LogNotEqual:
-                        return l != r;
-                    default:
-                        throw new InvalidOperatorException("Expecting conditional operator")
-                        { InvalidOperator = _operator };
-                }
-            }
-        }
+        public IValueNode<TwisterPrimitive> Left { get; protected set; }
+
+        public IValueNode<TwisterPrimitive> Right { get; protected set; }
+
+        public abstract TwisterPrimitive Value { get; }
 
         public NodeKind Kind => NodeKind.Expression;
-
-        public ExpressionKind ExpressionKind => ExpressionKind.Conditional;
-
-        public IValueNode<TwisterPrimitive> Left { get; private set; }
-
-        public IValueNode<TwisterPrimitive> Right { get; private set; }
-
     }
 
-    public class BinaryArithemeticExpressionNode : IExpressionNode<TwisterPrimitive>
+    public sealed class UnaryExpressionNode : BaseExpressionNode
     {
+        public UnaryExpressionNode(IValueNode<TwisterPrimitive> node, Operator @operator)
+            : base(node, null)
+        { Operator = @operator; }
+
         private Operator _operator;
-
-        public BinaryArithemeticExpressionNode(IExpressionNode<TwisterPrimitive> left, IExpressionNode<TwisterPrimitive> right,
-                Operator @operator)
-        {
-            Left = left;
-            Right = right;
-            Operator = @Operator;
-        }
-
-        public Operator Operator
+        public override Operator Operator
         {
             get => _operator;
-            private set
-            {
-                if (!value.IsBinaryArithmeticOperator())
-                    throw new InvalidOperatorException("Expecting binary arithmetic operator")
-                    { InvalidOperator = value };
-                _operator = value;
-            }
-        }
-
-        public TwisterPrimitive Value
-        {
-            get
-            {
-                var l = ((IExpressionNode<TwisterPrimitive>)Left).Value;
-                var r = ((IExpressionNode<TwisterPrimitive>)Right).Value;
-
-                switch (_operator)
-                {
-                    case Operator.Plus:
-                        return l + r;
-                    case Operator.Minus:
-                        return l - r;
-                    case Operator.Modulo:
-                        return l % r;
-                    case Operator.Multiplication:
-                        return l * r;
-                    case Operator.ForwardSlash:
-                        return l / r;
-                    case Operator.BitAnd:
-                        return l & r;
-                    case Operator.BitOr:
-                        return l | r;
-                    case Operator.BitExOr:
-                        return l ^ r;
-                    case Operator.LeftShift:
-                        {
-                            switch (r.Type)
-                            {
-                                case PrimitiveType.Int:
-                                    break;
-                                case PrimitiveType.UInt:
-                                    break;
-                                default:
-                                    throw new InvalidCastException("Shift can only be performed with int or uint types.")
-                                    {
-                                        FromType = $"{r.Type}",
-                                        ToType = $"int"
-                                    };
-                            }
-
-                            return l << r;
-                        }
-                    case Operator.RightShift:
-                        {
-                            switch (r.Type)
-                            {
-                                case PrimitiveType.Int:
-                                    break;
-                                case PrimitiveType.UInt:
-                                    break;
-                                default:
-                                    throw new InvalidCastException("Shift can only be performed with int or uint types.")
-                                    {
-                                        FromType = $"{r.Type}",
-                                        ToType = $"int"
-                                    };
-                            }
-
-                            return l >> r;
-                        }
-                }
-                throw new InvalidOperatorException("Expecting binary arithmetic operator")
-                { InvalidOperator = _operator };
-            }
-        }
-
-        public NodeKind Kind => NodeKind.Expression;
-
-        public ExpressionKind ExpressionKind => ExpressionKind.BinaryArithemtic;
-
-        public INode Left { get; private set; }
-
-        public INode Right { get; private set; }
-    }
-
-
-    public class UnaryExpressionNode : IExpressionNode<TwisterPrimitive>
-    {
-        private Operator _operator;
-
-        public UnaryExpressionNode(IExpressionNode<TwisterPrimitive> node, Operator @operator)
-        {
-            Node = node;
-            Operator = @operator;
-        }
-
-        public Operator Operator
-        {
-            get => _operator;
-            private set
+            protected set
             {
                 if (!value.IsUnaryArithmeticOperator())
                     throw new InvalidOperatorException("Expecting unary arithmetic operator")
@@ -187,11 +47,11 @@ namespace Twister.Compiler.Parser.Node
             }
         }
 
-        public TwisterPrimitive Value
+        public override TwisterPrimitive Value
         {
             get
             {
-                var l = ((IExpressionNode<TwisterPrimitive>)Node).Value;
+                var l = Left.Value;
                 switch (_operator)
                 {
                     case Operator.Plus:
@@ -208,11 +68,323 @@ namespace Twister.Compiler.Parser.Node
             }
         }
 
-        public NodeKind Kind => NodeKind.Expression;
-
-        public ExpressionKind ExpressionKind => ExpressionKind.Unary;
-
-        public IValueNode<TwisterPrimitive> Node { get; private set; }
+        public override ExpressionKind ExpressionKind => ExpressionKind.Unary;
     }
 
+    public sealed class AdditiveNode : BaseExpressionNode
+    {
+        public AdditiveNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right, Operator op)
+            : base(left, right)
+        { Operator = op; }
+
+        public override ExpressionKind ExpressionKind => ExpressionKind.Additive;
+
+        private Operator _operator;
+        public override Operator Operator
+        {
+            get => _operator;
+            protected set
+            {
+                if (value != Operator.Plus || value != Operator.Minus)
+                    throw new InvalidOperatorException("Expecting additive ('+' or '-') operator")
+                    { InvalidOperator = value };
+                _operator = value;
+            }
+        }
+
+        public override TwisterPrimitive Value
+        {
+            get
+            {
+                switch (Operator)
+                {
+                    case Operator.Plus:
+                        return Left.Value + Right.Value;
+                    case Operator.Minus:
+                        return Left.Value - Right.Value;
+                }
+                throw new InvalidOperatorException("Expecting additive ('+' or '-') operator")
+                { InvalidOperator = _operator };
+            }
+        }
+    }
+
+    public sealed class MultiplicativeNode : BaseExpressionNode
+    {
+        public MultiplicativeNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right, Operator op)
+            : base(left, right)
+        { Operator = op; }
+
+        public override ExpressionKind ExpressionKind => ExpressionKind.Multiplicative;
+
+        private Operator _operator;
+        public override Operator Operator
+        {
+            get => _operator;
+            protected set
+            {
+                if (value != Operator.Multiplication || value != Operator.ForwardSlash || value != Operator.Modulo)
+                    throw new InvalidOperatorException("Expecting Multiplicative ('*', '/', or '%') operator")
+                    { InvalidOperator = value };
+                _operator = value;
+            }
+        }
+
+        public override TwisterPrimitive Value
+        {
+            get
+            {
+                switch (Operator)
+                {
+                    case Operator.Multiplication:
+                        return Left.Value * Right.Value;
+                    case Operator.ForwardSlash:
+                        return Left.Value / Right.Value;
+                    case Operator.Modulo:
+                        return Left.Value % Right.Value;
+                }
+                throw new InvalidOperatorException("Expecting Multiplicative ('*', '/', or '%') operator")
+                { InvalidOperator = _operator };
+            }
+        }
+    }
+
+    public sealed class ShiftNode : BaseExpressionNode
+    {
+        public ShiftNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right, Operator op)
+            : base(left, right)
+        { Operator = op; }
+
+        public override ExpressionKind ExpressionKind => ExpressionKind.Shift;
+
+        private Operator _operator;
+        public override Operator Operator
+        {
+            get => _operator;
+            protected set
+            {
+                if (value != Operator.LeftShift || value != Operator.RightShift)
+                    throw new InvalidOperatorException("Expecting shift ('<<' or '>>') operator")
+                    { InvalidOperator = value };
+                _operator = value;
+            }
+        }
+
+        public override TwisterPrimitive Value
+        {
+            get
+            {
+                switch (Operator)
+                {
+                    case Operator.LeftShift:
+                        return Left.Value << Right.Value;
+                    case Operator.RightShift:
+                        return Left.Value >> Right.Value;
+                }
+                throw new InvalidOperatorException("Expecting shift ('<<' or '>>') operator")
+                { InvalidOperator = _operator };
+            }
+        }
+    }
+
+    public sealed class RelationalNode : BaseExpressionNode
+    {
+        public RelationalNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right, Operator op)
+            : base(left, right)
+        { Operator = op; }
+
+        public override ExpressionKind ExpressionKind => ExpressionKind.Relational;
+
+        private Operator _operator;
+        public override Operator Operator
+        {
+            get => _operator;
+            protected set
+            {
+                if (value != Operator.LogLess || value != Operator.LogGreater || value != Operator.LogLessEqual ||
+                    value != Operator.LogGreaterEqual)
+                    throw new InvalidOperatorException("Expecting relational ('<', '>', '<=', or '>=') operator")
+                    { InvalidOperator = value };
+                _operator = value;
+            }
+        }
+
+        public override TwisterPrimitive Value
+        {
+            get
+            {
+                switch (Operator)
+                {
+                    case Operator.LogLess:
+                        return Left.Value < Right.Value;
+                    case Operator.LogGreater:
+                        return Left.Value > Right.Value;
+                    case Operator.LogLessEqual:
+                        return Left.Value <= Right.Value;
+                    case Operator.LogGreaterEqual:
+                        return Left.Value >= Right.Value;
+                }
+                throw new InvalidOperatorException("Expecting relational ('<', '>', '<=', or '>=') operator")
+                { InvalidOperator = _operator };
+            }
+        }
+    }
+
+    public sealed class EqualityNode : BaseExpressionNode
+    {
+        public EqualityNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right, Operator op)
+            : base(left, right)
+        { Operator = op; }
+
+        public override ExpressionKind ExpressionKind => ExpressionKind.Equality;
+
+        private Operator _operator;
+        public override Operator Operator
+        {
+            get => _operator;
+            protected set
+            {
+                if (value != Operator.LogEqual || value != Operator.LogNotEqual)
+                    throw new InvalidOperatorException("Expecting equality ('==' or '!=') operator")
+                    { InvalidOperator = value };
+                _operator = value;
+            }
+        }
+
+        public override TwisterPrimitive Value
+        {
+            get
+            {
+                switch (Operator)
+                {
+                    case Operator.LogEqual:
+                        return Left.Value == Right.Value;
+                    case Operator.LogNotEqual:
+                        return Left.Value != Right.Value;
+                }
+                throw new InvalidOperatorException("Expecting equality ('==' or '!=') operator")
+                { InvalidOperator = _operator };
+            }
+        }
+    }
+
+    public sealed class BitAndNode : BaseExpressionNode
+    {
+        public BitAndNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right)
+            : base(left, right)
+        { Operator = Operator.BitAnd; }
+
+        public override ExpressionKind ExpressionKind => ExpressionKind.BitAnd;
+
+        private Operator _operator;
+        public override Operator Operator
+        {
+            get => _operator;
+            protected set
+            {
+                if (value != Operator.BitAnd)
+                    throw new InvalidOperatorException("Expecting bitand ('&') operator")
+                    { InvalidOperator = value };
+                _operator = value;
+            }
+        }
+
+        public override TwisterPrimitive Value => Left.Value & Right.Value;
+    }
+
+    public sealed class BitExOrNode : BaseExpressionNode
+    {
+        public BitExOrNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right)
+            : base(left, right)
+        { Operator = Operator.BitExOr; }
+
+        public override ExpressionKind ExpressionKind => ExpressionKind.BitExOr;
+
+        private Operator _operator;
+        public override Operator Operator
+        {
+            get => _operator;
+            protected set
+            {
+                if (value != Operator.BitExOr)
+                    throw new InvalidOperatorException("Expecting bitexor ('^') operator")
+                    { InvalidOperator = value };
+                _operator = value;
+            }
+        }
+
+        public override TwisterPrimitive Value => Left.Value ^ Right.Value;
+    }
+
+    public sealed class BitOrNode : BaseExpressionNode
+    {
+        public BitOrNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right)
+            : base(left, right)
+        { Operator = Operator.BitOr; }
+
+        public override ExpressionKind ExpressionKind => ExpressionKind.BitOr;
+
+        private Operator _operator;
+        public override Operator Operator
+        {
+            get => _operator;
+            protected set
+            {
+                if (value != Operator.BitOr)
+                    throw new InvalidOperatorException("Expecting bitor ('|') operator")
+                    { InvalidOperator = value };
+                _operator = value;
+            }
+        }
+
+        public override TwisterPrimitive Value => Left.Value | Right.Value;
+    }
+
+    public sealed class LogAndNode : BaseExpressionNode
+    {
+        public LogAndNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right)
+            : base(left, right)
+        { Operator = Operator.LogAnd; }
+
+        public override ExpressionKind ExpressionKind => ExpressionKind.LogAnd;
+
+        private Operator _operator;
+        public override Operator Operator
+        {
+            get => _operator;
+            protected set
+            {
+                if (value != Operator.LogAnd)
+                    throw new InvalidOperatorException("Expecting logand ('&&') operator")
+                    { InvalidOperator = value };
+                _operator = value;
+            }
+        }
+
+        public override TwisterPrimitive Value => Left.Value && Right.Value;
+    }
+
+    public sealed class LogOrNode : BaseExpressionNode
+    {
+        public LogOrNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right)
+            : base(left, right)
+        { Operator = Operator.LogOr; }
+
+        public override ExpressionKind ExpressionKind => ExpressionKind.LogOr;
+
+        private Operator _operator;
+        public override Operator Operator
+        {
+            get => _operator;
+            protected set
+            {
+                if (value != Operator.LogOr)
+                    throw new InvalidOperatorException("Expecting logor ('||') operator")
+                    { InvalidOperator = value };
+                _operator = value;
+            }
+        }
+
+        public override TwisterPrimitive Value => Left.Value || Right.Value;
+    }
 }
