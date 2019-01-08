@@ -67,6 +67,18 @@ namespace Twister.Compiler.Lexer
                         _scanner.Advance();
                     info.TokenType = TokenKind.Operator;
                     break;
+                case '<':
+                    if (_scanner.Peek() == '=' ||
+                        _scanner.Peek() == '<')
+                        _scanner.Advance();
+                    info.TokenType = TokenKind.Operator;
+                    break;
+                case '>':
+                    if (_scanner.Peek() == '=' ||
+                        _scanner.Peek() == '>')
+                        _scanner.Advance();
+                    info.TokenType = TokenKind.Operator;
+                    break;
                 case '=':
                     {
                         if (_scanner.Peek() == '>')
