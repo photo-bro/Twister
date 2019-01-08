@@ -9,10 +9,14 @@
 [![Build Status](https://travis-ci.org/photo-bro/Twister.svg?branch=master)](https://travis-ci.org/photo-bro/Twister)
 
 ## **Current Status:**
+*(1/7/19)*
+Managed to wrap my head around the arithmetic precedence expression parsing finally. Will update the grammar soon to reflect the progress too. Turns out I didn't need to build out all those individual expression nodes, debating if I should just replace them with my original BinaryExpressionNode<T>.
+
+
 *(1/6/19)*
 Realized that I hadn't implemented any precedence for arithmetic expressions, built out expression nodes to support that. Still wrapping my head around how to parse them...
 
-~~ Expression parsing is nearly fleshed out. Feel like I've found a good stride with wrapping my head around the parser. ~~
+~~Expression parsing is nearly fleshed out. Feel like I've found a good stride with wrapping my head around the parser.~~
 
 *(1/5/19)*
 More work on the parser. A bit of feeling my way as I write but feel like I'm narrowing myself on the right path. Finished implementing all of TwisterPrimitive. Fine tuning the grammar too.
