@@ -17,7 +17,7 @@ namespace Twister.Compiler.Parser
         {
             if (_matcher.IsNext<IValueToken<Keyword>>(t => t.Value == Keyword.Return))
                 return ReturnExpression();
-            return ArithmeticExpression();
+            return UnaryExpression();
         }
 
         /// <summary>
@@ -27,47 +27,160 @@ namespace Twister.Compiler.Parser
         {
             _matcher.Match<IValueToken<Keyword>>(t => t.Value == Keyword.Return);
 
-            return ArithmeticExpression();
+            return UnaryExpression();
         }
 
         /// <summary>
-        /// arith_exp ::= {unary_op} (primitive | arith_exp arith_rest_exp)
+        /// expr ::=  primitive | unary  
         /// </summary>
-        private IValueNode<TwisterPrimitive> ArithmeticExpression()
+        private IValueNode<TwisterPrimitive> ArithExpression()
         {
-            if (_matcher.IsNext<LeftParenToken>())
-                _matcher.Match();
+            var peek = _matcher.PeekNext();
+            switch (peek.Kind)
+            {
+                case var k when k.IsValueToken():
+                case TokenKind.Identifier:
+                case TokenKind.LeftParen:
+                    return Primitive();
+            }
 
-            IValueNode<TwisterPrimitive> left;
+            return UnaryExpression();
+        }
+
+        /// <summary>
+        /// unary ::= (- | ~ | !) primitive | expression
+        /// </summary>
+        private IValueNode<TwisterPrimitive> UnaryExpression()
+        {
             if (_matcher.IsNext<IValueToken<Operator>>(t => t.Value.IsUnaryArithmeticOperator()))
             {
                 var uop = _matcher.MatchAndGet<IValueToken<Operator>>(t => t.Value.IsUnaryArithmeticOperator());
-                left = new UnaryExpressionNode(ArithmeticExpression(), uop.Value);
+                return new UnaryExpressionNode(UnaryExpression(), uop.Value);
             }
-            else
-            {
-                var peek = _matcher.PeekNext();
-                left = peek.Kind.IsValueToken() || peek.Kind == TokenKind.Identifier
-                    ? Primitive()
-                    : ArithmeticExpression();
-            }
-            return ArithmeticRestExpression(left);
+
+            if (_matcher.IsNext<IToken>(t => t.Kind.IsValueToken()) ||
+                _matcher.IsNext<IToken>(t => t.Kind == TokenKind.LeftParen))
+                return Primitive();
+
+            return MultExpr(UnaryExpression());
         }
 
-        /// <summary>
-        /// arith_rest_exp ::= {arith_op primitive arith_rest_exp}
-        /// </summary>
-        private IExpressionNode<TwisterPrimitive, TwisterPrimitive> ArithmeticRestExpression
-            (IValueNode<TwisterPrimitive> left)
+        private IValueNode<TwisterPrimitive> MultExpr(IValueNode<TwisterPrimitive> left)
         {
-            if (_matcher.IsNext<IValueToken<Operator>>(t => t.Value.IsBinaryArithmeticOperator()))
+            var op_tok = _matcher.MatchAndGet<IValueToken<Operator>>();
+            switch (op_tok.Value)
             {
-                var op = _matcher.MatchAndGet<IValueToken<Operator>>(t => t.Value.IsBinaryArithmeticOperator());
-
-               
+                case Operator.Multiplication:
+                case Operator.ForwardSlash:
+                case Operator.Modulo:
+                    return new MultiplicativeNode(left, ArithExpression(), op_tok.Value);
             }
-            // TODO
-            return null; //left;
+
+            return AddExpr(left);
+        }
+
+        private IValueNode<TwisterPrimitive> AddExpr(IValueNode<TwisterPrimitive> left)
+        {
+            var op_tok = _matcher.MatchAndGet<IValueToken<Operator>>();
+            switch (op_tok.Value)
+            {
+                case Operator.Plus:
+                case Operator.Minus:
+                    return new AdditiveNode(left, ArithExpression(), op_tok.Value);
+            }
+
+            return ShiftExpr(left);
+        }
+
+        private IValueNode<TwisterPrimitive> ShiftExpr(IValueNode<TwisterPrimitive> left)
+        {
+            var op_tok = _matcher.MatchAndGet<IValueToken<Operator>>();
+            switch (op_tok.Value)
+            {
+                case Operator.LeftShift:
+                case Operator.RightShift:
+                    return new ShiftNode(left, ArithExpression(), op_tok.Value);
+            }
+
+            return RelationExpr(left);
+        }
+
+        private IValueNode<TwisterPrimitive> RelationExpr(IValueNode<TwisterPrimitive> left)
+        {
+            var op_tok = _matcher.MatchAndGet<IValueToken<Operator>>();
+            switch (op_tok.Value)
+            {
+                case Operator.LogLess:
+                case Operator.LogLessEqual:
+                case Operator.LogGreater:
+                case Operator.LogGreaterEqual:
+                    return new RelationalNode(left, ArithExpression(), op_tok.Value);
+            }
+
+            return EqualExpr(left);
+        }
+
+        private IValueNode<TwisterPrimitive> EqualExpr(IValueNode<TwisterPrimitive> left)
+        {
+            var op_tok = _matcher.MatchAndGet<IValueToken<Operator>>();
+            switch (op_tok.Value)
+            {
+                case Operator.LogEqual:
+                case Operator.LogNotEqual:
+                    return new EqualityNode(left, ArithExpression(), op_tok.Value);
+            }
+
+            return BitAndExpr(left);
+        }
+
+        private IValueNode<TwisterPrimitive> BitAndExpr(IValueNode<TwisterPrimitive> left)
+        {
+            var op_tok = _matcher.MatchAndGet<IValueToken<Operator>>();
+
+            return op_tok.Value == Operator.BitAnd
+                ? new BitAndNode(left, ArithExpression())
+                : BitExOrExpr(left);
+        }
+
+        private IValueNode<TwisterPrimitive> BitExOrExpr(IValueNode<TwisterPrimitive> left)
+        {
+            var op_tok = _matcher.MatchAndGet<IValueToken<Operator>>();
+
+            return op_tok.Value == Operator.BitExOr
+                ? new BitExOrNode(left, ArithExpression())
+                : BitOrExpr(left);
+        }
+
+        private IValueNode<TwisterPrimitive> BitOrExpr(IValueNode<TwisterPrimitive> left)
+        {
+            var op_tok = _matcher.MatchAndGet<IValueToken<Operator>>();
+
+            return op_tok.Value == Operator.BitOr
+                ? new BitOrNode(left, ArithExpression())
+                : LogOrExpr(left);
+        }
+
+        private IValueNode<TwisterPrimitive> LogAndExpr(IValueNode<TwisterPrimitive> left)
+        {
+            var op_tok = _matcher.MatchAndGet<IValueToken<Operator>>();
+
+            return op_tok.Value == Operator.LogAnd
+                ? new LogAndNode(left, ArithExpression())
+                : LogOrExpr(left);
+        }
+
+        private IValueNode<TwisterPrimitive> LogOrExpr(IValueNode<TwisterPrimitive> left)
+        {
+            var peek = _matcher.PeekNext();
+
+            if (peek?.Kind == TokenKind.Operator)
+            {
+                var op_tok = _matcher.MatchAndGet<IValueToken<Operator>>(t => t.Value == Operator.LogOr);
+                return new LogOrNode(left, ArithExpression());
+            }
+
+            throw new UnexpectedTokenException("Expected arithmetic operator")
+            { UnexpectedToken = peek };
         }
 
         /// <summary>
@@ -107,6 +220,13 @@ namespace Twister.Compiler.Parser
                     {
                         var tok = _matcher.MatchAndGet<IValueToken<string>>();
                         return new SymbolNode(SymbolKind.Variable, tok.Value, 0); // TODO : How to handle symbol table...
+                    }
+                case TokenKind.LeftParen:
+                    {
+                        _matcher.Match();
+                        var node = ArithExpression();
+                        _matcher.Match<IToken>(t => t.Kind == TokenKind.RightParen);
+                        return node;
                     }
                 default:
                     {
