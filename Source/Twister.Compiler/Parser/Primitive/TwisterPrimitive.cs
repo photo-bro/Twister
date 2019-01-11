@@ -70,7 +70,7 @@ namespace Twister.Compiler.Parser.Primitive
         /// Returns value for Twister equivalent type of T, returns null if instance
         /// has a differing PrimitiveType
         /// </summary>
-        private static T? GetValueOrNull<T>(TwisterPrimitive instance) where T : struct
+        public static T? GetValueOrNull<T>(TwisterPrimitive instance) where T : struct
         {
             var type = typeof(T);
 
@@ -97,7 +97,7 @@ namespace Twister.Compiler.Parser.Primitive
         /// Returns value for Twister equivalent type of T, returns default(T) if instance
         /// has a differing PrimitiveType
         /// </summary>
-        private static T GetValueOrDefault<T>(TwisterPrimitive instance)
+        public static T GetValueOrDefault<T>(TwisterPrimitive instance)
         {
             var type = typeof(T);
             T value = default(T);
@@ -131,7 +131,7 @@ namespace Twister.Compiler.Parser.Primitive
         /// Return the value of the <see cref="TwisterPrimitive"/> as a boxed object with the 
         /// <see cref="PrimitiveType"/> as an out parameter
         /// </summary>
-        private static object GetValue(TwisterPrimitive instance, out PrimitiveType type)
+        public static object GetValue(TwisterPrimitive instance, out PrimitiveType type)
         {
             switch (type = instance.Type)
             {

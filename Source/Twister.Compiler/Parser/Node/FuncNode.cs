@@ -7,25 +7,25 @@ namespace Twister.Compiler.Parser.Node
 {
     public class FuncNode<T> : IFuncNode<T>
     {
-        public FuncNode(string identifier, PrimitiveType? returnType, IList<ISymbolNode<TwisterPrimitive>> arguments,
+        public FuncNode(string identifier, TwisterType? returnType, IList<IValueNode<ISymbol>> parameters,
              IList<INode> body)
         {
             Identifier = identifier;
             ReturnType = returnType;
-            Arguments = arguments;
+            Parameters = parameters;
             Body = body;
         }
 
-        public IList<ISymbolNode<TwisterPrimitive>> Arguments { get; private set; }
+        public IList<IValueNode<ISymbol>> Parameters { get; private set; }
 
         public string Identifier { get; private set; }
 
-        public PrimitiveType? ReturnType { get; private set; }
+        public TwisterType? ReturnType { get; private set; }
 
         public IList<INode> Body { get; set; }
 
         public NodeKind Kind => NodeKind.Expression;
 
-        public TwisterPrimitive Value => throw new System.NotImplementedException(); // TODO
+        public T Value { get; private set; } // TODO
     }
 }

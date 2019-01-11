@@ -19,6 +19,16 @@ namespace Twister.Compiler.Lexer.Token
             TokenKind.Operator
         };
 
+        public static TokenKind[] PrimitiveTokens =
+        {
+            TokenKind.BoolLiteral,
+            TokenKind.CharLiteral,
+            TokenKind.SignedInt,
+            TokenKind.UnsignedInt,
+            TokenKind.Real,
+            TokenKind.StringLiteral
+        };
+
         public static IReadOnlyDictionary<Operator, string> OperatorValueMap => new Dictionary<Operator, string>
         {
             [Operator.None] = string.Empty,
@@ -90,6 +100,8 @@ namespace Twister.Compiler.Lexer.Token
         };
 
         public static bool IsValueToken(this TokenKind tokType) => ValueTokens.Any(vt => vt == tokType);
+
+        public static bool IsPrimitive(this TokenKind tokType) => PrimitiveTokens.Any(t => t == tokType);
 
         public static bool IsConditionalOperator(this Operator @operator) => ConditionalOperators.Any(co => co == @operator);
 

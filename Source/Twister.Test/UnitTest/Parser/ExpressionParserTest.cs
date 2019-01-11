@@ -1,30 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using Twister.Compiler.Lexer.Interface;
+using Twister.Compiler.Lexer.Token;
 using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Parser;
 using Xunit;
+using Twister.Compiler.Lexer.Enum;
+using Twister.Compiler.Parser.Node;
+using Twister.Compiler.Common;
+using Twister.Compiler.Parser.Primitive;
+
 namespace Twister.Test.UnitTest.Parser
 {
+#pragma warning disable CS1701 // Assuming assembly reference matches identity
+
     public class ExpressionParserTest
-
     {
+        ITwisterParser _parser;
 
+        private void SetupParser()
+        {
+            _parser = new TwisterParser((tokens) =>
+                new TokenMatcher(
+                    new Scanner<IToken>(tokens, new EmptyToken())
+                ));
+        }
 
-        //[Fact]
-        //public void Test_SimpleArithmeticExpression()
-        //{
-        //    IList<IToken> tokens;
-        //    INode expected;
+        [Fact]
+        public void Test_SimpleArithmeticExpression()
+        {
+            SetupParser();
+            IToken[] expression =
+            {
+                new SignedIntToken{Value = 1},
+                new OperatorToken{Value = Operator.Plus},
+                new SignedIntToken{Value = 2},
+                new SemiColonToken()
+            };
 
-        //    var parser = new TokenParser();
-        //    var actual = parser.
+            var expected = new PrimitiveNode(2);
 
+            var actualNode = _parser.Parse(expression) as  IValueNode<TwisterPrimitive>;
 
-        //}
+            var actual = actualNode.Value;
+
+            Assert.Equal(actual, (TwisterPrimitive)3);
+        }
 
 
 
 
     }
+#pragma warning restore CS1701 // Assuming assembly reference matches identity
+
 }

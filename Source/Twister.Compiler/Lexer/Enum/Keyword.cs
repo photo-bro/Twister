@@ -7,6 +7,7 @@
         Else,
         Func,
         Def,
+        Ref,
         Struct,
         Return,
         While,

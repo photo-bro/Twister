@@ -1,5 +1,4 @@
-﻿using System;
-using Twister.Compiler.Parser.Enum;
+﻿using Twister.Compiler.Parser.Enum;
 using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Parser.Primitive;
 
@@ -12,6 +11,6 @@ namespace Twister.Compiler.Parser.Node
 
         public TwisterPrimitive Value { get; private set; }
 
-        public NodeKind Kind =>NodeKind.Primitive;
+        public NodeKind Kind => NodeKind.Primitive;
     }
 }

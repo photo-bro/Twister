@@ -6,7 +6,6 @@ using Twister.Compiler.Parser.Primitive;
 
 namespace Twister.Compiler.Parser.Node
 {
-
     public abstract class BaseExpressionNode : IExpressionNode<TwisterPrimitive, TwisterPrimitive>
     {
         protected BaseExpressionNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right)
@@ -85,7 +84,7 @@ namespace Twister.Compiler.Parser.Node
             get => _operator;
             protected set
             {
-                if (value != Operator.Plus || value != Operator.Minus)
+                if (value != Operator.Plus && value != Operator.Minus)
                     throw new InvalidOperatorException("Expecting additive ('+' or '-') operator")
                     { InvalidOperator = value };
                 _operator = value;
@@ -123,7 +122,7 @@ namespace Twister.Compiler.Parser.Node
             get => _operator;
             protected set
             {
-                if (value != Operator.Multiplication || value != Operator.ForwardSlash || value != Operator.Modulo)
+                if (value != Operator.Multiplication && value != Operator.ForwardSlash && value != Operator.Modulo)
                     throw new InvalidOperatorException("Expecting Multiplicative ('*', '/', or '%') operator")
                     { InvalidOperator = value };
                 _operator = value;
@@ -163,7 +162,7 @@ namespace Twister.Compiler.Parser.Node
             get => _operator;
             protected set
             {
-                if (value != Operator.LeftShift || value != Operator.RightShift)
+                if (value != Operator.LeftShift && value != Operator.RightShift)
                     throw new InvalidOperatorException("Expecting shift ('<<' or '>>') operator")
                     { InvalidOperator = value };
                 _operator = value;
@@ -201,7 +200,7 @@ namespace Twister.Compiler.Parser.Node
             get => _operator;
             protected set
             {
-                if (value != Operator.LogLess || value != Operator.LogGreater || value != Operator.LogLessEqual ||
+                if (value != Operator.LogLess && value != Operator.LogGreater && value != Operator.LogLessEqual &&
                     value != Operator.LogGreaterEqual)
                     throw new InvalidOperatorException("Expecting relational ('<', '>', '<=', or '>=') operator")
                     { InvalidOperator = value };
@@ -244,7 +243,7 @@ namespace Twister.Compiler.Parser.Node
             get => _operator;
             protected set
             {
-                if (value != Operator.LogEqual || value != Operator.LogNotEqual)
+                if (value != Operator.LogEqual && value != Operator.LogNotEqual)
                     throw new InvalidOperatorException("Expecting equality ('==' or '!=') operator")
                     { InvalidOperator = value };
                 _operator = value;

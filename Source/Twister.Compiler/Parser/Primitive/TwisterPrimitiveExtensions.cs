@@ -10,13 +10,13 @@ namespace Twister.Compiler.Parser.Primitive
         /// Returns value for Twister equivalent type of T, returns null if instance
         /// has a differing PrimitiveType
         /// </summary>
-        public static T? GetValueOrNull<T>(this TwisterPrimitive instance) where T : struct => GetValueOrNull<T>(instance);
+        public static T? GetValueOrNull<T>(this TwisterPrimitive instance) where T : struct => TwisterPrimitive.GetValueOrNull<T>(instance);
 
         /// <summary>
         /// Returns value for Twister equivalent type of T, returns default(T) if instance
         /// has a differing PrimitiveType
         /// </summary>
-        public static T GetValueOrDefault<T>(this TwisterPrimitive instance) => GetValueOrDefault<T>(instance);
+        public static T GetValueOrDefault<T>(this TwisterPrimitive instance) => TwisterPrimitive.GetValueOrDefault<T>(instance);
 
         /// <summary>
         /// Return the value of the <see cref="TwisterPrimitive"/> as a boxed object with the 

@@ -136,7 +136,9 @@ namespace Twister.Compiler.Parser.Primitive
         }
 
         public static implicit operator TwisterPrimitive(int i) => new TwisterPrimitive(PrimitiveType.Int) { Int = i };
+        public static implicit operator TwisterPrimitive(long i) => new TwisterPrimitive(PrimitiveType.Int) { Int = (int)i };
         public static implicit operator TwisterPrimitive(uint u) => new TwisterPrimitive(PrimitiveType.UInt) { UInt = u };
+        public static implicit operator TwisterPrimitive(ulong u) => new TwisterPrimitive(PrimitiveType.UInt) { UInt = (uint)u };
         public static implicit operator TwisterPrimitive(double d) => new TwisterPrimitive(PrimitiveType.Float) { Float = d };
         public static implicit operator TwisterPrimitive(bool b) => new TwisterPrimitive(PrimitiveType.Bool) { Bool = b };
         public static implicit operator TwisterPrimitive(char c) => new TwisterPrimitive(PrimitiveType.Char) { Char = c };

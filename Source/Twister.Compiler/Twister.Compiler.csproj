@@ -25,6 +25,8 @@
     <Folder Include="Parser\Enum\" />
     <Folder Include="Lexer\Enum\" />
     <Folder Include="Parser\Primitive\" />
+    <Folder Include="Parser\Symbol\" />
+    <Folder Include="Semantic Analysis\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Parser\Parser\AssignmentParser.cs" />

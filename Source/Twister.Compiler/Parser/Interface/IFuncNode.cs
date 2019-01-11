@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using Twister.Compiler.Parser.Enum;
-using Twister.Compiler.Parser.Primitive;
 
 namespace Twister.Compiler.Parser.Interface
 {
-    public interface IFuncNode<T> : IValueNode<TwisterPrimitive>
+    public interface IFuncNode<T> : IValueNode<T>
     {
-        IList<ISymbolNode<TwisterPrimitive>> Arguments { get; }
+        IList<IValueNode<ISymbol>> Parameters { get; }
 
-        PrimitiveType? ReturnType { get; }
+        TwisterType? ReturnType { get; }
 
         string Identifier { get; }
 

@@ -15,9 +15,23 @@ namespace Twister.Compiler.Parser
             _scanner = scanner;
         }
 
-        public bool IsNext<T>() where T : IToken => !Equals((T)PeekNext(), default(T));
+        public bool IsNext<T>() where T : IToken
+        {
+            var peek = PeekNext();
+            if (!(peek is T))
+                return false;
 
-        public bool IsNext<T>(Predicate<T> constraint) where T : IToken => constraint((T)PeekNext());
+            return !Equals((T)peek, default(T));
+        }
+
+        public bool IsNext<T>(Predicate<T> constraint) where T : IToken
+        {
+            var peek = PeekNext();
+            if (!(peek is T))
+                return false;
+
+            return constraint((T)PeekNext());
+        }
 
         public IToken PeekNext() => PeekNext(1);
 
@@ -33,8 +47,7 @@ namespace Twister.Compiler.Parser
         public T MatchAndGet<T>() where T : IToken
         {
             var next = _scanner.Peek();
-            var expectedNext = (T)next;
-            if (next == null)
+            if (!(next is T))
                 throw new UnexpectedTokenException("Unexpected token")
                 {
                     UnexpectedToken = next,

@@ -14,23 +14,23 @@ namespace Twister.Compiler.Parser
         /// <summary>
         /// assignment ::= type identifier assign (arith_exp | func_call)
         /// </summary>
-        private IValueNode<TwisterPrimitive> Assign(IValueNode<TwisterPrimitive> right)
-        {
-            var type = _matcher.MatchAndGet<IValueToken<Keyword>>(t => t.Value.IsTypeKeyword());
-            var id = _matcher.MatchAndGet<IValueToken<string>>();
-            _matcher.Match<AssignToken>();
+        //private IValueNode<TwisterPrimitive> Assign(IValueNode<TwisterPrimitive> right)
+        //{
+            //var type = _matcher.MatchAndGet<IValueToken<Keyword>>(t => t.Value.IsTypeKeyword());
+            //var id = _matcher.MatchAndGet<IValueToken<string>>();
+            //_matcher.Match<AssignToken>();
 
-            var value = right.Value;
-            var expectedType = type.Value.ToPrimitiveType();
-            // TODO : Check primitive precedence and allow implicit coercion
-            if (expectedType != value.Type)
-                throw new InvalidAssignmentException("Cannot mix types")
-                {
-                    LeftType = $"{expectedType}",
-                    RightType = $"{value.Type}"
-                };
+            //var value = right.Value;
+            //var expectedType = type.Value.ToPrimitiveType();
+            //// TODO : Check primitive precedence and allow implicit coercion
+            //if (expectedType != value.Type)
+            //    throw new InvalidAssignmentException("Cannot mix types")
+            //    {
+            //        LeftType = $"{expectedType}",
+            //        RightType = $"{value.Type}"
+            //    };
 
-            return new SymbolNode(SymbolKind.Variable, id.Value, right.Value); 
-        }
+            //return new SymbolNode(SymbolKind.Variable, id.Value, right.Value); 
+        //}
     }
 }
