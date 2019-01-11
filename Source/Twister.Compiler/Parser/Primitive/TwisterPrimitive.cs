@@ -66,6 +66,27 @@ namespace Twister.Compiler.Parser.Primitive
             return areValuesSame;
         }
 
+        public override string ToString()
+        {
+            switch (Type)
+            {
+                case PrimitiveType.Bool:
+                    return $"{Bool}";
+                case PrimitiveType.Int:
+                    return $"{Int}";
+                case PrimitiveType.UInt:
+                    return $"{UInt}";
+                case PrimitiveType.Float:
+                    return $"{Float}";
+                case PrimitiveType.Char:
+                    return $"{Char}";
+                case PrimitiveType.Str:
+                    return Str;
+                default:
+                    return string.Empty;
+            }
+        }
+
         /// <summary>
         /// Returns value for Twister equivalent type of T, returns null if instance
         /// has a differing PrimitiveType

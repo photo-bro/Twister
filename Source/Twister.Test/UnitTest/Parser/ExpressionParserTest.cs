@@ -44,7 +44,7 @@ namespace Twister.Test.UnitTest.Parser
 
             var actual = actualNode.Value;
 
-            Assert.Equal(actual, (TwisterPrimitive)3);
+            Assert.Equal((TwisterPrimitive)3, actual);
         }
 
 
