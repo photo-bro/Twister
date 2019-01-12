@@ -107,7 +107,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
 
             var actual = actualNode.Value;
 
-            Assert.Equal((TwisterPrimitive)true, actual);
+            Assert.Equal((TwisterPrimitive)false, actual);
         }
 
         [Fact]
@@ -233,7 +233,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
 
             var actual = actualNode.Value;
 
-            Assert.Equal((TwisterPrimitive)90, actual);
+            Assert.Equal((TwisterPrimitive)true, actual);
         }
     }
 #pragma warning restore CS1701 // Assuming assembly reference matches identity

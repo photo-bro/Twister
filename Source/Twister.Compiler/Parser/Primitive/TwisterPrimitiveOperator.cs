@@ -421,6 +421,16 @@ namespace Twister.Compiler.Parser.Primitive
                                     }
                                     break;
                                 }
+                            case PrimitiveType.Bool:
+                                {
+                                    var r = right.GetValueOrDefault<bool>();
+                                    switch (o)
+                                    {
+                                        case Operator.BitAnd: return (l > 0) && r;
+                                        case Operator.BitOr: return (l > 0) || r;
+                                    }
+                                }
+                                break;
                         }
                         break;
                     }
@@ -496,6 +506,16 @@ namespace Twister.Compiler.Parser.Primitive
                                     }
                                     break;
                                 }
+                            case PrimitiveType.Bool:
+                                {
+                                    var r = right.GetValueOrDefault<bool>();
+                                    switch (o)
+                                    {
+                                        case Operator.BitAnd: return (l > 0u) && r;
+                                        case Operator.BitOr: return (l > 0u) || r;
+                                    }
+                                }
+                                break;
                         }
                         break;
                     }
@@ -556,6 +576,16 @@ namespace Twister.Compiler.Parser.Primitive
                                     }
                                     break;
                                 }
+                            case PrimitiveType.Bool:
+                                {
+                                    var r = right.GetValueOrDefault<bool>();
+                                    switch (o)
+                                    {
+                                        case Operator.BitAnd: return (l > 0d) && r;
+                                        case Operator.BitOr: return (l > 0d) || r;
+                                    }
+                                }
+                                break;
                         }
                         break;
                     }
@@ -631,9 +661,77 @@ namespace Twister.Compiler.Parser.Primitive
                                     }
                                     break;
                                 }
+                            case PrimitiveType.Bool:
+                                {
+                                    var r = right.GetValueOrDefault<bool>();
+                                    switch (o)
+                                    {
+                                        case Operator.BitAnd: return (l > 0) && r;
+                                        case Operator.BitOr: return (l > 0) || r;
+                                    }
+                                }
+                                break;
                         }
                         break;
                     }
+                case PrimitiveType.Bool:
+                    {
+                        var l = left.GetValueOrDefault<bool>();
+                        switch (right.Type)
+                        {
+                            case PrimitiveType.Int:
+                                {
+                                    var r = right.GetValueOrDefault<int>();
+                                    switch (o)
+                                    {
+                                        case Operator.BitAnd: return l && (r > 0);
+                                        case Operator.BitOr: return l || (r > 0);
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.UInt:
+                                {
+                                    var r = right.GetValueOrDefault<uint>();
+                                    switch (o)
+                                    {
+                                        case Operator.BitAnd: return l && (r > 0u);
+                                        case Operator.BitOr: return l || (r > 0u);
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.Float:
+                                {
+                                    var r = right.GetValueOrDefault<double>();
+                                    switch (o)
+                                    {
+                                        case Operator.BitAnd: return l && (r > 0d);
+                                        case Operator.BitOr: return l || (r > 0d);
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.Char:
+                                {
+                                    var r = right.GetValueOrDefault<char>();
+                                    switch (o)
+                                    {
+                                        case Operator.BitAnd: return l && (r > 0);
+                                        case Operator.BitOr: return l || (r > 0);
+                                    }
+                                    break;
+                                }
+                            case PrimitiveType.Bool:
+                                {
+                                    var r = right.GetValueOrDefault<bool>();
+                                    switch (o)
+                                    {
+                                        case Operator.BitAnd: return l && r;
+                                        case Operator.BitOr: return l || r;
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    break;
             }
 
             return null;

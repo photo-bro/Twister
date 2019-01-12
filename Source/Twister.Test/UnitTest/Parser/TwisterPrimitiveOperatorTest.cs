@@ -8,6 +8,98 @@ namespace Twister.Test.UnitTest.Parser
     public class TwisterPrimitiveOperatorTest
     {
         [Theory]
+        [InlineData(true, true)]
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        [InlineData(false, false)]
+        public void LogAnd(bool a, bool b)
+        {
+            var left = new TwisterPrimitive(PrimitiveType.Bool) { Bool = a };
+            var right = new TwisterPrimitive(PrimitiveType.Bool) { Bool = b };
+
+            var actual = left && right;
+            var expected = a && b;
+
+            Assert.Equal(expected, actual.Bool);
+        }
+
+        [Theory]
+        [InlineData(true, true)]
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        [InlineData(false, false)]
+        public void LogOr(bool a, bool b)
+        {
+            var left = new TwisterPrimitive(PrimitiveType.Bool) { Bool = a };
+            var right = new TwisterPrimitive(PrimitiveType.Bool) { Bool = b };
+
+            var actual = left || right;
+            var expected = a || b;
+
+            Assert.Equal(expected, actual.Bool);
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(0XFF, 0)]
+        [InlineData(0XFF, 0xFF)]
+        public void BitAnd_Int_Int(int a, int b)
+        {
+            var left = new TwisterPrimitive(PrimitiveType.Int) { Int = a };
+            var right = new TwisterPrimitive(PrimitiveType.Int) { Int = b };
+
+            var actual = left & right;
+            var expected = a & b;
+
+            Assert.Equal(expected, actual.Int);
+        }
+
+        [Theory]
+        [InlineData(0, 0u)]
+        [InlineData(0XFF, 0u)]
+        [InlineData(0XFF, 0xFFu)]
+        public void BitAnd_Int_UInt(int a, uint b)
+        {
+            var left = new TwisterPrimitive(PrimitiveType.Int) { Int = a };
+            var right = new TwisterPrimitive(PrimitiveType.UInt) { UInt = b };
+
+            var actual = left & right;
+            var expected = (uint)(a & b);
+
+            Assert.Equal(expected, actual.UInt);
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(0XFF, 0)]
+        [InlineData(0XFF, 0xFF)]
+        public void BitOr_Int_Int(int a, int b)
+        {
+            var left = new TwisterPrimitive(PrimitiveType.Int) { Int = a };
+            var right = new TwisterPrimitive(PrimitiveType.Int) { Int = b };
+
+            var actual = left | right;
+            var expected = a | b;
+
+            Assert.Equal(expected, actual.Int);
+        }
+
+        [Theory]
+        [InlineData(0, 0u)]
+        [InlineData(0XFF, 0u)]
+        [InlineData(0XFF, 0xFFu)]
+        public void BitOr_Int_UInt(int a, uint b)
+        {
+            var left = new TwisterPrimitive(PrimitiveType.Int) { Int = a };
+            var right = new TwisterPrimitive(PrimitiveType.UInt) { UInt = b };
+
+            var actual = left | right;
+            var expected = (uint)(a | (int)b);
+
+            Assert.Equal(expected, actual.UInt);
+        }
+
+        [Theory]
         [InlineData(0, 0)]
         [InlineData(2, 4)]
         [InlineData(-100, 25)]
