@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Xunit;
+using Twister.Compiler.Common;
+using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
-using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Parser;
-using Xunit;
-using Twister.Compiler.Lexer.Enum;
+using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Parser.Node;
-using Twister.Compiler.Common;
 using Twister.Compiler.Parser.Primitive;
 
 namespace Twister.Test.UnitTest.Parser.Expression
@@ -38,8 +36,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var expected = new PrimitiveNode(2);
-
             var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
 
             var actual = actualNode.Value;
@@ -58,8 +54,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SignedIntToken{Value = 10},
                 new SemiColonToken()
             };
-
-            var expected = new PrimitiveNode(2);
 
             var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
 
@@ -80,8 +74,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var expected = new PrimitiveNode(2);
-
             var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
 
             var actual = actualNode.Value;
@@ -100,8 +92,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SignedIntToken{Value = 10},
                 new SemiColonToken()
             };
-
-            var expected = new PrimitiveNode(2);
 
             var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
 
@@ -122,8 +112,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var expected = new PrimitiveNode(2);
-
             var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
 
             var actual = actualNode.Value;
@@ -142,8 +130,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SignedIntToken{Value = 0X01},
                 new SemiColonToken()
             };
-
-            var expected = new PrimitiveNode(2);
 
             var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
 
@@ -164,8 +150,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var expected = new PrimitiveNode(2);
-
             var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
 
             var actual = actualNode.Value;
@@ -184,8 +168,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SignedIntToken{Value = 0x5},
                 new SemiColonToken()
             };
-
-            var expected = new PrimitiveNode(2);
 
             var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
 
@@ -206,8 +188,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var expected = new PrimitiveNode(2);
-
             var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
 
             var actual = actualNode.Value;
@@ -227,15 +207,47 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var expected = new PrimitiveNode(2);
-
             var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
 
             var actual = actualNode.Value;
 
             Assert.Equal((TwisterPrimitive)true, actual);
         }
+
+        [Fact]
+        public void SimpleArith_Paren()
+        {
+            SetupParser();
+            IToken[] expression =
+            {   new LeftParenToken(),
+                new SignedIntToken {Value = 10},
+                new RightParenToken(),
+                new SemiColonToken()
+            };
+
+            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+
+            var actual = actualNode.Value;
+
+            Assert.Equal((TwisterPrimitive)10, actual);
+        }
+
+        [Fact]
+        public void SimpleArith_Unary()
+        {
+            SetupParser();
+            IToken[] expression = { 
+                new OperatorToken {Value = Operator.Minus},
+                new RealToken { Value = 10d },
+                new SemiColonToken()
+            };
+
+            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+
+            var actual = actualNode.Value;
+
+            Assert.Equal((TwisterPrimitive)(-10d), actual);
+        }
     }
 #pragma warning restore CS1701 // Assuming assembly reference matches identity
-
 }

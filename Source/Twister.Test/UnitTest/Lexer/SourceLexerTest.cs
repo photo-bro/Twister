@@ -56,7 +56,8 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("false", 1)]
         [InlineData("fools", 0)]
         [InlineData("truefalse", 0)]
-        [InlineData("true false", 1 )]
+        [InlineData("true false", 2)]
+        [InlineData(" != true", 1)]
         public void Test_Lexer_BoolLiteral(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);

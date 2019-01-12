@@ -56,21 +56,25 @@ namespace Twister.Compiler.Parser
 
             }
 
-            return UnaryExpression(Primitive());
+
+            return UnaryExpression();
         }
 
         /// <summary>
         /// unary ::= (- | ~ | !) primitive | expression
         /// </summary>
-        private IValueNode<TwisterPrimitive> UnaryExpression(IValueNode<TwisterPrimitive> right)
+        private IValueNode<TwisterPrimitive> UnaryExpression()
         {
-            if (_matcher.IsNext<IValueToken<Operator>>(t => t.Value.IsUnaryArithmeticOperator()))
+            var op_tok = _matcher.Peek as IValueToken<Operator>;
+
+            if (op_tok.Value.IsUnaryArithmeticOperator())
             {
                 var uop = _matcher.MatchAndGet<IValueToken<Operator>>(t => t.Value.IsUnaryArithmeticOperator());
                 return new UnaryExpressionNode(ArithExpression(), uop.Value);
             }
 
-            return right;
+            throw new UnexpectedTokenException("Expecting numeric literal or identifer")
+            { UnexpectedToken = op_tok };
         }
 
         private IValueNode<TwisterPrimitive> MultExpr(IValueNode<TwisterPrimitive> left)

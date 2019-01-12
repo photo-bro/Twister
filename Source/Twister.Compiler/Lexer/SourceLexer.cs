@@ -214,8 +214,7 @@ namespace Twister.Compiler.Lexer
             }
 
             // A bit ugly, but we need to check if it's a bool literal
-            if ((_scanner.Offset == 4 && _scanner.Peek(-4) == 't') ||
-                (_scanner.Offset == 5 && _scanner.Peek(-5) == 'f'))
+            if (_scanner.CurrentWindow.ToLower() == "true" || _scanner.CurrentWindow.ToLower() == "false")
             {
                 info.TokenType = TokenKind.BoolLiteral;
                 return;
