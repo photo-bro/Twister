@@ -3,12 +3,17 @@ using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Common.Interface;
 using Twister.Compiler.Lexer.Enum;
 using System;
+using System.Linq;
 
 namespace Twister.Compiler.Parser
 {
     public class TokenMatcher : ITokenMatcher
     {
         private readonly IScanner<IToken> _scanner;
+
+        public IToken Current => _scanner.CurrentWindow.ToArray()[0];
+
+        public IToken Peek => _scanner.Peek();
 
         public TokenMatcher(IScanner<IToken> scanner)
         {
@@ -17,23 +22,19 @@ namespace Twister.Compiler.Parser
 
         public bool IsNext<T>() where T : IToken
         {
-            var peek = PeekNext();
-            if (!(peek is T))
+            if (!(Peek is T))
                 return false;
 
-            return !Equals((T)peek, default(T));
+            return !Equals((T)Peek, default(T));
         }
 
         public bool IsNext<T>(Predicate<T> constraint) where T : IToken
         {
-            var peek = PeekNext();
-            if (!(peek is T))
+            if (!(Peek is T))
                 return false;
 
-            return constraint((T)PeekNext());
+            return constraint((T)Peek);
         }
-
-        public IToken PeekNext() => PeekNext(1);
 
         public IToken PeekNext(int count)
         {
@@ -77,11 +78,10 @@ namespace Twister.Compiler.Parser
         {
             foreach (var k in pattern)
             {
-                var actual = PeekNext();
-                if (k != actual.Kind)
+                if (k != Peek.Kind)
                     throw new UnexpectedTokenException("Unexpected token")
                     {
-                        UnexpectedToken = actual,
+                        UnexpectedToken = Peek,
                         ExpectedTokenType = k.GetType()
                     };
                 _scanner.Advance();

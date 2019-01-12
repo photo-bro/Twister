@@ -28,12 +28,20 @@ namespace Twister.Compiler.Parser
             _hasMain = false;
         }
 
-        public INode Parse(IEnumerable<IToken> twisterTokens)
+        public INode ParseProgram(IEnumerable<IToken> twisterTokens)
         {
             _matcher = CreateTokenMatcherFunc(twisterTokens);
             SetupParser();
 
-            return Expression(); // TODO !!! Set back to program and find a proper way to unit test these methods
+            return Program(); // TODO !!! Set back to program and find a proper way to unit test these methods
+        }
+
+        public INode ParseExpression(IEnumerable<IToken> twisterTokens)
+        {
+            _matcher = CreateTokenMatcherFunc(twisterTokens);
+            SetupParser();
+
+            return Expression();
         }
 
         /// <summary>
@@ -149,7 +157,7 @@ namespace Twister.Compiler.Parser
         private IList<INode> Body()
         {
             var nodes = new List<INode>();
-            var next = _matcher.PeekNext();
+            var next = _matcher.Peek;
             if (next.Kind == TokenKind.LeftBrack)
             {
                 _matcher.Match();

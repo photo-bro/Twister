@@ -22,11 +22,13 @@
     <Folder Include="UnitTest\Lexer\" />
     <Folder Include="Data\Test Programs\" />
     <Folder Include="UnitTest\Parser\" />
+    <Folder Include="UnitTest\Parser\Expression\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Twister.Compiler\Twister.Compiler.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="UnitTest\Parser\TokenParserTests.cs" />
+    <Compile Remove="UnitTest\Parser\TwisterPrimitiveTest.cs" />
   </ItemGroup>
 </Project>

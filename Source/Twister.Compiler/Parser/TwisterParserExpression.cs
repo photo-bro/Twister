@@ -1,4 +1,4 @@
-﻿using Twister.Compiler.Lexer.Enum;
+using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
 using Twister.Compiler.Parser.Interface;
@@ -35,14 +35,24 @@ namespace Twister.Compiler.Parser
         /// </summary>
         private IValueNode<TwisterPrimitive> ArithExpression()
         {
-            var peek = _matcher.PeekNext();
+            var peek = _matcher.Peek;
             switch (peek.Kind)
             {
                 case var k when k.IsPrimitive():
                 case TokenKind.Identifier:
                 case TokenKind.LeftParen:
-                    return LogOrExpr(LogAndExpr(BitOrExpr(BitExOrExpr(BitAndExpr(EqualExpr(
-                           RelationExpr(ShiftExpr(AddExpr(MultExpr(Primitive()))))))))));
+                    return LogOrExpr(
+                            LogAndExpr(
+                            BitOrExpr(
+                            BitExOrExpr(
+                            BitAndExpr(
+                            EqualExpr(
+                            RelationExpr(
+                            ShiftExpr(
+                            AddExpr(
+                            MultExpr(
+                            Primitive()
+                            ))))))))));
 
             }
 
@@ -65,7 +75,7 @@ namespace Twister.Compiler.Parser
 
         private IValueNode<TwisterPrimitive> MultExpr(IValueNode<TwisterPrimitive> left)
         {
-            var op_tok = _matcher.PeekNext() as IValueToken<Operator>;
+            var op_tok = _matcher.Peek as IValueToken<Operator>;
             if (op_tok == null)
                 return left;
 
@@ -83,7 +93,7 @@ namespace Twister.Compiler.Parser
 
         private IValueNode<TwisterPrimitive> AddExpr(IValueNode<TwisterPrimitive> left)
         {
-            var op_tok = _matcher.PeekNext() as IValueToken<Operator>;
+            var op_tok = _matcher.Peek as IValueToken<Operator>;
             if (op_tok == null)
                 return left;
 
@@ -100,7 +110,7 @@ namespace Twister.Compiler.Parser
 
         private IValueNode<TwisterPrimitive> ShiftExpr(IValueNode<TwisterPrimitive> left)
         {
-            var op_tok = _matcher.PeekNext() as IValueToken<Operator>;
+            var op_tok = _matcher.Peek as IValueToken<Operator>;
             if (op_tok == null)
                 return left;
 
@@ -117,7 +127,7 @@ namespace Twister.Compiler.Parser
 
         private IValueNode<TwisterPrimitive> RelationExpr(IValueNode<TwisterPrimitive> left)
         {
-            var op_tok = _matcher.PeekNext() as IValueToken<Operator>;
+            var op_tok = _matcher.Peek as IValueToken<Operator>;
             if (op_tok == null)
                 return left;
 
@@ -136,7 +146,7 @@ namespace Twister.Compiler.Parser
 
         private IValueNode<TwisterPrimitive> EqualExpr(IValueNode<TwisterPrimitive> left)
         {
-            var op_tok = _matcher.PeekNext() as IValueToken<Operator>;
+            var op_tok = _matcher.Peek as IValueToken<Operator>;
             if (op_tok == null)
                 return left;
 
@@ -153,7 +163,7 @@ namespace Twister.Compiler.Parser
 
         private IValueNode<TwisterPrimitive> BitAndExpr(IValueNode<TwisterPrimitive> left)
         {
-            var op_tok = _matcher.PeekNext() as IValueToken<Operator>;
+            var op_tok = _matcher.Peek as IValueToken<Operator>;
             if (op_tok == null)
                 return left;
 
@@ -167,18 +177,21 @@ namespace Twister.Compiler.Parser
 
         private IValueNode<TwisterPrimitive> BitExOrExpr(IValueNode<TwisterPrimitive> left)
         {
-            var op_tok = _matcher.PeekNext() as IValueToken<Operator>;
+            var op_tok = _matcher.Peek as IValueToken<Operator>;
             if (op_tok == null)
                 return left;
 
-            return op_tok.Value == Operator.BitExOr
-                ? BitExOrExpr(new BitExOrNode(left, BitAndExpr(EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(ArithExpression()))))))))
-                : left;
+            if (op_tok.Value == Operator.BitExOr)
+            {
+                _matcher.Match();
+                return BitExOrExpr(new BitExOrNode(left, BitAndExpr(EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(ArithExpression()))))))));
+            }
+            return left;
         }
 
         private IValueNode<TwisterPrimitive> BitOrExpr(IValueNode<TwisterPrimitive> left)
         {
-            var op_tok = _matcher.PeekNext() as IValueToken<Operator>;
+            var op_tok = _matcher.Peek as IValueToken<Operator>;
             if (op_tok == null)
                 return left;
 
@@ -192,7 +205,7 @@ namespace Twister.Compiler.Parser
 
         private IValueNode<TwisterPrimitive> LogAndExpr(IValueNode<TwisterPrimitive> left)
         {
-            var op_tok = _matcher.PeekNext() as IValueToken<Operator>;
+            var op_tok = _matcher.Peek as IValueToken<Operator>;
             if (op_tok == null)
                 return left;
 
@@ -206,7 +219,7 @@ namespace Twister.Compiler.Parser
 
         private IValueNode<TwisterPrimitive> LogOrExpr(IValueNode<TwisterPrimitive> left)
         {
-            var op_tok = _matcher.PeekNext() as IValueToken<Operator>;
+            var op_tok = _matcher.Peek as IValueToken<Operator>;
             if (op_tok == null)
                 return left;
 
@@ -223,7 +236,7 @@ namespace Twister.Compiler.Parser
         /// </summary>
         private IValueNode<TwisterPrimitive> Primitive()
         {
-            var peek = _matcher.PeekNext();
+            var peek = _matcher.Peek;
             switch (peek.Kind)
             {
                 case TokenKind.BoolLiteral:
@@ -254,7 +267,7 @@ namespace Twister.Compiler.Parser
                 case TokenKind.Identifier:
                     {
                         var tok = _matcher.MatchAndGet<IValueToken<string>>();
-                        return new PrimitiveNode(null); // TODO : How to handle symbol table...
+                        return new PrimitiveNode(null); // TODO : How to handle symbols...?
                     }
                 case TokenKind.LeftParen:
                     {

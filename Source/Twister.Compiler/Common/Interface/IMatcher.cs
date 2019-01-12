@@ -7,8 +7,6 @@ namespace Twister.Compiler.Common.Interface
 
         bool IsNext<U>(Predicate<U> constraint) where U : T;
 
-        T PeekNext();
-
         T PeekNext(int count);
 
         U MatchAndGet<U>() where U : T;
@@ -20,5 +18,9 @@ namespace Twister.Compiler.Common.Interface
         void Match<U>() where U : T;
 
         void Match<U>(Predicate<U> constraint) where U : T;
+
+        T Current { get; }
+
+        T Peek { get; }
     }
 }

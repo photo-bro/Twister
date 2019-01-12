@@ -24,14 +24,13 @@ namespace Twister.Compiler.Parser
 
         public INode SimpleStatement()
         {
-            var peek = _matcher.PeekNext();
-            if (peek.Kind == TokenKind.Semicolon)
+            if (_matcher.Peek.Kind == TokenKind.Semicolon)
             {
                 _matcher.Match();
                 return new TerminalNode();
             }
 
-            switch (peek)
+            switch (_matcher.Peek)
             {
                 case IValueToken<Keyword> keyToken when keyToken is IValueToken<Keyword>:
                     {

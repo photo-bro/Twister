@@ -5,6 +5,8 @@ namespace Twister.Compiler.Parser.Interface
 {
     public interface ITwisterParser
     {
-        INode Parse(IEnumerable<IToken> twisterTokens);
+        INode ParseProgram(IEnumerable<IToken> twisterTokens);
+
+        INode ParseExpression(IEnumerable<IToken> twisterTokens);
     }
 }
