@@ -7,16 +7,13 @@ namespace Twister.Compiler.Parser.Node
 {
     public class FuncNode<T> : IFuncNode<T>
     {
-        public FuncNode(string identifier, TwisterType? returnType, IList<IValueNode<ISymbol>> parameters,
-             IList<INode> body)
+        public FuncNode(string identifier, TwisterType? returnType, IScope scope, IList<INode> body)
         {
             Identifier = identifier;
             ReturnType = returnType;
-            Parameters = parameters;
+            Scope = scope;
             Body = body;
         }
-
-        public IList<IValueNode<ISymbol>> Parameters { get; private set; }
 
         public string Identifier { get; private set; }
 
@@ -27,5 +24,7 @@ namespace Twister.Compiler.Parser.Node
         public NodeKind Kind => NodeKind.Expression;
 
         public T Value { get; private set; } // TODO
+
+        public IScope Scope { get; private set; }
     }
 }

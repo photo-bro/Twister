@@ -35,8 +35,7 @@ namespace Twister.Compiler.Parser
         /// </summary>
         private IValueNode<TwisterPrimitive> ArithExpression()
         {
-            var peek = _matcher.Peek;
-            switch (peek.Kind)
+            switch (_matcher.Peek.Kind)
             {
                 case var k when k.IsPrimitive():
                 case TokenKind.Identifier:
@@ -56,8 +55,18 @@ namespace Twister.Compiler.Parser
 
             }
 
-
-            return UnaryExpression();
+            return LogOrExpr(
+                    LogAndExpr(
+                    BitOrExpr(
+                    BitExOrExpr(
+                    BitAndExpr(
+                    EqualExpr(
+                    RelationExpr(
+                    ShiftExpr(
+                    AddExpr(
+                    MultExpr(
+                    UnaryExpression()
+                    ))))))))));
         }
 
         /// <summary>
@@ -70,7 +79,17 @@ namespace Twister.Compiler.Parser
             if (op_tok.Value.IsUnaryArithmeticOperator())
             {
                 var uop = _matcher.MatchAndGet<IValueToken<Operator>>(t => t.Value.IsUnaryArithmeticOperator());
-                return new UnaryExpressionNode(ArithExpression(), uop.Value);
+
+                switch (_matcher.Peek.Kind)
+                {
+                    case var k when k.IsPrimitive():
+                    case TokenKind.Identifier:
+                    case TokenKind.LeftParen:
+                        return new UnaryExpressionNode(Primitive().Value, uop.Value);
+                }
+
+                if (_matcher.Peek is IValueToken<Operator>)
+                    return new UnaryExpressionNode(UnaryExpression().Value, uop.Value);
             }
 
             throw new UnexpectedTokenException("Expecting numeric literal or identifer")
@@ -271,7 +290,7 @@ namespace Twister.Compiler.Parser
                 case TokenKind.Identifier:
                     {
                         var tok = _matcher.MatchAndGet<IValueToken<string>>();
-                        return new PrimitiveNode(null); // TODO : How to handle symbols...?
+                        return new SymbolNode(tok.Value, _scopeManager.ActiveScope);
                     }
                 case TokenKind.LeftParen:
                     {

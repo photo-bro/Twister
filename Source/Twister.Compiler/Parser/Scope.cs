@@ -1,6 +1,7 @@
-﻿using System;
+﻿using System.Linq;
 using System.Collections.Generic;
 using Twister.Compiler.Parser.Interface;
+using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser
 {
@@ -16,14 +17,43 @@ namespace Twister.Compiler.Parser
 
         public int Depth { get; private set; }
 
-        public IList<ISymbol> Symbols { get; set; }
+        public ICollection<ISymbol> Symbols { get; set; }
 
         public IScope ParentScope { get; private set; }
 
         public IList<IScope> ChildScopes { get; set; }
 
-        public bool IsInCurrentScope(ISymbol symbol) => Symbols.Contains(symbol);
+        public bool IsInCurrentScope(string identifier) => Symbols.Any(s => s.Identifier == identifier);
 
-        public bool IsInScope(ISymbol symbol) => IsInCurrentScope(symbol) || (ParentScope?.IsInScope(symbol) ?? false);
+        public bool IsInScope(string identifier) =>
+            IsInCurrentScope(identifier) || (ParentScope?.IsInScope(identifier) ?? false);
+
+        public ISymbol GetSymbol(string identifier)
+        {
+            var symbol = Symbols.SingleOrDefault(s => s.Identifier == identifier);
+            if (symbol == null)
+                throw new UndefinedSymbolException(string.Empty)
+                {
+                    Identifier = identifier
+                };
+            return symbol;
+        }
+
+        public void AddSymbol(ISymbol symbol)
+        {
+            if (!IsInCurrentScope(symbol.Identifier))
+                Symbols.Add(symbol);
+
+            throw new DuplicateDefinitionException(string.Empty)
+            {
+                Identifier = symbol.Identifier
+            };
+        }
+
+        public void AddSymbols(ICollection<ISymbol> symbols)
+        {
+            foreach (var s in symbols)
+                AddSymbol(s);
+        }
     }
 }

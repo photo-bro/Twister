@@ -5,12 +5,14 @@ namespace Twister.Compiler.Parser.Symbol
 {
     public class BasicSymbol : ISymbol
     {
-        public BasicSymbol(string identifier, SymbolKind kind, SymbolAttribute attributes, TwisterType dataType)
+        public BasicSymbol(string identifier, SymbolKind kind, SymbolAttribute attributes,
+            TwisterType dataType, object value)
         {
             Identifier = identifier;
             Kind = kind;
             Attributes = attributes;
             DataType = dataType;
+            Value = value;
         }
 
         public string Identifier { get; private set; }
@@ -20,5 +22,7 @@ namespace Twister.Compiler.Parser.Symbol
         public SymbolAttribute Attributes { get; private set; }
 
         public TwisterType DataType { get; private set; }
+
+        public object Value { get; private set; }
     }
 }

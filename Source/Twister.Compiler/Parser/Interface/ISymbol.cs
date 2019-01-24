@@ -11,5 +11,7 @@ namespace Twister.Compiler.Parser.Interface
         SymbolAttribute Attributes { get; }
 
         TwisterType DataType { get; }
+
+        object Value { get; }
     }
 }

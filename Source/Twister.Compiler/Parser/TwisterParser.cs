@@ -16,6 +16,9 @@ namespace Twister.Compiler.Parser
         private readonly Func<IEnumerable<IToken>, ITokenMatcher> CreateTokenMatcherFunc;
 
         private ITokenMatcher _matcher;
+        private IScopeManager _scopeManager;
+
+
         private bool _hasMain;
 
         public TwisterParser(Func<IEnumerable<IToken>, ITokenMatcher> createTokenMatcherFunc)
@@ -25,6 +28,8 @@ namespace Twister.Compiler.Parser
 
         private void SetupParser()
         {
+            _scopeManager = new ScopeManager();
+
             _hasMain = false;
         }
 
@@ -66,10 +71,13 @@ namespace Twister.Compiler.Parser
         {
             var funcToken = _matcher.MatchAndGet<IValueToken<Keyword>>(t => t.Value == Keyword.Func);
             var idToken = _matcher.MatchAndGet<IValueToken<string>>();
+            var funcName = idToken.Value;
             if (idToken.Value == "main")
                 _hasMain = true; // TODO : Pattern check full main func signature
 
-            var funcParams = FuncParams();
+            var scope = _scopeManager.NewScope();
+            scope.AddSymbols(FuncParams());
+            _scopeManager.RemoveBottomScope();
 
             var type = TwisterType.Void;
             if (_matcher.IsNext<DefineToken>())
@@ -83,13 +91,15 @@ namespace Twister.Compiler.Parser
 
             var body = FuncBody();
 
-            return new FuncNode<TwisterPrimitive>(idToken.Value, type, funcParams, body);
+            _scopeManager.ActiveScope.AddSymbol(new FuncSymbol()); // TODO - Flesh out FuncSymbol
+
+            return new FuncNode<TwisterPrimitive>(idToken.Value, type, scope, body);
         }
 
         /// <summary>
         /// func_params ::= lsqrbrack params rsqrbrack
         /// </summary>
-        private IList<IValueNode<ISymbol>> FuncParams()
+        private IList<ISymbol> FuncParams()
         {
             _matcher.Match<LeftSquareBrackToken>();
             var @params = Params();
@@ -98,9 +108,9 @@ namespace Twister.Compiler.Parser
         }
 
         //params ::= param {comma param}
-        private IList<IValueNode<ISymbol>> Params()
+        private IList<ISymbol> Params()
         {
-            var @params = new List<IValueNode<ISymbol>> { Param() };
+            var @params = new List<ISymbol> { Param() };
 
             while (_matcher.IsNext<CommaToken>())
             {
@@ -114,7 +124,7 @@ namespace Twister.Compiler.Parser
         /// <summary>
         /// param ::= {ref} type colon identifier
         /// </summary>
-        private IValueNode<ISymbol> Param()
+        private ISymbol Param()
         {
             var attributes = SymbolAttribute.FuncParam;
             var tk = _matcher.MatchAndGet<IValueToken<Keyword>>();
@@ -132,12 +142,12 @@ namespace Twister.Compiler.Parser
             _matcher.Match<ColonToken>();
             var identifier = _matcher.MatchAndGet<IValueToken<string>>();
 
-            var paramSymbol = new BasicSymbol(
-                identifier: identifier.Value,
-                kind: SymbolKind.Variable,
-                attributes: attributes,
-                dataType: tk.Value.ToTwisterType());
-            return new SymbolNode(paramSymbol);
+            return new BasicSymbol(
+                 identifier: identifier.Value,
+                 kind: SymbolKind.Variable,
+                 attributes: attributes,
+                 dataType: tk.Value.ToTwisterType(),
+                 value: null);
         }
 
         /// <summary>

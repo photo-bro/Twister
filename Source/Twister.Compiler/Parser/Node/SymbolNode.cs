@@ -1,18 +1,33 @@
 ﻿using System;
 using Twister.Compiler.Parser.Enum;
 using Twister.Compiler.Parser.Interface;
+using Twister.Compiler.Parser.Primitive;
+using Twister.Compiler.Parser.Symbol;
 
 namespace Twister.Compiler.Parser.Node
 {
-    public class SymbolNode : IValueNode<ISymbol>
+    public class SymbolNode : IValueNode<TwisterPrimitive>
     {
-        public SymbolNode(ISymbol value)
+        public SymbolNode(string identifier, IScope scope)
         {
-            Value = value;
+            Identifier = identifier;
+            Scope = scope;
         }
 
-        public ISymbol Value { get; private set; }
+        public TwisterPrimitive Value
+        {
+            get
+            {
+                var sym = Scope.GetSymbol(Identifier);
+                return sym.GetPrimitiveValue();
+            }
+        }
 
         public NodeKind Kind => NodeKind.Symbol;
+
+
+        public string Identifier { get; private set; }
+
+        public IScope Scope { get; private set; }
     }
 }

@@ -1,18 +1,26 @@
 ﻿using System.Collections.Generic;
+using Twister.Compiler.Parser.Enum;
+
 namespace Twister.Compiler.Parser.Interface
 {
     public interface IScope
     {
         int Depth { get; }
 
-        IList<ISymbol> Symbols { get; }
+        ICollection<ISymbol> Symbols { get; }
 
         IScope ParentScope { get; }
 
         IList<IScope> ChildScopes { get; }
 
-        bool IsInScope(ISymbol symbol);
+        bool IsInScope(string identifier);
 
-        bool IsInCurrentScope(ISymbol symbol);
+        bool IsInCurrentScope(string identifier);
+
+        ISymbol GetSymbol(string identifier);
+
+        void AddSymbol(ISymbol symbol);
+
+        void AddSymbols(ICollection<ISymbol> symbols);
     }
 }

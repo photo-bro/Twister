@@ -29,9 +29,12 @@ namespace Twister.Compiler.Parser.Node
 
     public sealed class UnaryExpressionNode : BaseExpressionNode
     {
-        public UnaryExpressionNode(IValueNode<TwisterPrimitive> node, Operator @operator)
-            : base(node, null)
-        { Operator = @operator; }
+        public UnaryExpressionNode(TwisterPrimitive rightValue, Operator @operator)
+            : base(null, null)
+        {
+            RightValue = rightValue;
+            Operator = @operator;
+        }
 
         private Operator _operator;
         public override Operator Operator
@@ -50,17 +53,16 @@ namespace Twister.Compiler.Parser.Node
         {
             get
             {
-                var l = Left.Value;
                 switch (_operator)
                 {
                     case Operator.Plus:
-                        return l;
+                        return RightValue;
                     case Operator.Minus:
-                        return -1 * l;
+                        return -1 * RightValue;
                     case Operator.LogNot:
-                        return !l;
+                        return !RightValue;
                     case Operator.BitNot:
-                        return ~l;
+                        return ~RightValue;
                 }
                 throw new InvalidOperatorException("Expecting unary arithmetic operator")
                 { InvalidOperator = _operator };
@@ -68,6 +70,8 @@ namespace Twister.Compiler.Parser.Node
         }
 
         public override ExpressionKind ExpressionKind => ExpressionKind.Unary;
+
+        private TwisterPrimitive RightValue { get; set; }
     }
 
     public sealed class AdditiveNode : BaseExpressionNode

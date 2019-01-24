@@ -1,6 +1,7 @@
 ﻿using System;
 using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
+using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser
 {
@@ -93,4 +94,25 @@ namespace Twister.Compiler.Parser
 
         public override string Message => $"{base.Message}. Cannot assign value of type '{RightType}' to '{LeftType}'";
     }
+
+    public class UndefinedSymbolException : Exception
+    {
+        public string Identifier { get; set; }
+
+        public UndefinedSymbolException(string message) : base(message) { }
+
+        public override string Message => $"{base.Message}. Symbol with identifer '{Identifier}' is not defined " +
+            "or out of scope";
+    }
+
+    public class DuplicateDefinitionException : Exception
+    {
+        public string Identifier { get; set; }
+
+        public DuplicateDefinitionException(string message) : base(message) { }
+
+        public override string Message => $"{base.Message}. Symbol with identifer '{Identifier}' is already defined " +
+            "in active scope";
+    }
+
 }
