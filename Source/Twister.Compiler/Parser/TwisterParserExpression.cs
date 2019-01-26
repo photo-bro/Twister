@@ -4,7 +4,6 @@ using Twister.Compiler.Lexer.Token;
 using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Parser.Primitive;
 using Twister.Compiler.Parser.Node;
-using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser
 {
@@ -17,7 +16,8 @@ namespace Twister.Compiler.Parser
         {
             if (_matcher.IsNext<IValueToken<Keyword>>(t => t.Value == Keyword.Return))
                 return ReturnExpression();
-            return ArithExpression();
+            return EvalRecursive();
+            //return EvalIterative();
         }
 
         /// <summary>
@@ -27,13 +27,84 @@ namespace Twister.Compiler.Parser
         {
             _matcher.Match<IValueToken<Keyword>>(t => t.Value == Keyword.Return);
 
-            return ArithExpression();
+            return EvalRecursive();
         }
 
-        /// <summary>
-        /// expr ::=  primitive | unary  
-        /// </summary>
-        private IValueNode<TwisterPrimitive> ArithExpression()
+        private IValueNode<TwisterPrimitive> EvalIterative(PrecedenceLevel currentPrecedence = PrecedenceLevel.Unary,
+            IValueNode<TwisterPrimitive> left = null)
+        {
+            switch (_matcher.Peek.Kind)
+            {
+                case var k when k.IsPrimitive():
+                case TokenKind.Identifier:
+                case TokenKind.LeftParen:
+                    return EvalIterative(PrecedenceLevel.Multiplicative, Primitive());
+                case TokenKind.Operator:
+                    {
+                        var right = (IValueNode<TwisterPrimitive>)null;
+                        var op = _matcher.MatchAndGet<IValueToken<Operator>>().Value;
+
+                        // Unary
+                        if (op.IsUnaryArithmeticOperator())
+                        {
+                            right = UnaryIterative(null, op);
+                        }
+
+                        var nextprecedence = PrecedenceLevel.Unary;
+                        while (nextprecedence <= currentPrecedence)
+                        {
+                            right = EvalIterative(nextprecedence++, right);
+                        }
+
+                        return EvalIterative(
+                                    currentPrecedence: currentPrecedence,
+                                    left: new BinaryExpressionNode(
+                                            left: left,
+                                            right: right,
+                                            op: op));
+                    }
+                default:
+                    return left;
+            }
+        }
+
+
+        private IValueNode<TwisterPrimitive> UnaryIterative(IValueNode<TwisterPrimitive> right, Operator op)
+        {
+            switch (_matcher.Peek.Kind)
+            {
+                case var k when k.IsPrimitive():
+                case TokenKind.Identifier:
+                case TokenKind.LeftParen:
+                    return new UnaryExpressionNode(Primitive().Value, op);
+                case TokenKind.Operator:
+                    if (_matcher.IsNext<IValueToken<Operator>>(t => t.Value.IsUnaryArithmeticOperator()))
+                    {
+                        var nextOp = _matcher.MatchAndGet<IValueToken<Operator>>().Value;
+                        return new UnaryExpressionNode(UnaryIterative(right, nextOp).Value, op);
+                    }
+                    break;
+            }
+            return right;
+        }
+
+        internal enum PrecedenceLevel
+        {
+            Unary = 0,
+            Primitive,
+            Multiplicative,
+            Addition,
+            Shift,
+            Relational,
+            Equality,
+            BitAnd,
+            BitExor,
+            BitOr,
+            LogAnd,
+            LogOr
+        }
+
+        private IValueNode<TwisterPrimitive> EvalRecursive()
         {
             switch (_matcher.Peek.Kind)
             {
@@ -69,9 +140,6 @@ namespace Twister.Compiler.Parser
                     ))))))))));
         }
 
-        /// <summary>
-        /// unary ::= (- | ~ | !) primitive | expression
-        /// </summary>
         private IValueNode<TwisterPrimitive> UnaryExpression()
         {
             var op_tok = _matcher.Peek as IValueToken<Operator>;
@@ -108,7 +176,7 @@ namespace Twister.Compiler.Parser
                 case Operator.ForwardSlash:
                 case Operator.Modulo:
                     _matcher.Match();
-                    return MultExpr(new MultiplicativeNode(left, ArithExpression(), op_tok.Value));
+                    return MultExpr(new MultiplicativeNode(left, EvalRecursive(), op_tok.Value));
             }
 
             return left;
@@ -125,7 +193,7 @@ namespace Twister.Compiler.Parser
                 case Operator.Plus:
                 case Operator.Minus:
                     _matcher.Match();
-                    return AddExpr(new AdditiveNode(left, MultExpr(ArithExpression()), op_tok.Value));
+                    return AddExpr(new AdditiveNode(left, MultExpr(EvalRecursive()), op_tok.Value));
             }
 
             return left;
@@ -142,7 +210,7 @@ namespace Twister.Compiler.Parser
                 case Operator.LeftShift:
                 case Operator.RightShift:
                     _matcher.Match();
-                    return ShiftExpr(new ShiftNode(left, AddExpr(MultExpr(ArithExpression())), op_tok.Value));
+                    return ShiftExpr(new ShiftNode(left, AddExpr(MultExpr(EvalRecursive())), op_tok.Value));
             }
 
             return left;
@@ -161,7 +229,7 @@ namespace Twister.Compiler.Parser
                 case Operator.LogGreater:
                 case Operator.LogGreaterEqual:
                     _matcher.Match();
-                    return RelationExpr(new RelationalNode(left, ShiftExpr(AddExpr(MultExpr(ArithExpression()))), op_tok.Value));
+                    return RelationExpr(new RelationalNode(left, ShiftExpr(AddExpr(MultExpr(EvalRecursive()))), op_tok.Value));
             }
 
             return left;
@@ -178,7 +246,7 @@ namespace Twister.Compiler.Parser
                 case Operator.LogEqual:
                 case Operator.LogNotEqual:
                     _matcher.Match();
-                    return EqualExpr(new EqualityNode(left, RelationExpr(ShiftExpr(AddExpr(MultExpr(ArithExpression())))), op_tok.Value));
+                    return EqualExpr(new EqualityNode(left, RelationExpr(ShiftExpr(AddExpr(MultExpr(EvalRecursive())))), op_tok.Value));
             }
 
             return left;
@@ -193,7 +261,7 @@ namespace Twister.Compiler.Parser
             if (op_tok.Value == Operator.BitAnd)
             {
                 _matcher.Match();
-                return BitAndExpr(new BitAndNode(left, EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(ArithExpression())))))));
+                return BitAndExpr(new BitAndNode(left, EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(EvalRecursive())))))));
             }
             return left;
         }
@@ -207,7 +275,7 @@ namespace Twister.Compiler.Parser
             if (op_tok.Value == Operator.BitExOr)
             {
                 _matcher.Match();
-                return BitExOrExpr(new BitExOrNode(left, BitAndExpr(EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(ArithExpression()))))))));
+                return BitExOrExpr(new BitExOrNode(left, BitAndExpr(EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(EvalRecursive()))))))));
             }
             return left;
         }
@@ -221,7 +289,7 @@ namespace Twister.Compiler.Parser
             if (op_tok.Value == Operator.BitOr)
             {
                 _matcher.Match();
-                return BitOrExpr(new BitOrNode(left, BitExOrExpr(BitAndExpr(EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(ArithExpression())))))))));
+                return BitOrExpr(new BitOrNode(left, BitExOrExpr(BitAndExpr(EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(EvalRecursive())))))))));
             }
             return left;
         }
@@ -235,7 +303,7 @@ namespace Twister.Compiler.Parser
             if (op_tok.Value == Operator.LogAnd)
             {
                 _matcher.Match();
-                return LogAndExpr(new LogAndNode(left, BitOrExpr(BitExOrExpr(BitAndExpr(EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(ArithExpression()))))))))));
+                return LogAndExpr(new LogAndNode(left, BitOrExpr(BitExOrExpr(BitAndExpr(EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(EvalRecursive()))))))))));
             }
             return left;
         }
@@ -249,7 +317,7 @@ namespace Twister.Compiler.Parser
             if (op_tok.Value == Operator.LogAnd)
             {
                 _matcher.Match();
-                return LogOrExpr(new LogAndNode(left, LogAndExpr(BitOrExpr(BitExOrExpr(BitAndExpr(EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(ArithExpression())))))))))));
+                return LogOrExpr(new LogAndNode(left, LogAndExpr(BitOrExpr(BitExOrExpr(BitAndExpr(EqualExpr(RelationExpr(ShiftExpr(AddExpr(MultExpr(EvalRecursive())))))))))));
             }
             return left;
         }
@@ -295,7 +363,7 @@ namespace Twister.Compiler.Parser
                 case TokenKind.LeftParen:
                     {
                         _matcher.Match<LeftParenToken>();
-                        var node = ArithExpression();
+                        var node = EvalRecursive();
                         _matcher.Match<IToken>(t => t.Kind == TokenKind.RightParen);
                         return node;
                     }

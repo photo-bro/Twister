@@ -29,7 +29,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData(".999", 1)]
         [InlineData("1234567890", 1)]
         [InlineData("1234567890 123 1.12321 9u", 4)]
-        public void Test_Lexer_NumericLiteral(string source, int expectedTokenCount)
+        public void NumericLiteral(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount,
@@ -43,7 +43,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("\"Hello World!\"", 1)]
         [InlineData("\"\"", 1)]
         [InlineData("\"123 \\\" \"", 1)]
-        public void Test_Lexer_StringCharLiteral(string source, int expectedTokenCount)
+        public void StringCharLiteral(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount,
@@ -58,7 +58,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("truefalse", 0)]
         [InlineData("true false", 2)]
         [InlineData(" != true", 1)]
-        public void Test_Lexer_BoolLiteral(string source, int expectedTokenCount)
+        public void BoolLiteral(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount, tokens.Count(tk => tk is BoolLiteralToken));
@@ -67,7 +67,7 @@ namespace Twister.Test.UnitTest.Lexer
         [Theory]
         [InlineData("fALSE", typeof(InvalidTokenException))]
         [InlineData("truE", typeof(InvalidTokenException))]
-        public void Test_Lexer_InvalidBool(string source, Type expectedExceptionType)
+        public void InvalidBool(string source, Type expectedExceptionType)
         {
             Assert.Throws(expectedExceptionType, () => GetTokens(source, LexerFlag.None).ToList());
         }
@@ -78,7 +78,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("(* abcdefhuasdfjh  *)123u(* *)", 1)]
         [InlineData("(* \n *)123u(* *)", 1)]
         [InlineData("(* \n *) 123u (* *)", 1)]
-        public void Test_Lexer_Comments(string source, int expectedTokenCount)
+        public void Comments(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount, tokens.Count());
@@ -89,7 +89,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("\t\t\t\t\t\t\t", 0)]
         [InlineData("\r\n\r\n\r\n\t\t", 0)]
         [InlineData("    123 1.000 \"Hello World\"   ", 3)]
-        public void Test_Lexer_Whitespace(string source, int expectedTokenCount)
+        public void Whitespace(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount, tokens.Count());
@@ -102,7 +102,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("_twister123", 1)]
         [InlineData("_twister___ hellostring", 2)]
         [InlineData("a b c  d       e f g", 7)]
-        public void Test_Lexer_Identifier(string source, int expectedTokenCount)
+        public void Identifier(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount, tokens.OfType<IdToken>().Count());
@@ -112,7 +112,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("1myVar", typeof(UnexpectedCharacterException))]
         [InlineData("1123myVar", typeof(UnexpectedCharacterException))]
         [InlineData("11.23myVar", typeof(UnexpectedCharacterException))]
-        public void Test_Lexer_BadIdentifier(string source, Type expectedExceptionType)
+        public void BadIdentifier(string source, Type expectedExceptionType)
         {
             Assert.Throws(expectedExceptionType, () => GetTokens(source, LexerFlag.None).ToList());
         }
@@ -121,7 +121,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("func", 1)]
         [InlineData("int uint float str char struct bool", 7)]
         [InlineData("if else while break cont return", 6)]
-        public void Test_Lexer_Keyword(string source, int expectedTokenCount)
+        public void Keyword(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount, tokens.OfType<KeywordToken>().Count());
@@ -139,7 +139,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("|||", 2)]
         [InlineData("<< >>", 2)]
         [InlineData("== !=", 2)]
-        public void Test_Lexer_Operator(string source, int expectedTokenCount)
+        public void Operator(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount, tokens.OfType<OperatorToken>().Count());
@@ -156,7 +156,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("==>", 2)]
         [InlineData("==>>", 2)]
         [InlineData("==>=>", 3)]
-        public void Test_Lexer_RegularTokens(string source, int expectedTokenCount)
+        public void RegularTokens(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.None);
             Assert.Equal(expectedTokenCount, tokens.Count());
@@ -166,7 +166,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("\"\"", 1)]
         [InlineData("\"åéô\"", 1)]
         [InlineData("\"©™Ω\" \"ºℨ\"", 2)]
-        public void Test_Lexer_Flag_AllowUnicode(string source, int expectedTokenCount)
+        public void Flag_AllowUnicode(string source, int expectedTokenCount)
         {
             var tokens = GetTokens(source, LexerFlag.AllowUnicode);
             Assert.Equal(expectedTokenCount, tokens.Count());
@@ -176,7 +176,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("\"\"", typeof(IllegalCharacterException))]
         [InlineData("\"åéô\"", typeof(IllegalCharacterException))]
         [InlineData("\"©™Ω\" \"ºℨ\"", typeof(IllegalCharacterException))]
-        public void Test_Lexer_Flag_NoUnicode(string source, Type expectedExceptionType)
+        public void Flag_NoUnicode(string source, Type expectedExceptionType)
         {
             Assert.Throws(expectedExceptionType, () => GetTokens(source, LexerFlag.None).ToList());
         }
@@ -184,7 +184,7 @@ namespace Twister.Test.UnitTest.Lexer
         // TODO - Defect somewhere (could be VS Mac) where newline escapes are getting duplicated, 
         // which is breaking char parsing
         //[Fact]
-        //public void Test_Lexer_Combined()
+        //public void   Combined()
         //{
         //    foreach (var file in TestProgramLoader.AllPrograms())
         //    {

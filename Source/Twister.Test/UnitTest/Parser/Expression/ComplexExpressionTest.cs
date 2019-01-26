@@ -29,7 +29,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
 
         [Theory]
         [InlineData("(1 + 2 * ( 1 << 4) / (1024 >> 8)) % 4", 1)]
-        public void OperatorPrecedence_Int(string expressionStr, int expected)
+        public void Integer(string expressionStr, int expected)
         {
             SetupParser();
             var expression = GetTokens(expressionStr);
@@ -43,7 +43,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
 
         [Theory]
         [InlineData("((1 + 2 * ( 1 << 4) / (1024 >> 8)) % 4) > (16 ^ 16 | (4 & 32)) != false", true)]
-        public void OperatorPrecedence_Bool(string expressionStr, bool expected)
+        public void Bool(string expressionStr, bool expected)
         {
             SetupParser();
             var expression = GetTokens(expressionStr);

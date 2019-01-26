@@ -390,4 +390,67 @@ namespace Twister.Compiler.Parser.Node
 
         public override TwisterPrimitive Value => Left.Value || Right.Value;
     }
+
+    public sealed class BinaryExpressionNode : BaseExpressionNode
+    {
+        public BinaryExpressionNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right,
+         Operator op)
+            : base(left, right)
+        { Operator = op; }
+
+        public override ExpressionKind ExpressionKind => ExpressionKind.General;
+
+        public override Operator Operator { get; protected set; }
+
+        public override TwisterPrimitive Value
+        {
+            get
+            {
+                var l = Left.Value;
+                var r = Right.Value;
+                switch (Operator)
+                {
+                    case Operator.Plus:
+                        return l + r;
+                    case Operator.Minus:
+                        return l - r;
+                    case Operator.Modulo:
+                        return l % r;
+                    case Operator.Multiplication:
+                        return l * r;
+                    case Operator.ForwardSlash:
+                        return l / r;
+                    case Operator.BitAnd:
+                        return l & r;
+                    case Operator.BitOr:
+                        return l | r;
+                    case Operator.BitExOr:
+                        return l ^ r;
+                    case Operator.LeftShift:
+                        return l << r;
+                    case Operator.RightShift:
+                        return l >> r;
+                    case Operator.LogAnd:
+                        return l && r;
+                    case Operator.LogOr:
+                        return l || r;
+                    case Operator.LogEqual:
+                        return l == r;
+                    case Operator.LogNotEqual:
+                        return l != r;
+                    case Operator.LogLess:
+                        return l < r;
+                    case Operator.LogGreater:
+                        return l > r;
+                    case Operator.LogLessEqual:
+                        return l <= r;
+                    case Operator.LogGreaterEqual:
+                        return l >= r;
+                    default:
+                        throw new InvalidOperatorException("Expecting only binary operators")
+                        { InvalidOperator = Operator };
+                }
+            }
+        }
+    }
 }

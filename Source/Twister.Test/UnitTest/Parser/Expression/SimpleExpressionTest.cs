@@ -18,14 +18,13 @@ namespace Twister.Test.UnitTest.Parser.Expression
 
         private void SetupParser()
         {
-            _parser = new TwisterParser((tokens) =>
-                new TokenMatcher(
+            _parser = new TwisterParser((tokens) => new TokenMatcher(
                     new Scanner<IToken>(tokens, new EmptyToken())
                 ));
         }
 
         [Fact]
-        public void SimpleArith_Addition()
+        public void Addition()
         {
             SetupParser();
             IToken[] expression =
@@ -44,7 +43,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
         }
 
         [Fact]
-        public void SimpleArith_Mult()
+        public void Mult()
         {
             SetupParser();
             IToken[] expression =
@@ -63,7 +62,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
         }
 
         [Fact]
-        public void SimpleArith_Shift()
+        public void Shift()
         {
             SetupParser();
             IToken[] expression =
@@ -82,7 +81,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
         }
 
         [Fact]
-        public void SimpleArith_Relation()
+        public void Relation()
         {
             SetupParser();
             IToken[] expression =
@@ -101,7 +100,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
         }
 
         [Fact]
-        public void SimpleArith__Eq()
+        public void Eq()
         {
             SetupParser();
             IToken[] expression =
@@ -120,7 +119,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
         }
 
         [Fact]
-        public void SimpleArith_BitAnd()
+        public void BitAnd()
         {
             SetupParser();
             IToken[] expression =
@@ -139,7 +138,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
         }
 
         [Fact]
-        public void SimpleArith_BitExOr()
+        public void BitExOr()
         {
             SetupParser();
             IToken[] expression =
@@ -158,7 +157,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
         }
 
         [Fact]
-        public void SimpleArith_BitOr()
+        public void BitOr()
         {
             SetupParser();
             IToken[] expression =
@@ -177,7 +176,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
         }
 
         [Fact]
-        public void SimpleArith_LogAnd()
+        public void LogAnd()
         {
             SetupParser();
             IToken[] expression =
@@ -196,7 +195,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
         }
 
         [Fact]
-        public void SimpleArith_LogOr()
+        public void LogOr()
         {
             SetupParser();
             IToken[] expression =
@@ -215,7 +214,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
         }
 
         [Fact]
-        public void SimpleArith_Paren()
+        public void Paren()
         {
             SetupParser();
             IToken[] expression =
@@ -233,10 +232,10 @@ namespace Twister.Test.UnitTest.Parser.Expression
         }
 
         [Fact]
-        public void SimpleArith_Unary()
+        public void Unary()
         {
             SetupParser();
-            IToken[] expression = { 
+            IToken[] expression = {
                 new OperatorToken {Value = Operator.Minus},
                 new RealToken { Value = 10d },
                 new SemiColonToken()

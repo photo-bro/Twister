@@ -13,7 +13,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("", "", 0)]
         [InlineData("aabbccddeeaa", "aa", 2)]
         [InlineData("int main()\r\nHello World;\r\n", "\r\n", 2)]
-        public void Test_Count(string initialSpan, string initialItem, int expectedCount)
+        public void Count(string initialSpan, string initialItem, int expectedCount)
         {
             var span = initialSpan.AsSpan();
             var item = initialItem.AsSpan();
@@ -24,7 +24,7 @@ namespace Twister.Test.UnitTest.Lexer
         }
 
         [Fact]
-        public void Test_LexerFlag_AllowUnicode()
+        public void LexerFlag_AllowUnicode()
         {
             var flag = LexerFlag.AllowUnicode;
             Assert.True(flag.AllowUnicode());

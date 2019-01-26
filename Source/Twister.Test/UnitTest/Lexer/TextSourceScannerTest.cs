@@ -23,7 +23,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("123", 0, 3, '3')]
         [InlineData("123", 0, 4, EOF)]
         [InlineData("123", 2, 1, '3')]
-        public void Test_Advance_Happy(string source, int position, int advanceCount, char expected)
+        public void Advance_Happy(string source, int position, int advanceCount, char expected)
         {
             var scanner = new TextSourceScanner(source);
 
@@ -41,7 +41,7 @@ namespace Twister.Test.UnitTest.Lexer
 
         [Theory]
         [InlineData("123", -1)]
-        public void Test_Advance_NegativeCount(string source, int advanceCount)
+        public void Advance_NegativeCount(string source, int advanceCount)
         {
             var scanner = new TextSourceScanner(source);
 
@@ -67,7 +67,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("false", 5, -5, 'f')]
         [InlineData("abcdefghijklmnopqrstuv", 1, -1, 'a')]
         [InlineData("abcdefghijklmnopqrstuv", 5, -10, EOF)]
-        public void Test_PeekNext_Happy(string source, int position, int peekCount, char expected)
+        public void PeekNext_Happy(string source, int position, int peekCount, char expected)
         {
             var scanner = new TextSourceScanner(source);
 
@@ -89,7 +89,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("", 0, true)]
         [InlineData("", 1, true)]
         [InlineData("a", 1, true)]
-        public void Test_IsAtEnd(string source, int position, bool expected)
+        public void IsAtEnd(string source, int position, bool expected)
         {
             var scanner = new TextSourceScanner(source);
 
@@ -106,7 +106,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("\n\n\n\n", 1, 1)]
         [InlineData("int Main()\n{\n}\n\n", 25, 4)]
         [InlineData("int Main(){}", 25, 0)]
-        public void Test_CurrentSourceLine_Unix(string source, int position, int expected)
+        public void CurrentSourceLine_Unix(string source, int position, int expected)
         {
             var scanner = new TextSourceScanner(source);
 
@@ -129,7 +129,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("\r\n\r\n\r\n\r\n", 1, 0)]
         [InlineData("int Main()\r\n{\r\n}\r\n\r\n", 25, 4)]
         [InlineData("int Main(){}", 25, 0)]
-        public void Test_CurrentSourceLine_Windows(string source, int position, int expected)
+        public void CurrentSourceLine_Windows(string source, int position, int expected)
         {
             var scanner = new TextSourceScanner(source);
 
@@ -154,7 +154,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("0123456789", 9, 10, "9")]
         [InlineData("0123456789", 3, 10, "3456789")]
         [InlineData("0123456789", 10, 10, "")]
-        public void Test_CurrentWindow(string source, int @base, int position, string expected)
+        public void CurrentWindow(string source, int @base, int position, string expected)
         {
             var scanner = new TextSourceScanner(source);
 
@@ -174,9 +174,9 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("0123456789", 0, 10, "0123456789")]
         [InlineData("0123456789", 9, 10, "9")]
         [InlineData("0123456789", 3, 10, "3456789")]
-        [InlineData("0123456789", 10, 10, "")] 
-        [InlineData("(* \n *) 123u (* *)", 8, 4, "123u")] 
-        public void Test_CurrentWindow_WithBaseAdjust(string source, int position, int advanceCount, string expected)
+        [InlineData("0123456789", 10, 10, "")]
+        [InlineData("(* \n *) 123u (* *)", 8, 4, "123u")]
+        public void CurrentWindow_WithBaseAdjust(string source, int position, int advanceCount, string expected)
         {
             var scanner = new TextSourceScanner(source);
 
