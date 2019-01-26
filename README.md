@@ -9,6 +9,9 @@
 [![Build Status](https://travis-ci.org/photo-bro/Twister.svg?branch=master)](https://travis-ci.org/photo-bro/Twister)
 
 ## **Current Status:**
+*(1/26/19)*
+Lots of misc stuff. Arithmetic parsing works in recursive form, including unary precedence. Am working another implemention using a more generic iterative approach using less cascading methods and specific node class in lieu of a basic BinaryNode<Node l, Node r>. Also did a little work with symbols and scopes. Will probably jump back to actual parsing work soon.
+
 *(1/7/19)*
 Managed to wrap my head around the arithmetic precedence expression parsing finally. Will update the grammar soon to reflect the progress too. Turns out I didn't need to build out all those individual expression nodes, debating if I should just replace them with my original BinaryExpressionNode<T>.
 
