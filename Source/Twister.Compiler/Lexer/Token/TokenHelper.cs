@@ -86,7 +86,8 @@ namespace Twister.Compiler.Lexer.Token
         {
             Operator.Plus,
             Operator.Minus,
-            Operator.BitNot
+            Operator.BitNot,
+            Operator.LogNot
         };
 
         public static Keyword[] PrimitiveTypeKeywords =

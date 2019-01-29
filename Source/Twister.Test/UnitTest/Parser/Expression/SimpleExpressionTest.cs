@@ -5,7 +5,6 @@ using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
 using Twister.Compiler.Parser;
 using Twister.Compiler.Parser.Interface;
-using Twister.Compiler.Parser.Node;
 using Twister.Compiler.Parser.Primitive;
 
 namespace Twister.Test.UnitTest.Parser.Expression

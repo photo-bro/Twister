@@ -35,6 +35,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [InlineData("-1 + 2 * 3", 5)]
         [InlineData("-1 + -2", -3)]
         [InlineData("-1 - -2", 1)]
+        [InlineData("-1 - - - - -2", -3)]
         [InlineData("1 + 2 * -3", -5)] 
         public void Integer(string expression, int expected)
         {
