@@ -2,32 +2,36 @@
 using System.Collections.Generic;
 using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
+using Twister.Compiler.Lexer.Token;
+using Twister.Compiler.Parser.Enum;
 using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Parser.Node;
 using Twister.Compiler.Parser.Primitive;
-using Twister.Compiler.Lexer.Token;
-using Twister.Compiler.Parser.Enum;
 using Twister.Compiler.Parser.Symbol;
 
 namespace Twister.Compiler.Parser
 {
     public partial class TwisterParser : ITwisterParser
     {
-        private readonly Func<IEnumerable<IToken>, ITokenMatcher> CreateTokenMatcherFunc;
+        private readonly Func<IEnumerable<IToken>, ITokenMatcher> _createTokenMatcher;
+        private readonly IExpressionParser _expressionParser;
 
         private ITokenMatcher _matcher;
         private IScopeManager _scopeManager;
-
-
         private bool _hasMain;
 
-        public TwisterParser(Func<IEnumerable<IToken>, ITokenMatcher> createTokenMatcherFunc)
+
+        public TwisterParser(
+            Func<IEnumerable<IToken>, ITokenMatcher> createTokenMatcher,
+            IExpressionParser expressionParser)
         {
-            CreateTokenMatcherFunc = createTokenMatcherFunc;
+            _createTokenMatcher = createTokenMatcher;
+            _expressionParser = expressionParser; 
         }
 
-        private void SetupParser()
+        private void SetupParser(IEnumerable<IToken> tokens)
         {
+            _matcher = _createTokenMatcher(tokens);
             _scopeManager = new ScopeManager();
 
             _hasMain = false;
@@ -35,16 +39,14 @@ namespace Twister.Compiler.Parser
 
         public INode ParseProgram(IEnumerable<IToken> twisterTokens)
         {
-            _matcher = CreateTokenMatcherFunc(twisterTokens);
-            SetupParser();
+            SetupParser(twisterTokens);
 
             return Program(); // TODO !!! Set back to program and find a proper way to unit test these methods
         }
 
         public INode ParseExpression(IEnumerable<IToken> twisterTokens)
         {
-            _matcher = CreateTokenMatcherFunc(twisterTokens);
-            SetupParser();
+            SetupParser(twisterTokens);
 
             return Expression();
         }
@@ -102,23 +104,23 @@ namespace Twister.Compiler.Parser
         private IList<ISymbol> FuncParams()
         {
             _matcher.Match<LeftSquareBrackToken>();
-            var @params = Params();
+            var parameters = Params();
             _matcher.Match<RightSquareBrackToken>();
-            return @params;
+            return parameters;
         }
 
         //params ::= param {comma param}
         private IList<ISymbol> Params()
         {
-            var @params = new List<ISymbol> { Param() };
+            var parameters = new List<ISymbol> { Param() };
 
             while (_matcher.IsNext<CommaToken>())
             {
                 _matcher.Match();
-                @params.Add(Param());
+                parameters.Add(Param());
             }
 
-            return @params;
+            return parameters;
         }
 
         /// <summary>
@@ -157,7 +159,7 @@ namespace Twister.Compiler.Parser
         {
             _matcher.Match<LeftBrackToken>();
             var body = Body();
-            body.Add(ReturnExpression());
+            body.Add(Expression());
             return body;
         }
 

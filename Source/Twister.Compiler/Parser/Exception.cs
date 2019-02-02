@@ -1,7 +1,6 @@
 ﻿using System;
 using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
-using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser
 {

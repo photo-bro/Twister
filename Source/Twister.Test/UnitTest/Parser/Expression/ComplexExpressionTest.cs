@@ -1,12 +1,13 @@
-﻿using Xunit;
+﻿using System.Collections.Generic;
 using Twister.Compiler.Common;
+using Twister.Compiler.Lexer;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
 using Twister.Compiler.Parser;
+using Twister.Compiler.Parser.ExpressionParser;
 using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Parser.Primitive;
-using Twister.Compiler.Lexer;
-using System.Collections.Generic;
+using Xunit;
 
 namespace Twister.Test.UnitTest.Parser.Expression
 {
@@ -17,10 +18,9 @@ namespace Twister.Test.UnitTest.Parser.Expression
 
         private void SetupParser()
         {
-            _parser = new TwisterParser((tokens) =>
-                new TokenMatcher(
-                    new Scanner<IToken>(tokens, new EmptyToken())
-                ));
+            _parser = new TwisterParser(
+                createTokenMatcher: t => new TokenMatcher(new Scanner<IToken>(t, new EmptyToken())),
+                expressionParser: new GenericRDExpressionParser());
         }
 
         private IEnumerable<IToken> GetTokens(string expression) =>

@@ -27,6 +27,8 @@
     <Folder Include="Parser\Primitive\" />
     <Folder Include="Parser\Symbol\" />
     <Folder Include="Semantic Analysis\" />
+    <Folder Include="Parser\ExpressionParser\" />
+    <Folder Include="Parser\TwisterParser\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Parser\Parser\AssignmentParser.cs" />
