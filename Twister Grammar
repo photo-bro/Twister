@@ -45,6 +45,22 @@ logor_term      ::= || primitive
 primitive       ::= literal | variable | func_call | '(' expr ')'
 
 
+expr            ::= logor
+logor           ::= logand { || logand }
+logand          ::= bitor { & bitor }
+bitor           ::= bitexor { | bitexor }
+bitexor         ::= bitand { ^ bitand }
+bitand          ::= equal { & equal }
+equal           ::= relation { (== | !=) relation }
+relation        ::= shift { (< | <= | > | >=) shift }
+shift           ::= add { (<< | >>) add }
+add             ::= mult { (+ | -) mult }
+mult            ::= unary { (* | / | %) unary }
+unary           ::= primitve | { (- | ~ | + | !) unary }
+primitive       ::= literal | identifier | func_call | '(' expr ')'
+
+
+
 term            ::= primitive rest_term
 rest_term       ::= multiplicative rest_term
 

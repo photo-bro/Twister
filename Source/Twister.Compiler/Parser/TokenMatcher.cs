@@ -11,7 +11,7 @@ namespace Twister.Compiler.Parser
     {
         private readonly IScanner<IToken> _scanner;
 
-        public IToken Current => _scanner.CurrentWindow.ToArray()[0];
+        public IToken Current => _scanner.Peek(0);
 
         public IToken Peek => _scanner.Peek();
 
@@ -87,5 +87,11 @@ namespace Twister.Compiler.Parser
                 _scanner.Advance();
             }
         }
+
+        public T MatchAndGetIfNext<T>() where T : IToken => IsNext<T>() ? MatchAndGet<T>() : default(T);
+
+        public T MatchAndGetIfNext<T>(Predicate<T> constraint) where T : IToken => IsNext(constraint)
+                                                                                       ? MatchAndGet(constraint)
+                                                                                       : default(T);
     }
 }

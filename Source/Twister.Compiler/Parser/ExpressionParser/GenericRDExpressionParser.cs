@@ -24,37 +24,52 @@ namespace Twister.Compiler.Parser.ExpressionParser
             return Evaluate();
         }
 
-        private IValueNode<TwisterPrimitive> Evaluate(PrecedenceLevel precedence = PrecedenceLevel.Unary,
-            IValueNode<TwisterPrimitive> left = null)
+        private IValueNode<TwisterPrimitive> Evaluate(PrecedenceLevel precedence = PrecedenceLevel.LogOr)
         {
-            var op = Operator.None;
-            var peekKind = _matcher.Peek.Kind;
-            switch (peekKind)
+            var nextPrecedence = (PrecedenceLevel)((int)precedence - 1);
+            var left = EvaluateNext(precedence, nextPrecedence);
+
+            var nextOperator = (_matcher.Peek as IValueToken<Operator>)?.Value;
+            while (nextOperator.HasValue && IsOperatorInPrecedence(nextOperator.Value, precedence))
             {
-                case var k when k.IsPrimitive():
-                case TokenKind.Identifier:
-                case TokenKind.LeftParen:
-                    return Evaluate(PrecedenceLevel.Multiplicative, Primitive());
-                case TokenKind.Operator:
-                    //op = _matcher.MatchAndGet<IValueToken<Operator>>().Value;
-                    //op = (_matcher.Peek as IValueToken<Operator>).Value;
-                    break;
-                default:
-                    return left;
+                var op = _matcher.MatchAndGet<IValueToken<Operator>>().Value;
+
+                var right = precedence <= PrecedenceLevel.Multiplicative
+                    ? EvaluateUnary()
+                    : Evaluate(nextPrecedence);
+
+                left = new BinaryExpressionNode(left, right, op);
+                nextOperator = (_matcher.Peek as IValueToken<Operator>)?.Value;
             }
 
+            return left;
+        }
 
-            IValueNode<TwisterPrimitive> evalNode()
+        private IValueNode<TwisterPrimitive> EvaluateNext(PrecedenceLevel precedence, PrecedenceLevel nextPrecedence) =>
+            precedence <= PrecedenceLevel.Multiplicative
+                ? EvaluateUnary()
+                : Evaluate(nextPrecedence);
+
+        private IValueNode<TwisterPrimitive> EvaluateUnary()
+        {
+            var op = (_matcher.Peek as IValueToken<Operator>)?.Value;
+            if (op.HasValue && op.Value.IsUnaryArithmeticOperator())
             {
-                _matcher.Match<IValueToken<Operator>>(t => t.Value == op);
-                return Evaluate(++precedence, new BinaryExpressionNode(left, Evaluate(), op));
+                _matcher.Match();
+                var right = EvaluateUnary();
+                return new UnaryExpressionNode(right, op.Value);
             }
 
+            return Primitive();
+        }
+
+        private bool IsOperatorInPrecedence(Operator op, PrecedenceLevel precedence)
+        {
+            var isPrecedenceOperator = false;
             switch (precedence)
             {
                 case PrecedenceLevel.Unary:
-                    if (op.IsUnaryArithmeticOperator())
-                        return Evaluate(PrecedenceLevel.Multiplicative, Unary(op));
+                    isPrecedenceOperator |= op.IsUnaryArithmeticOperator();
                     break;
                 case PrecedenceLevel.Multiplicative:
                     switch (op)
@@ -62,7 +77,8 @@ namespace Twister.Compiler.Parser.ExpressionParser
                         case Operator.Multiplication:
                         case Operator.ForwardSlash:
                         case Operator.Modulo:
-                            return evalNode();
+                            isPrecedenceOperator = true;
+                            break;
                     }
                     break;
                 case PrecedenceLevel.Addition:
@@ -70,7 +86,8 @@ namespace Twister.Compiler.Parser.ExpressionParser
                     {
                         case Operator.Plus:
                         case Operator.Minus:
-                            return evalNode();
+                            isPrecedenceOperator = true;
+                            break;
                     }
                     break;
                 case PrecedenceLevel.Shift:
@@ -78,7 +95,8 @@ namespace Twister.Compiler.Parser.ExpressionParser
                     {
                         case Operator.LeftShift:
                         case Operator.RightShift:
-                            return evalNode();
+                            isPrecedenceOperator = true;
+                            break;
                     }
                     break;
                 case PrecedenceLevel.Relational:
@@ -88,7 +106,8 @@ namespace Twister.Compiler.Parser.ExpressionParser
                         case Operator.LogGreaterEqual:
                         case Operator.LogLess:
                         case Operator.LogLessEqual:
-                            return evalNode();
+                            isPrecedenceOperator = true;
+                            break;
                     }
                     break;
                 case PrecedenceLevel.Equality:
@@ -96,42 +115,48 @@ namespace Twister.Compiler.Parser.ExpressionParser
                     {
                         case Operator.LogEqual:
                         case Operator.LogNotEqual:
-                            return evalNode();
+                            isPrecedenceOperator = true;
+                            break;
                     }
                     break;
                 case PrecedenceLevel.BitAnd:
                     switch (op)
                     {
                         case Operator.BitAnd:
-                            return evalNode();
+                            isPrecedenceOperator = true;
+                            break;
                     }
                     break;
                 case PrecedenceLevel.BitExor:
                     switch (op)
                     {
                         case Operator.BitExOr:
-                            return evalNode();
+                            isPrecedenceOperator = true;
+                            break;
                     }
                     break;
                 case PrecedenceLevel.BitOr:
                     switch (op)
                     {
                         case Operator.BitOr:
-                            return evalNode();
+                            isPrecedenceOperator = true;
+                            break;
                     }
                     break;
                 case PrecedenceLevel.LogAnd:
                     switch (op)
                     {
                         case Operator.LogAnd:
-                            return evalNode();
+                            isPrecedenceOperator = true;
+                            break;
                     }
                     break;
                 case PrecedenceLevel.LogOr:
                     switch (op)
                     {
                         case Operator.LogOr:
-                            return evalNode();
+                            isPrecedenceOperator = true;
+                            break;
                     }
                     break;
                 default:
@@ -139,35 +164,7 @@ namespace Twister.Compiler.Parser.ExpressionParser
                     { UnexpectedToken = _matcher.Current };
             }
 
-            IValueNode<TwisterPrimitive> right = null;
-            for (var nextprecedence = PrecedenceLevel.Unary; nextprecedence <= PrecedenceLevel.LogOr; ++nextprecedence)
-            {
-                right = Evaluate(nextprecedence, right);
-            }
-
-            return Evaluate(
-                precedence: precedence,
-                left: new BinaryExpressionNode(
-                    left: left,
-                    right: right,
-                    op: op));
-        }
-
-        private IValueNode<TwisterPrimitive> Unary(Operator op)
-        {
-            switch (_matcher.Peek.Kind)
-            {
-                case var k when k.IsPrimitive():
-                case TokenKind.Identifier:
-                case TokenKind.LeftParen:
-                    return new UnaryExpressionNode(Primitive().Value, op);
-                case TokenKind.Operator:
-                    var nextOp = _matcher.MatchAndGet<IValueToken<Operator>>().Value;
-                    return new UnaryExpressionNode(Unary(nextOp).Value, op);
-            }
-
-            throw new UnexpectedTokenException("Expecting numeric literal or identifer")
-            { UnexpectedToken = _matcher.Peek };
+            return isPrecedenceOperator;
         }
 
         private IValueNode<TwisterPrimitive> Primitive()

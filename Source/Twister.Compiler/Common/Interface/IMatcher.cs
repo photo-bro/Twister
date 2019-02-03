@@ -13,6 +13,10 @@ namespace Twister.Compiler.Common.Interface
 
         U MatchAndGet<U>(Predicate<U> constraint) where U : T;
 
+        U MatchAndGetIfNext<U>() where U : T;
+
+        U MatchAndGetIfNext<U>(Predicate<U> constraint) where U : T;
+
         void Match();
 
         void Match<U>() where U : T;
