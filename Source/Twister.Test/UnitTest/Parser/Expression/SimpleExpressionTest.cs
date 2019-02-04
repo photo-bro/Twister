@@ -1,4 +1,5 @@
-﻿using Twister.Compiler.Common;
+﻿using System.Collections.Generic;
+using Twister.Compiler.Common;
 using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
@@ -14,19 +15,18 @@ namespace Twister.Test.UnitTest.Parser.Expression
 
     public class SimpleExpressionTest
     {
-        ITwisterParser _parser;
-
-        private void SetupParser()
+        private IValueNode<TwisterPrimitive> ParseExpression(IEnumerable<IToken> expression)
         {
-            _parser = new TwisterParser(
-                createTokenMatcher: t => new TokenMatcher(new Scanner<IToken>(t, new EmptyToken())),
-                expressionParser: new GenericRDExpressionParser());
+            var parser = new RecursiveDescentExpressionParser();
+            return parser.ParseArithmeticExpression(
+                matcher: new TokenMatcher(new Scanner<IToken>(expression, new EmptyToken())),
+                scopeManager: new ScopeManager(),
+                assignmentCallback: null);
         }
 
         [Fact]
         public void Addition()
         {
-            SetupParser();
             IToken[] expression =
             {
                 new SignedIntToken{Value = 1},
@@ -35,7 +35,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -45,7 +45,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [Fact]
         public void Mult()
         {
-            SetupParser();
             IToken[] expression =
             {
                 new SignedIntToken{Value = 9},
@@ -54,7 +53,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -64,7 +63,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [Fact]
         public void Shift()
         {
-            SetupParser();
             IToken[] expression =
             {
                 new SignedIntToken{Value = 1},
@@ -73,7 +71,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -83,7 +81,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [Fact]
         public void Relation()
         {
-            SetupParser();
             IToken[] expression =
             {
                 new SignedIntToken{Value = 9},
@@ -92,7 +89,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -102,7 +99,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [Fact]
         public void Eq()
         {
-            SetupParser();
             IToken[] expression =
             {
                 new SignedIntToken{Value = 10},
@@ -111,7 +107,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -121,7 +117,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [Fact]
         public void BitAnd()
         {
-            SetupParser();
             IToken[] expression =
             {
                 new SignedIntToken{Value = 0xFF},
@@ -130,7 +125,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -140,7 +135,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [Fact]
         public void BitExOr()
         {
-            SetupParser();
             IToken[] expression =
             {
                 new SignedIntToken{Value = 0xFF},
@@ -149,7 +143,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -159,7 +153,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [Fact]
         public void BitOr()
         {
-            SetupParser();
             IToken[] expression =
             {
                 new SignedIntToken{Value = 0x0},
@@ -168,7 +161,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -178,7 +171,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [Fact]
         public void LogAnd()
         {
-            SetupParser();
             IToken[] expression =
             {
                 new BoolLiteralToken{Value = true},
@@ -187,7 +179,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -197,7 +189,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [Fact]
         public void LogOr()
         {
-            SetupParser();
             IToken[] expression =
             {
                 new BoolLiteralToken{Value = true},
@@ -206,7 +197,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -216,7 +207,6 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [Fact]
         public void Paren()
         {
-            SetupParser();
             IToken[] expression =
             {   new LeftParenToken(),
                 new SignedIntToken {Value = 10},
@@ -224,7 +214,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -234,14 +224,13 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [Fact]
         public void Unary()
         {
-            SetupParser();
             IToken[] expression = {
                 new OperatorToken {Value = Operator.Minus},
                 new RealToken { Value = 10d },
                 new SemiColonToken()
             };
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 

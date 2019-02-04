@@ -14,13 +14,13 @@ namespace Twister.Test.UnitTest.Parser.Expression
 #pragma warning disable CS1701 // Assuming assembly reference matches identity
     public class ComplexExpressionTest
     {
-        ITwisterParser _parser;
-
-        private void SetupParser()
+        private IValueNode<TwisterPrimitive> ParseExpression(IEnumerable<IToken> expression)
         {
-            _parser = new TwisterParser(
-                createTokenMatcher: t => new TokenMatcher(new Scanner<IToken>(t, new EmptyToken())),
-                expressionParser: new GenericRDExpressionParser());
+            var parser = new RecursiveDescentExpressionParser();
+            return parser.ParseArithmeticExpression(
+                matcher: new TokenMatcher(new Scanner<IToken>(expression, new EmptyToken())),
+                scopeManager: new ScopeManager(),
+                assignmentCallback: null);
         }
 
         private IEnumerable<IToken> GetTokens(string expression) =>
@@ -31,10 +31,9 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [InlineData("(1 + 2 * ( 1 << 4) / (1024 >> 8)) % 4", 1)]
         public void Integer(string expressionStr, int expected)
         {
-            SetupParser();
             var expression = GetTokens(expressionStr);
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 
@@ -45,10 +44,9 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [InlineData("((1 + 2 * ( 1 << 4) / (1024 >> 8)) % 4) > (16 ^ 16 | (4 & 32)) != false", true)]
         public void Bool(string expressionStr, bool expected)
         {
-            SetupParser();
             var expression = GetTokens(expressionStr);
 
-            var actualNode = _parser.ParseExpression(expression) as IValueNode<TwisterPrimitive>;
+            var actualNode = ParseExpression(expression);
 
             var actual = actualNode.Value;
 

@@ -15,13 +15,13 @@ namespace Twister.Test.UnitTest.Parser.Expression
 
     public class ExpressionPrecedenceTest
     {
-        ITwisterParser _parser;
-
-        private void SetupParser()
+        private IValueNode<TwisterPrimitive> ParseExpression(IEnumerable<IToken> expression)
         {
-            _parser = new TwisterParser(
-               createTokenMatcher: t => new TokenMatcher(new Scanner<IToken>(t, new EmptyToken())),
-               expressionParser: new GenericRDExpressionParser());
+            var parser = new RecursiveDescentExpressionParser();
+            return parser.ParseArithmeticExpression(
+                matcher: new TokenMatcher(new Scanner<IToken>(expression, new EmptyToken())),
+                scopeManager: new ScopeManager(),
+                assignmentCallback: null);
         }
 
         private IEnumerable<IToken> GetTokens(string expression) =>
@@ -40,14 +40,12 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [InlineData("1 + 2 * -3", -5)]
         [InlineData("4 | 8 ^ 16 & 12 << 2 + 24 * -12", 28)]
         [InlineData("-256 / 64 - 72 >> 3 & 55 ^ 23 | 5", 37)]
-        [InlineData("-256 / -64 - 72 << -3 & 55 ^ -23 | 99", -21)] 
+        [InlineData("-256 / -64 - 72 << -3 & 55 ^ -23 | 99", -21)]
         public void Integer(string expression, int expected)
         {
-            SetupParser();
-
             var tokens = GetTokens(expression);
 
-            var node = _parser.ParseExpression(tokens) as IValueNode<TwisterPrimitive>;
+            var node = ParseExpression(tokens);
 
             Assert.NotNull(node);
 
@@ -64,11 +62,9 @@ namespace Twister.Test.UnitTest.Parser.Expression
         [InlineData("2 + -2 * -4 / 2 << 3 ^ 2", 50)]
         public void IntegerAllPrecedence(string expression, int expected)
         {
-            SetupParser();
-
             var tokens = GetTokens(expression);
 
-            var node = _parser.ParseExpression(tokens) as IValueNode<TwisterPrimitive>;
+            var node = ParseExpression(tokens);
 
             Assert.NotNull(node);
 

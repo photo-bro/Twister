@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Twister.Test.Data
@@ -15,10 +16,10 @@ namespace Twister.Test.Data
 
         public static string Literals => File.ReadAllText(ProgramDirectory + @"Literals.twt");
 
-        public static IEnumerable<string> AllPrograms()
+        public static IEnumerable<Tuple<string, string>> AllPrograms()
         {
             foreach (var file in Directory.GetFiles(ProgramDirectory, "*.twt"))
-                yield return File.ReadAllText(file);
+                yield return Tuple.Create(file, File.ReadAllText(file));
         }
     }
 }

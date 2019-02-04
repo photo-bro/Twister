@@ -2,7 +2,7 @@
 program         ::= func {func}
 
 *** Functions
-function        ::= func identifier func_params {define_op type} colon func_body
+function        ::= func identifier {func_params} {define_op type} colon func_body
 func_call       ::= identifier rsqrbrack {args} lsqrbrack scolon
 args            ::= (literal | identifier) {comma (literal | identifier)}
 func_params     ::= lsqrbrack params rsqrbrack
@@ -17,35 +17,8 @@ body            ::= expression | statement | lbrack {(expression | statement)} r
 *** Expressions
 expression      ::= (general_exp | return_exp)
 return_expr     ::= ret arith_exp
-arith_exp       ::= (numeric_lit | identifier | arith_exp) {arith_op (numeric_lit | identifier)}
 
-
-expr            ::=  primitive | unary  
-unary           ::=  (- | ~ | !) primitive | unary multiplicative
-multiplicative  ::= unary mult_term
-mult_term       ::= mult_op multiplicative
-additive        ::= mult_term add_term
-add_term        ::= add_op additve
-shift           ::= add_term shift_term
-shift_term      ::= shift_op shift
-relation        ::= shift_term rel_term
-rel_term        ::= rel_op relation
-equal           ::= rel_term eq_term
-eq_term         ::= eq_op equal
-bitand          ::= eq_term bitand_term
-bitand_term     ::= & bitand
-bitexor         ::= bitand_term bitexor_term
-bitexor_term    ::= ^ bitexor
-bitor           ::= bitexor_term bitor_term
-bitor_term      ::= | bitor
-logand          ::= bitor_term logand_term
-logand_term     ::= && logand
-logor           ::= logand_term logor_term
-logor_term      ::= || primitive
-primitive       ::= literal | variable | func_call | '(' expr ')'
-
-
-expr            ::= logor
+arith_expr      ::= logor
 logor           ::= logand { || logand }
 logand          ::= bitor { & bitor }
 bitor           ::= bitexor { | bitexor }
@@ -58,12 +31,6 @@ add             ::= mult { (+ | -) mult }
 mult            ::= unary { (* | / | %) unary }
 unary           ::= primitve | { (- | ~ | + | !) unary }
 primitive       ::= literal | identifier | func_call | '(' expr ')'
-
-
-
-term            ::= primitive rest_term
-rest_term       ::= multiplicative rest_term
-
 
 *** Declaration + Assignment (Expressions)
 general_das     ::= type assign (arith_exp | func_call)

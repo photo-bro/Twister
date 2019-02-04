@@ -1,11 +1,9 @@
-﻿using Twister.Compiler.Lexer.Enum;
+﻿using System.Collections.Generic;
+using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
 using Twister.Compiler.Parser.Interface;
-using Twister.Compiler.Parser.Primitive;
 using Twister.Compiler.Parser.Node;
-using Twister.Compiler.Parser.Enum;
-using System.Collections.Generic;
 
 namespace Twister.Compiler.Parser
 {
@@ -24,7 +22,7 @@ namespace Twister.Compiler.Parser
 
         public INode SimpleStatement()
         {
-            if (_matcher.Peek.Kind == TokenKind.Semicolon)
+            if (_matcher.IsNext<SemiColonToken>())
             {
                 _matcher.Match();
                 return new TerminalNode();

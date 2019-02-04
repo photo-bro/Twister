@@ -26,11 +26,14 @@ namespace Twister.Compiler.Parser
             IExpressionParser expressionParser)
         {
             _createTokenMatcher = createTokenMatcher;
-            _expressionParser = expressionParser; 
+            _expressionParser = expressionParser;
         }
 
         private void SetupParser(IEnumerable<IToken> tokens)
         {
+            if (tokens == null)
+                throw new InvalidProgramException("Source text is empty");
+
             _matcher = _createTokenMatcher(tokens);
             _scopeManager = new ScopeManager();
 
@@ -41,7 +44,7 @@ namespace Twister.Compiler.Parser
         {
             SetupParser(twisterTokens);
 
-            return Program(); // TODO !!! Set back to program and find a proper way to unit test these methods
+            return Program();
         }
 
         public INode ParseExpression(IEnumerable<IToken> twisterTokens)
@@ -57,7 +60,7 @@ namespace Twister.Compiler.Parser
         private INode Program()
         {
             var functionBody = new List<IFuncNode<TwisterPrimitive>>();
-            while (_matcher.IsNext<IToken>())
+            while (_matcher.Peek.Kind != TokenKind.None)
                 functionBody.Add(Function());
 
             if (!_hasMain)
@@ -67,18 +70,22 @@ namespace Twister.Compiler.Parser
         }
 
         /// <summary>
-        /// function ::= func identifier func_params {define_op type} colon funcbody
+        /// function ::= func identifier {func_params} {define_op type} colon func_body
         /// </summary>
         private IFuncNode<TwisterPrimitive> Function()
         {
             var funcToken = _matcher.MatchAndGet<IValueToken<Keyword>>(t => t.Value == Keyword.Func);
-            var idToken = _matcher.MatchAndGet<IValueToken<string>>();
-            var funcName = idToken.Value;
-            if (idToken.Value == "main")
+            var funcName = _matcher.MatchAndGet<IValueToken<string>>().Value;
+
+            if (funcName == "main")
                 _hasMain = true; // TODO : Pattern check full main func signature
 
             var scope = _scopeManager.NewScope();
-            scope.AddSymbols(FuncParams());
+            if (_matcher.IsNext<RightBrackToken>())
+            {
+                var funcParams = FuncParams();
+                scope.AddSymbols(funcParams);
+            }
             _scopeManager.RemoveBottomScope();
 
             var type = TwisterType.Void;
@@ -90,12 +97,13 @@ namespace Twister.Compiler.Parser
             }
 
             _matcher.Match<ColonToken>();
-
+             
             var body = FuncBody();
 
-            _scopeManager.ActiveScope.AddSymbol(new FuncSymbol()); // TODO - Flesh out FuncSymbol
+            var funcSymbol = new FuncSymbol(funcName, type, SymbolAttribute.None, null /* TODO */);
+            _scopeManager.ActiveScope.AddSymbol(funcSymbol);
 
-            return new FuncNode<TwisterPrimitive>(idToken.Value, type, scope, body);
+            return new FuncNode<TwisterPrimitive>(funcName, type, scope, body);
         }
 
         /// <summary>
@@ -159,29 +167,32 @@ namespace Twister.Compiler.Parser
         {
             _matcher.Match<LeftBrackToken>();
             var body = Body();
-            body.Add(Expression());
+            var returnExpression = Expression();
+            body.Add(returnExpression);
             return body;
         }
 
         /// <summary>
-        /// body ::= expression | statement | lbrack {(expression | statement)} rbrack
+        /// body ::=  statement | lbrack {statement} rbrack
         /// </summary>
         private IList<INode> Body()
         {
             var nodes = new List<INode>();
-            var next = _matcher.Peek;
-            if (next.Kind == TokenKind.LeftBrack)
+            if (_matcher.IsNext<LeftBrackToken>())
             {
                 _matcher.Match();
                 while (!_matcher.IsNext<RightBrackToken>())
                 {
-
+                    nodes.Add(Statement());
                 }
                 _matcher.Match<RightBrackToken>();
             }
+            else
+            {
+                nodes.Add(Statement());
+            }
 
-            // TODO
-            return null;
+            return nodes;
         }
     }
 }

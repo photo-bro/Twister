@@ -9,7 +9,7 @@ using Twister.Compiler.Parser.Primitive;
 
 namespace Twister.Compiler.Parser.ExpressionParser
 {
-    public class GenericRDExpressionParser : IExpressionParser
+    public class RecursiveDescentExpressionParser : IExpressionParser
     {
         private ITokenMatcher _matcher;
         private IScopeManager _scopeManager;

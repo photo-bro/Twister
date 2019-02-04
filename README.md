@@ -9,6 +9,9 @@
 [![Build Status](https://travis-ci.org/photo-bro/Twister.svg?branch=master)](https://travis-ci.org/photo-bro/Twister)
 
 ## **Current Status:**
+*(2/3/19)*
+Finally implemented arithmetic parsing in a clean and simple recursive descent form. Lots of refactoring rearranging of code and files. Focussing on regular program parsing now.
+
 *(1/26/19)*
 Lots of misc stuff. Arithmetic parsing works in recursive form, including unary precedence. Am working another implemention using a more generic iterative approach using less cascading methods and specific node class in lieu of a basic BinaryNode<Node l, Node r>. Also did a little work with symbols and scopes. Will probably jump back to actual parsing work soon.
 

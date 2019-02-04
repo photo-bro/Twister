@@ -6,14 +6,22 @@ namespace Twister.Compiler.Parser.Symbol
 {
     public class FuncSymbol : ISymbol
     {
-       public string Identifier => throw new NotImplementedException();
+        public FuncSymbol(string identifier, TwisterType type, SymbolAttribute attributes, object value)
+        {
+            Identifier = identifier;
+            DataType = type;
+            Attributes = attributes;
+            Value = value;
+        }
 
-        public SymbolKind Kind => throw new NotImplementedException();
+        public string Identifier { get; private set; }
 
-        public SymbolAttribute Attributes => throw new NotImplementedException();
+        public SymbolKind Kind => SymbolKind.Function;
 
-        public TwisterType DataType => throw new NotImplementedException();
+        public SymbolAttribute Attributes { get; private set; }
 
-        public object Value => throw new NotImplementedException();
+        public TwisterType DataType { get; private set; }
+
+        public object Value { get; private set; }
     }
 }
