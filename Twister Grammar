@@ -9,6 +9,7 @@ func_params     ::= lsqrbrack params rsqrbrack
 func_body       ::= lbrack body return_expr rbrack
 
 *** Statements
+statement       ::= (if_stmt | else_stmt | while_stmt | func_call | declaration | assignment | block) scolon
 if_stmt         ::= if cond_exp colon expression_body {(else_stmt | else if_stmt)}
 else_stmt       ::= else (expression | lbrack {expression} rbrack)
 while_stmt      ::= while cond_exp : expression_body
@@ -33,15 +34,20 @@ unary           ::= primitve | { (- | ~ | + | !) unary }
 primitive       ::= literal | identifier | func_call | '(' expr ')'
 
 *** Declaration + Assignment (Expressions)
-general_das     ::= type assign (arith_exp | func_call)
+assignment      ::= (var_decl | identifier) assign (arith_exp | func_call) 
 var_das         ::= bool_das | char_das | str_das | int_das | uint_das | float_das
-bool_das        ::= bool identifier assign (true | false) scolon
-char_das        ::= char identifier assign char_lit scolon
-string_das      ::= str identifier assign str_lit scolon
-int_das         ::= int identifier assign int_lit scolon
-uint_das        ::= uint identifier assign uint_lit scolon
-float_das       ::= float identifier assign float_lit scolon
+bool_das        ::= bool identifier assign (true | false) 
+char_das        ::= char identifier assign char_lit 
+string_das      ::= str identifier assign str_lit 
+int_das         ::= int identifier assign int_lit 
+uint_das        ::= uint identifier assign uint_lit 
+float_das       ::= float identifier assign float_lit 
  
+*** Declarations
+declaration     ::= (struct_decl | var_decl) 
+struct_decl     ::= def struct identifier colon lbrack params rbrack 
+var_decl        ::= type colon identifier  
+
 *** Literals 
 literal         ::= bool_lit | char_lit | str_lit | int_lit | uint_lit | float_lit
 numeric_lit     ::= int_lit | uint_lit | float_lit
@@ -52,9 +58,6 @@ int_lit         ::= {-} digit {digit}
 uint_lit        ::= digit {digit} (u | U)
 float_lit       ::= {-} {digit} dot {digit}
 
-*** Declarations
-struct_decl     ::= def struct identifier colon lbrack params rbrack scolon
-var_decl        ::= type colon identifier scolon 
 
 *** Parameter
 params          ::= param {comma param}

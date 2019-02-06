@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
@@ -10,76 +11,111 @@ namespace Twister.Compiler.Parser
     public partial class TwisterParser
     {
         /// <summary>
-        /// 
+        /// statement ::= (if_stmt | else_stmt | while_stmt | func_call | declaration | assignment | block) scolon
         /// </summary>
-        public IValueNode<INode> Statement()
+        public INode Statement()
         {
+            INode statementNode;
+            var peek = _matcher.Peek;
 
-
-
-            return null;
-        }
-
-        public INode SimpleStatement()
-        {
-            if (_matcher.IsNext<SemiColonToken>())
+            switch (peek)
             {
-                _matcher.Match();
-                return new TerminalNode();
-            }
-
-            switch (_matcher.Peek)
-            {
-                case IValueToken<Keyword> keyToken when keyToken is IValueToken<Keyword>:
+                case LeftBrackToken leftBrackToken:
+                    statementNode = Block();
+                    break;
+                case IValueToken<Keyword> keywordToken:
                     {
-                        switch (keyToken.Value)
+                        switch (keywordToken.Value)
                         {
+                            case var t when t.IsTypeKeyword():
+                            case var tt when tt == Keyword.Def:
+                                statementNode = Declaration();
+                                break;
                             case Keyword.If:
+                                statementNode = If();
                                 break;
                             case Keyword.Else:
-                                break;
-                            case Keyword.Func:
-                                break;
-                            case Keyword.Def:
-                                break;
-                            case Keyword.Return:
+                                statementNode = Else();
                                 break;
                             case Keyword.While:
-                                break;
-                            case Keyword.Cont:
+                                statementNode = While();
                                 break;
                             case Keyword.Break:
+                                statementNode = Break();
                                 break;
-                            case Keyword.Bool:
-                            case Keyword.Char:
-                            case Keyword.Int:
-                            case Keyword.UInt:
-                            case Keyword.Float:
-                            case Keyword.Str:
-                            default:
-                                throw new UnexpectedTokenException("Unexpected token")
-                                { UnexpectedToken = keyToken };
+                            case Keyword.Cont:
+                                statementNode = Cont();
+                                break;
                         }
-                        break;
                     }
+                    break;
+                case IValueToken<string> identifierToken:
+                    {
+                        var peekAfter = _matcher.PeekNext(2);
+                        statementNode = peekAfter.Kind == TokenKind.RightSquareBrack
+                            ? FuncCall()
+                            : Assignment();
+                    }
+                    break;
             }
 
+            _matcher.Match<SemiColonToken>();
             return null;
         }
+
+
 
         /// <summary>
         /// '{' { statement } '}'
         /// </summary>
-        public IValueNode<INode> BlockStatement()
+        public IValueNode<INode> Block()
         {
-            _matcher.Match<LeftBrackToken>();
             var statementList = new List<INode>();
+
+            _matcher.Match<LeftBrackToken>();
+            if (_matcher.IsNext<RightBrackToken>())
+            {
+                _matcher.Match();
+                return null;
+            }
+
             for (var snode = Statement(); snode != null || !(snode is TerminalNode); snode = Statement())
+            {
                 statementList.Add(snode);
+            }
 
             _matcher.Match<RightBrackToken>();
             return null;
         }
 
+        private INode If()
+        {
+            return null;
+        }
+
+        private INode Else()
+        {
+            return null;
+        }
+
+        private INode While()
+        {
+            return null;
+        }
+
+        private INode FuncCall()
+        {
+            return null;
+        }
+
+        private INode Cont()
+        {
+            return null;
+        }
+
+        private INode Break()
+        {
+            return null;
+        }
     }
 }

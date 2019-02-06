@@ -17,7 +17,7 @@ namespace Twister.Compiler.Parser
         /// <summary>
         /// assignment ::= type identifier assign (arith_exp | func_call)
         /// </summary>
-        private IValueNode<TwisterPrimitive> Assign(IValueNode<TwisterPrimitive> right)
+        private INode Assign(IValueNode<TwisterPrimitive> right)
         {
             var type = _matcher.MatchAndGet<IValueToken<Keyword>>(t => t.Value.IsTypeKeyword());
             var id = _matcher.MatchAndGet<IValueToken<string>>();
@@ -34,6 +34,39 @@ namespace Twister.Compiler.Parser
                 };
 
             return null;//new SymbolNode(SymbolKind.Variable, id.Value, right.Value); TODO
+        }
+
+        private INode Declaration()
+        {
+            switch (_matcher.Peek)
+            {
+                case var k when k is IValueToken<Keyword>:
+
+                default:
+                    break;
+            }
+
+
+
+            return null;
+        }
+
+
+        private INode StructDeclaration()
+        {
+
+            return null;
+        }
+
+        private INode VariableDeclaration()
+        {
+            var type = _matcher.MatchAndGet<IValueToken<Keyword>>(t => t.Value.IsTypeKeyword());
+            var id = _matcher.MatchAndGet<IValueToken<string>>();
+            _matcher.Match<AssignToken>();
+
+
+
+            return null;
         }
     }
 }
