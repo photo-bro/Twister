@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
@@ -66,7 +67,7 @@ namespace Twister.Compiler.Parser
             if (!_hasMain)
                 throw new InvalidProgramException("Program entry point, 'func main', is missing");
 
-            return new ProgramNode((IList<INode>)functionBody);
+            return new ProgramNode(functionBody.Cast<INode>().ToList());
         }
 
         /// <summary>

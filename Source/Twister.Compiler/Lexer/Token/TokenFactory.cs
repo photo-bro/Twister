@@ -41,15 +41,13 @@ namespace Twister.Compiler.Lexer.Token
                 case TokenKind.LeftSquareBrack:
                     return new LeftSquareBrackToken { LineNumber = info.SourceLineNumber };
                 case TokenKind.RightSquareBrack:
-                    return new RightSquareBrackToken { LineNumber = info.SourceLineNumber };               
+                    return new RightSquareBrackToken { LineNumber = info.SourceLineNumber };
                 default:
                     return new EmptyToken
                     {
                         LineNumber = info.SourceLineNumber
                     };
             }
-
-
         }
 
         private static IToken CreateValueToken(ref TokenInfo info, ref LexerFlag flags)
@@ -190,6 +188,5 @@ namespace Twister.Compiler.Lexer.Token
                     throw new NotSupportedException($"TokenType {info.TokenType} currently not supported");
             }
         }
-
     }
 }

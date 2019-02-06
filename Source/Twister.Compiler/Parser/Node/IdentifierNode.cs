@@ -8,7 +8,7 @@ namespace Twister.Compiler.Parser.Node
         public IdentifierNode(string identifier)
         { Value = identifier; }
 
-        public string Value { get; private set; }
+        public string Value { get; }
 
         public NodeKind Kind => NodeKind.Identifier;
     }

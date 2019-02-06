@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Twister.Compiler.Parser.Enum;
 using Twister.Compiler.Parser.Interface;
-using Twister.Compiler.Parser.Primitive;
 
 namespace Twister.Compiler.Parser.Node
 {
@@ -15,9 +14,9 @@ namespace Twister.Compiler.Parser.Node
             Body = body;
         }
 
-        public string Identifier { get; private set; }
+        public string Identifier { get; }
 
-        public TwisterType? ReturnType { get; private set; }
+        public TwisterType? ReturnType { get; }
 
         public IList<INode> Body { get; set; }
 
@@ -25,6 +24,6 @@ namespace Twister.Compiler.Parser.Node
 
         public T Value { get; private set; } // TODO
 
-        public IScope Scope { get; private set; }
+        public IScope Scope { get; }
     }
 }

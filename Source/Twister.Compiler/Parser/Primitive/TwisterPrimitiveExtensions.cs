@@ -1,5 +1,4 @@
 ﻿using Twister.Compiler.Lexer.Enum;
-using Twister.Compiler.Lexer.Token;
 using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser.Primitive
@@ -22,12 +21,12 @@ namespace Twister.Compiler.Parser.Primitive
         /// Return the value of the <see cref="TwisterPrimitive"/> as a boxed object with the 
         /// <see cref="PrimitiveType"/> as an out parameter
         /// </summary>
-        public static object GetValue(this TwisterPrimitive instance, out PrimitiveType type) => GetValue(instance, out type);
+        public static object GetValue(this TwisterPrimitive instance, out PrimitiveType type) => TwisterPrimitive.GetValue(instance, out type);
 
         /// <summary>
         /// Return the value of the <see cref="TwisterPrimitive"/> as a boxed object
         /// </summary>
-        public static object GetValue(this TwisterPrimitive instance) => GetValue(instance, out var type);
+        public static object GetValue(this TwisterPrimitive instance) => GetValue(instance, out var _);
 
         public static bool IsNumeric(this TwisterPrimitive instance) => instance.Type == PrimitiveType.Int ||
                                                                         instance.Type == PrimitiveType.UInt ||

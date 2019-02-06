@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using Twister.Compiler.Parser.Interface;
-using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser
 {
@@ -15,11 +14,11 @@ namespace Twister.Compiler.Parser
             ChildScopes = new List<IScope>();
         }
 
-        public int Depth { get; private set; }
+        public int Depth { get; }
 
         public ICollection<ISymbol> Symbols { get; set; }
 
-        public IScope ParentScope { get; private set; }
+        public IScope ParentScope { get; }
 
         public IList<IScope> ChildScopes { get; set; }
 

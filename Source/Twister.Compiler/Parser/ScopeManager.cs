@@ -1,5 +1,4 @@
-﻿using System;
-using Twister.Compiler.Parser.Interface;
+﻿using Twister.Compiler.Parser.Interface;
 
 namespace Twister.Compiler.Parser
 {

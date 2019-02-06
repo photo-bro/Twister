@@ -36,32 +36,29 @@ namespace Twister.Compiler.Parser.Primitive
         public override int GetHashCode()
         {
             var hash = 19;
-            hash = (hash * 7) + Bool.GetHashCode();
-            hash = (hash * 7) + Int.GetHashCode();
-            hash = (hash * 7) + UInt.GetHashCode();
-            hash = (hash * 7) + Float.GetHashCode();
-            hash = (hash * 7) + Char.GetHashCode();
-            hash = (hash * 7) + Str.GetHashCode();
+            hash = hash * 7 + Bool.GetHashCode();
+            hash = hash * 7 + Int.GetHashCode();
+            hash = hash * 7 + UInt.GetHashCode();
+            hash = hash * 7 + Float.GetHashCode();
+            hash = hash * 7 + Char.GetHashCode();
+            hash = hash * 7 + Str.GetHashCode();
 
             return hash;
         }
 
         public static bool Equals(TwisterPrimitive instance, object obj)
         {
-            if (!(obj is TwisterPrimitive))
+            var other = obj as TwisterPrimitive?;
+
+            if (instance.Type != other?.Type)
                 return false;
 
-            var other = (TwisterPrimitive)obj;
-
-            if (instance.Type != other.Type)
-                return false;
-
-            var areValuesSame = instance.Bool == other.Bool &&
-                                instance.Int == other.Int &&
-                                instance.UInt == other.UInt &&
-                                Math.Abs(instance.Float - other.Float) < .00001 &&
-                                instance.Char == other.Char &&
-                                instance.Str == other.Str;
+            var areValuesSame = instance.Bool == other.Value.Bool &&
+                                instance.Int == other.Value.Int &&
+                                instance.UInt == other.Value.UInt &&
+                                Math.Abs(instance.Float - other.Value.Float) < .00001 &&
+                                instance.Char == other.Value.Char &&
+                                instance.Str == other.Value.Str;
 
             return areValuesSame;
         }

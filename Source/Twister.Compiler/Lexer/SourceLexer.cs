@@ -24,8 +24,6 @@ namespace Twister.Compiler.Lexer
             _flags = flags;
 
             var tokenInfo = default(TokenInfo);
-            var tokens = new List<IToken>();
-
             while (ScanToken(ref tokenInfo))
             {
                 var token = TokenFactory.Create(ref tokenInfo, ref _flags);
@@ -38,7 +36,7 @@ namespace Twister.Compiler.Lexer
             info.Text = string.Empty;
             info.TokenType = TokenKind.None;
 
-            char currentChar = _scanner.Advance();
+            var currentChar = _scanner.Advance();
             ConsumeWhiteSpace(ref currentChar);
 
             switch (currentChar)
@@ -289,16 +287,22 @@ namespace Twister.Compiler.Lexer
                 return;
             }
 
-            if (_scanner.Peek() == '\\')
+            if (_scanner.Peek() != '\\')
+                throw new IllegalCharacterException("Empty escaped char literal", _scanner.CurrentSourceLine)
+                          {Character = '\\'};
+
+            var escapedChar = _scanner.Peek(2);
+            switch (escapedChar)
             {
-                var escapedChar = _scanner.Peek(2);
-                if (escapedChar == '\\' || escapedChar == '\'' || escapedChar == '\"' ||
-                    escapedChar == 'n' || escapedChar == 'r' || escapedChar == '0')
-                {
+                case '\\':
+                case '\'':
+                case '\"':
+                case 'n':
+                case 'r':
+                case '0':
                     current = _scanner.Advance(2);
                     info.TokenType = TokenKind.CharLiteral;
                     return;
-                }
             }
 
             // empty escaped chars not allowed

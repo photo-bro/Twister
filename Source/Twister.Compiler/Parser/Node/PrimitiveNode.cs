@@ -9,7 +9,7 @@ namespace Twister.Compiler.Parser.Node
         public PrimitiveNode(TwisterPrimitive value)
         { Value = value; }
 
-        public TwisterPrimitive Value { get; private set; }
+        public TwisterPrimitive Value { get; }
 
         public NodeKind Kind => NodeKind.Primitive;
     }

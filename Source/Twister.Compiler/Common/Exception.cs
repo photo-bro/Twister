@@ -1,5 +1,4 @@
-﻿using System;
-namespace Twister.Compiler.Common
+﻿namespace Twister.Compiler.Common
 {
 
 }

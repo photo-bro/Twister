@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Twister.Compiler.Parser.Interface;
 
 namespace Twister.Compiler.Parser
@@ -18,7 +17,7 @@ namespace Twister.Compiler.Parser
 
         public int ScopeDepth { get; } = 0;
 
-        public IScope TopScope { get; private set; }
+        public IScope TopScope { get; }
 
         public IScope ActiveScope => _scopeStack.Peek();
     }

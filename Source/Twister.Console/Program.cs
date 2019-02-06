@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Twister.Console;
 
 namespace TwisterConsole
@@ -32,7 +33,7 @@ namespace TwisterConsole
             Console.WriteLine($"Compile completed successfully in {result.Duration:g}.");
         }
 
-        private static void ParseArgs(string[] args)
+        private static void ParseArgs(IEnumerable<string> args)
         {
             foreach (var arg in args)
             {

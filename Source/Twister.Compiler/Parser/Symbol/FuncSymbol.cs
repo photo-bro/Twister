@@ -1,5 +1,4 @@
-﻿using System;
-using Twister.Compiler.Parser.Enum;
+﻿using Twister.Compiler.Parser.Enum;
 using Twister.Compiler.Parser.Interface;
 
 namespace Twister.Compiler.Parser.Symbol
@@ -14,14 +13,14 @@ namespace Twister.Compiler.Parser.Symbol
             Value = value;
         }
 
-        public string Identifier { get; private set; }
+        public string Identifier { get; }
 
         public SymbolKind Kind => SymbolKind.Function;
 
-        public SymbolAttribute Attributes { get; private set; }
+        public SymbolAttribute Attributes { get; }
 
-        public TwisterType DataType { get; private set; }
+        public TwisterType DataType { get; }
 
-        public object Value { get; private set; }
+        public object Value { get; }
     }
 }

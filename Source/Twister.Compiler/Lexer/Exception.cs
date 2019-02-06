@@ -5,7 +5,7 @@ namespace Twister.Compiler.Lexer
     {
         public int LineNumber { get; set; }
 
-        public BaseLexerException(string message, int lineNumber) : base(message)
+        protected BaseLexerException(string message, int lineNumber) : base(message)
         {
             LineNumber = lineNumber;
         }

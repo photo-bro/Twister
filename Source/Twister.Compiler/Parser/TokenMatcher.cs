@@ -3,7 +3,6 @@ using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Common.Interface;
 using Twister.Compiler.Lexer.Enum;
 using System;
-using System.Linq;
 
 namespace Twister.Compiler.Parser
 {
@@ -39,10 +38,9 @@ namespace Twister.Compiler.Parser
         public IToken PeekNext(int count)
         {
             var peek = _scanner.Peek(count);
-            if (peek == _scanner.InvalidItem)
-                return default(IToken);
-
-            return peek;
+            return peek == _scanner.InvalidItem 
+                ? default(IToken) 
+                : peek;
         }
 
         public T MatchAndGet<T>() where T : IToken

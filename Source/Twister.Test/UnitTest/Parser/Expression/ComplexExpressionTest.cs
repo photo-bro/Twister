@@ -14,7 +14,7 @@ namespace Twister.Test.UnitTest.Parser.Expression
 #pragma warning disable CS1701 // Assuming assembly reference matches identity
     public class ComplexExpressionTest
     {
-        private IValueNode<TwisterPrimitive> ParseExpression(IEnumerable<IToken> expression)
+        private static IValueNode<TwisterPrimitive> ParseExpression(IEnumerable<IToken> expression)
         {
             var parser = new RecursiveDescentExpressionParser();
             return parser.ParseArithmeticExpression(
@@ -23,8 +23,8 @@ namespace Twister.Test.UnitTest.Parser.Expression
                 assignmentCallback: null);
         }
 
-        private IEnumerable<IToken> GetTokens(string expression) =>
-            new SourceLexer((s) => new TextSourceScanner(s))
+        private static IEnumerable<IToken> GetTokens(string expression) =>
+            new SourceLexer(s => new TextSourceScanner(s))
                 .Tokenize(expression, LexerFlag.None);
 
         [Theory]

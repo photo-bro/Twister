@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Twister.Compiler.Parser.Enum;
 
 namespace Twister.Compiler.Parser.Interface
 {

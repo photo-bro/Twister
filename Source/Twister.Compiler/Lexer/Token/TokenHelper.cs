@@ -6,7 +6,7 @@ namespace Twister.Compiler.Lexer.Token
 {
     public static class TokenHelper
     {
-        public static TokenKind[] ValueTokens => new TokenKind[]
+        public static TokenKind[] ValueTokens =
         {
             TokenKind.SignedInt,
             TokenKind.UnsignedInt,

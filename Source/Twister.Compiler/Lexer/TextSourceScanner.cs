@@ -7,8 +7,8 @@ namespace Twister.Compiler.Lexer
 {
     public class TextSourceScanner : ISourceScanner
     {
-        private const char INVALIDCHAR = char.MaxValue;
-        private readonly string NewLine = Environment.NewLine;
+        private const char Invalidchar = char.MaxValue;
+        private readonly string _newLine = Environment.NewLine;
         private readonly ReadOnlyMemory<char> _source;
 
         public TextSourceScanner(string source)
@@ -16,15 +16,15 @@ namespace Twister.Compiler.Lexer
             _source = source.AsMemory();
         }
 
-        public char InvalidItem => INVALIDCHAR;
+        public char InvalidItem => Invalidchar;
 
-        public int CurrentSourceLine { get; private set; } = 0;
+        public int CurrentSourceLine { get; private set; }
 
         public int Offset => Position - Base;
 
-        public int Base { get; set; } = 0;
+        public int Base { get; set; }
 
-        public int Position { get; private set; } = 0;
+        public int Position { get; private set; }
 
         public int SourceLength => _source.Length;
 
@@ -37,10 +37,9 @@ namespace Twister.Compiler.Lexer
                 if (Base > SourceLength)
                     return string.Empty;
 
-                if (Base + Offset > SourceLength)
-                    return _source.Slice(Base).ToString();
-
-                return _source.Slice(Base, Offset).ToString();
+                return Base + Offset > SourceLength 
+                    ? _source.Slice(Base).ToString() 
+                    : _source.Slice(Base, Offset).ToString();
             }
         }
 
@@ -113,17 +112,17 @@ namespace Twister.Compiler.Lexer
         {
             if (currentSlice.Length != 1)
             {
-                CurrentSourceLine += currentSlice.Count(NewLine.AsSpan());
+                CurrentSourceLine += currentSlice.Count(_newLine.AsSpan());
                 return;
             }
 
-            if (currentSlice[0] == '\n')
-            {
-                // if non-unix newlines only increment if there is a carriage return
-                if (NewLine[0] == '\r' && Peek(-1) != '\r')
-                    return;
-                CurrentSourceLine++;
-            }
+            if (currentSlice[0] != '\n')
+                return;
+
+            // if non-unix newlines only increment if there is a carriage return
+            if (_newLine[0] == '\r' && Peek(-1) != '\r')
+                return;
+            CurrentSourceLine++;
         }
     }
 

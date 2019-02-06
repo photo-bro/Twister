@@ -13,7 +13,7 @@ namespace Twister.Compiler.Parser.Node
 
         public StatementKind StatementKind => StatementKind.Program;
 
-        public IList<INode> Value { get; private set; }
+        public IList<INode> Value { get; }
 
         public NodeKind Kind { get; private set; }
     }

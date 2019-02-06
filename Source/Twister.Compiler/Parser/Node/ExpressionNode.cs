@@ -69,8 +69,6 @@ namespace Twister.Compiler.Parser.Node
         }
 
         public override ExpressionKind ExpressionKind => ExpressionKind.Unary;
-
-        private TwisterPrimitive RightValue { get; set; }
     }
 
     public sealed class AdditiveNode : BaseExpressionNode
@@ -155,7 +153,11 @@ namespace Twister.Compiler.Parser.Node
     {
         public ShiftNode(IValueNode<TwisterPrimitive> left, IValueNode<TwisterPrimitive> right, Operator op)
             : base(left, right)
-        { Operator = op; }
+        {
+            Operator = op;
+            if (right.Value.Type != PrimitiveType.Int || right.Value.Type != PrimitiveType.UInt)
+                throw new InvalidOperatorException("Right side of shift operator must be integer type");
+        }
 
         public override ExpressionKind ExpressionKind => ExpressionKind.Shift;
 

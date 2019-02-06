@@ -15,14 +15,14 @@ namespace Twister.Compiler.Parser.Symbol
             Value = value;
         }
 
-        public string Identifier { get; private set; }
+        public string Identifier { get; }
 
-        public SymbolKind Kind { get; private set; }
+        public SymbolKind Kind { get; }
 
-        public SymbolAttribute Attributes { get; private set; }
+        public SymbolAttribute Attributes { get; }
 
-        public TwisterType DataType { get; private set; }
+        public TwisterType DataType { get; }
 
-        public object Value { get; private set; }
+        public object Value { get; }
     }
 }

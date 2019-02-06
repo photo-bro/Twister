@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Twister.Compiler.Lexer.Enum;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
@@ -15,12 +14,12 @@ namespace Twister.Compiler.Parser
         /// </summary>
         public INode Statement()
         {
-            INode statementNode;
+            INode statementNode = null;
             var peek = _matcher.Peek;
 
             switch (peek)
             {
-                case LeftBrackToken leftBrackToken:
+                case LeftBrackToken _:
                     statementNode = Block();
                     break;
                 case IValueToken<Keyword> keywordToken:
@@ -49,7 +48,7 @@ namespace Twister.Compiler.Parser
                         }
                     }
                     break;
-                case IValueToken<string> identifierToken:
+                case IValueToken<string> _:
                     {
                         var peekAfter = _matcher.PeekNext(2);
                         statementNode = peekAfter.Kind == TokenKind.RightSquareBrack
@@ -60,10 +59,8 @@ namespace Twister.Compiler.Parser
             }
 
             _matcher.Match<SemiColonToken>();
-            return null;
+            return statementNode;
         }
-
-
 
         /// <summary>
         /// '{' { statement } '}'
@@ -79,7 +76,7 @@ namespace Twister.Compiler.Parser
                 return null;
             }
 
-            for (var snode = Statement(); snode != null || !(snode is TerminalNode); snode = Statement())
+            for (var snode = Statement(); snode != null; snode = Statement())
             {
                 statementList.Add(snode);
             }

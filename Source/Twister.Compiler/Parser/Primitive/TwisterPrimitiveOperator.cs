@@ -17,7 +17,7 @@ namespace Twister.Compiler.Parser.Primitive
                         {
                             var l = instance.GetValueOrDefault<string>();
                             var r = other.GetValueOrDefault<string>();
-                            return string.Compare(l, r) == 0;
+                            return string.CompareOrdinal(l, r) == 0;
                         }
                     case PrimitiveType.Int:
                         {
@@ -290,7 +290,7 @@ namespace Twister.Compiler.Parser.Primitive
             throw new InvalidExpressionException("Cannot evaluate expression")
             {
                 Left = $"{instance.Type}",
-                Right = $"",
+                Right = "",
                 Operation = $"{Operator.LogNot}"
             };
         }
@@ -310,7 +310,7 @@ namespace Twister.Compiler.Parser.Primitive
             throw new InvalidExpressionException("Cannot evaluate expression")
             {
                 Left = $"{instance.Type}",
-                Right = $"",
+                Right = "",
                 Operation = $"{Operator.BitNot}"
             };
         }
@@ -324,7 +324,7 @@ namespace Twister.Compiler.Parser.Primitive
             throw new InvalidExpressionException("Cannot evaluate expression")
             {
                 Left = $"{instance.Type}",
-                Right = $"int",
+                Right = "int",
                 Operation = $"{Operator.LeftShift}"
             };
         }
@@ -339,7 +339,7 @@ namespace Twister.Compiler.Parser.Primitive
                 throw new InvalidExpressionException("Cannot evaluate expression")
                 {
                     Left = $"{instance.Type}",
-                    Right = $"int",
+                    Right = "int",
                     Operation = $"{Operator.RightShift}"
                 };
             }

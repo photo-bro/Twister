@@ -1,5 +1,4 @@
-﻿using System;
-using Twister.Compiler.Parser.Enum;
+﻿using Twister.Compiler.Parser.Enum;
 using Twister.Compiler.Parser.Interface;
 using Twister.Compiler.Parser.Primitive;
 using Twister.Compiler.Parser.Symbol;
@@ -26,8 +25,8 @@ namespace Twister.Compiler.Parser.Node
         public NodeKind Kind => NodeKind.Symbol;
 
 
-        public string Identifier { get; private set; }
+        public string Identifier { get; }
 
-        public IScope Scope { get; private set; }
+        public IScope Scope { get; }
     }
 }

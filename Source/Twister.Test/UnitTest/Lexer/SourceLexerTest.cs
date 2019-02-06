@@ -4,7 +4,6 @@ using System.Linq;
 using Twister.Compiler.Lexer;
 using Twister.Compiler.Lexer.Interface;
 using Twister.Compiler.Lexer.Token;
-using Twister.Test.Data;
 using Xunit;
 
 namespace Twister.Test.UnitTest.Lexer

@@ -53,14 +53,12 @@ namespace Twister.Compiler.Parser.ExpressionParser
         private IValueNode<TwisterPrimitive> EvaluateUnary()
         {
             var op = (_matcher.Peek as IValueToken<Operator>)?.Value;
-            if (op.HasValue && op.Value.IsUnaryArithmeticOperator())
-            {
-                _matcher.Match();
-                var right = EvaluateUnary();
-                return new UnaryExpressionNode(right, op.Value);
-            }
+            if (op?.IsUnaryArithmeticOperator() != true)
+                return Primitive();
 
-            return Primitive();
+            _matcher.Match();
+            var right = EvaluateUnary();
+            return new UnaryExpressionNode(right, op.Value);
         }
 
         private bool IsOperatorInPrecedence(Operator op, PrecedenceLevel precedence)
