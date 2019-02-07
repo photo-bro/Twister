@@ -1,10 +1,9 @@
 language: csharp
 mono: none
+sudo: required
+dist: xenial
 dotnet: 2.2
-
-install:
-- dotnet restore Source/
-
 script:
-- dotnet build Source/
-- dotnet test Source/Twister.Test/Twister.Test.csproj
+    - dotnet restore Source/
+    - dotnet build Source/
+    - dotnet test Source/Twister.Test/Twister.Test.csproj
