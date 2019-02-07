@@ -108,12 +108,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("int Main(){}", 25, 0)]
         public void CurrentSourceLine_Unix(string source, int position, int expected)
         {
-            var scanner = new TextSourceScanner(source);
-
-            // Ugly but required, use reflection to manually override platform dependent newline
-            scanner.GetType()
-                .GetField("NewLine", BindingFlags.NonPublic | BindingFlags.Instance)
-                .SetValue(scanner, "\n");
+            var scanner = new TextSourceScanner(source, "\n");
 
             scanner.Advance(position);
 
@@ -131,12 +126,7 @@ namespace Twister.Test.UnitTest.Lexer
         [InlineData("int Main(){}", 25, 0)]
         public void CurrentSourceLine_Windows(string source, int position, int expected)
         {
-            var scanner = new TextSourceScanner(source);
-
-            // Ugly but required, use reflection to manually override platform dependent newline
-            scanner.GetType()
-                .GetField("NewLine", BindingFlags.NonPublic | BindingFlags.Instance)
-                .SetValue(scanner, "\r\n");
+            var scanner = new TextSourceScanner(source, "\r\n");
 
             scanner.Advance(position);
 

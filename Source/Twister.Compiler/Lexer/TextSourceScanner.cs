@@ -8,12 +8,13 @@ namespace Twister.Compiler.Lexer
     public class TextSourceScanner : ISourceScanner
     {
         private const char Invalidchar = char.MaxValue;
-        private readonly string _newLine = Environment.NewLine;
+        private readonly string _newLine;
         private readonly ReadOnlyMemory<char> _source;
 
-        public TextSourceScanner(string source)
+        public TextSourceScanner(string source, string newline = null)
         {
             _source = source.AsMemory();
+            _newLine = newline ?? Environment.NewLine;
         }
 
         public char InvalidItem => Invalidchar;
